@@ -8,11 +8,28 @@
 
 /* Begin PBXBuildFile section */
 		5C3D6BA6214447480094FDC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BA5214447480094FDC2 /* AppDelegate.swift */; };
-		5C3D6BA8214447480094FDC2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BA7214447480094FDC2 /* ViewController.swift */; };
-		5C3D6BAB214447480094FDC2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C3D6BA9214447480094FDC2 /* Main.storyboard */; };
-		5C3D6BAD2144474A0094FDC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C3D6BAC2144474A0094FDC2 /* Assets.xcassets */; };
 		5C3D6BB02144474A0094FDC2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C3D6BAE2144474A0094FDC2 /* LaunchScreen.storyboard */; };
 		5C3D6BBB2144474A0094FDC2 /* MyPeopleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BBA2144474A0094FDC2 /* MyPeopleTests.swift */; };
+		5C3D6BF321444A070094FDC2 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BF221444A070094FDC2 /* Person.swift */; };
+		5C3D6BF521444A140094FDC2 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BF421444A140094FDC2 /* Group.swift */; };
+		5C3D6BF721444A710094FDC2 /* PersonProfilePictureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BF621444A710094FDC2 /* PersonProfilePictureView.swift */; };
+		5C3D6BFB21444AE30094FDC2 /* MyPeopleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BFA21444AE30094FDC2 /* MyPeopleViewController.swift */; };
+		5C3D6BFD21444AF30094FDC2 /* PersonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BFC21444AF30094FDC2 /* PersonCell.swift */; };
+		5C3D6BFF21444B000094FDC2 /* GroupHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BFE21444B000094FDC2 /* GroupHeaderView.swift */; };
+		5C3D6C0F21444C820094FDC2 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BF221444A070094FDC2 /* Person.swift */; };
+		5C3D6C1021444C820094FDC2 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BF421444A140094FDC2 /* Group.swift */; };
+		5C3D6C1121444C820094FDC2 /* PersonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BFC21444AF30094FDC2 /* PersonCell.swift */; };
+		5C3D6C1221444C820094FDC2 /* GroupHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BFE21444B000094FDC2 /* GroupHeaderView.swift */; };
+		5C3D6C1321444C820094FDC2 /* MyPeopleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BFA21444AE30094FDC2 /* MyPeopleViewController.swift */; };
+		5C3D6C1421444C820094FDC2 /* PersonProfilePictureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BF621444A710094FDC2 /* PersonProfilePictureView.swift */; };
+		5C3D6C1621444C8D0094FDC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C3D6BAC2144474A0094FDC2 /* Assets.xcassets */; };
+		5C3D6C1A214455560094FDC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C3D6BAC2144474A0094FDC2 /* Assets.xcassets */; };
+		5C3D6C1C214458A60094FDC2 /* SectionBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6C1B214458A60094FDC2 /* SectionBackgroundView.swift */; };
+		5C3D6C1D214458A60094FDC2 /* SectionBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6C1B214458A60094FDC2 /* SectionBackgroundView.swift */; };
+		5C3D6C1F21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6C1E21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift */; };
+		5C3D6C2021445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6C1E21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift */; };
+		5CC8F4492146327000965D90 /* CocoaTouchAdditions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C3D6C1821444CC10094FDC2 /* CocoaTouchAdditions.framework */; };
+		5CC8F44A2146327000965D90 /* CocoaTouchAdditions.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5C3D6C1821444CC10094FDC2 /* CocoaTouchAdditions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,17 +42,41 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		5CC8F44B2146327000965D90 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				5CC8F44A2146327000965D90 /* CocoaTouchAdditions.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		5C3D6BA2214447480094FDC2 /* MyPeople.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyPeople.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C3D6BA5214447480094FDC2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		5C3D6BA7214447480094FDC2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		5C3D6BAA214447480094FDC2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5C3D6BAC2144474A0094FDC2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5C3D6BAF2144474A0094FDC2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5C3D6BB12144474A0094FDC2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5C3D6BB62144474A0094FDC2 /* MyPeopleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyPeopleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C3D6BBA2144474A0094FDC2 /* MyPeopleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPeopleTests.swift; sourceTree = "<group>"; };
 		5C3D6BBC2144474A0094FDC2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5C3D6BF221444A070094FDC2 /* Person.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
+		5C3D6BF421444A140094FDC2 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
+		5C3D6BF621444A710094FDC2 /* PersonProfilePictureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonProfilePictureView.swift; sourceTree = "<group>"; };
+		5C3D6BFA21444AE30094FDC2 /* MyPeopleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPeopleViewController.swift; sourceTree = "<group>"; };
+		5C3D6BFC21444AF30094FDC2 /* PersonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonCell.swift; sourceTree = "<group>"; };
+		5C3D6BFE21444B000094FDC2 /* GroupHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupHeaderView.swift; sourceTree = "<group>"; };
+		5C3D6C0521444B970094FDC2 /* MyPeoplePlaygroundAccessible.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MyPeoplePlaygroundAccessible.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C3D6C0721444B970094FDC2 /* MyPeoplePlaygroundAccessible.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyPeoplePlaygroundAccessible.h; sourceTree = "<group>"; };
+		5C3D6C0821444B970094FDC2 /* PlaygroundAccesibleFrameworkInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PlaygroundAccesibleFrameworkInfo.plist; sourceTree = "<group>"; };
+		5C3D6C1821444CC10094FDC2 /* CocoaTouchAdditions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CocoaTouchAdditions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C3D6C1B214458A60094FDC2 /* SectionBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionBackgroundView.swift; sourceTree = "<group>"; };
+		5C3D6C1E21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionBackgroundFlowLayout.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,10 +84,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5CC8F4492146327000965D90 /* CocoaTouchAdditions.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		5C3D6BB32144474A0094FDC2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5C3D6C0221444B970094FDC2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -62,6 +111,7 @@
 				5C3D6BA4214447480094FDC2 /* MyPeople */,
 				5C3D6BB92144474A0094FDC2 /* MyPeopleTests */,
 				5C3D6BA3214447480094FDC2 /* Products */,
+				5C3D6C1721444CC10094FDC2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -70,6 +120,7 @@
 			children = (
 				5C3D6BA2214447480094FDC2 /* MyPeople.app */,
 				5C3D6BB62144474A0094FDC2 /* MyPeopleTests.xctest */,
+				5C3D6C0521444B970094FDC2 /* MyPeoplePlaygroundAccessible.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -77,12 +128,11 @@
 		5C3D6BA4214447480094FDC2 /* MyPeople */ = {
 			isa = PBXGroup;
 			children = (
-				5C3D6BA5214447480094FDC2 /* AppDelegate.swift */,
-				5C3D6BA7214447480094FDC2 /* ViewController.swift */,
-				5C3D6BA9214447480094FDC2 /* Main.storyboard */,
-				5C3D6BAC2144474A0094FDC2 /* Assets.xcassets */,
+				5C3D6BF1214449F30094FDC2 /* Models */,
+				5C3D6BF0214449D70094FDC2 /* ViewControllers */,
+				5C3D6BEF214449C20094FDC2 /* Views */,
+				5C3D6C0D21444BDA0094FDC2 /* CoreApp */,
 				5C3D6BAE2144474A0094FDC2 /* LaunchScreen.storyboard */,
-				5C3D6BB12144474A0094FDC2 /* Info.plist */,
 			);
 			path = MyPeople;
 			sourceTree = "<group>";
@@ -96,7 +146,90 @@
 			path = MyPeopleTests;
 			sourceTree = "<group>";
 		};
+		5C3D6BEF214449C20094FDC2 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5C3D6BF621444A710094FDC2 /* PersonProfilePictureView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5C3D6BF0214449D70094FDC2 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				5C3D6BF821444AB50094FDC2 /* MyPeople */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		5C3D6BF1214449F30094FDC2 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5C3D6BF221444A070094FDC2 /* Person.swift */,
+				5C3D6BF421444A140094FDC2 /* Group.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		5C3D6BF821444AB50094FDC2 /* MyPeople */ = {
+			isa = PBXGroup;
+			children = (
+				5C3D6BF921444ACC0094FDC2 /* Views */,
+				5C3D6BFA21444AE30094FDC2 /* MyPeopleViewController.swift */,
+				5C3D6C1E21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift */,
+			);
+			path = MyPeople;
+			sourceTree = "<group>";
+		};
+		5C3D6BF921444ACC0094FDC2 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5C3D6BFC21444AF30094FDC2 /* PersonCell.swift */,
+				5C3D6BFE21444B000094FDC2 /* GroupHeaderView.swift */,
+				5C3D6C1B214458A60094FDC2 /* SectionBackgroundView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5C3D6C0D21444BDA0094FDC2 /* CoreApp */ = {
+			isa = PBXGroup;
+			children = (
+				5C3D6BA5214447480094FDC2 /* AppDelegate.swift */,
+				5C3D6BAC2144474A0094FDC2 /* Assets.xcassets */,
+				5C3D6BB12144474A0094FDC2 /* Info.plist */,
+				5C3D6C0E21444BEE0094FDC2 /* PlaygroundAccessible */,
+			);
+			path = CoreApp;
+			sourceTree = "<group>";
+		};
+		5C3D6C0E21444BEE0094FDC2 /* PlaygroundAccessible */ = {
+			isa = PBXGroup;
+			children = (
+				5C3D6C0821444B970094FDC2 /* PlaygroundAccesibleFrameworkInfo.plist */,
+				5C3D6C0721444B970094FDC2 /* MyPeoplePlaygroundAccessible.h */,
+			);
+			path = PlaygroundAccessible;
+			sourceTree = "<group>";
+		};
+		5C3D6C1721444CC10094FDC2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5C3D6C1821444CC10094FDC2 /* CocoaTouchAdditions.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		5C3D6C0021444B970094FDC2 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
 		5C3D6BA1214447470094FDC2 /* MyPeople */ = {
@@ -106,6 +239,7 @@
 				5C3D6B9E214447470094FDC2 /* Sources */,
 				5C3D6B9F214447470094FDC2 /* Frameworks */,
 				5C3D6BA0214447470094FDC2 /* Resources */,
+				5CC8F44B2146327000965D90 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -134,6 +268,24 @@
 			productReference = 5C3D6BB62144474A0094FDC2 /* MyPeopleTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		5C3D6C0421444B970094FDC2 /* MyPeoplePlaygroundAccessible */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5C3D6C0A21444B970094FDC2 /* Build configuration list for PBXNativeTarget "MyPeoplePlaygroundAccessible" */;
+			buildPhases = (
+				5C3D6C0021444B970094FDC2 /* Headers */,
+				5C3D6C0121444B970094FDC2 /* Sources */,
+				5C3D6C0221444B970094FDC2 /* Frameworks */,
+				5C3D6C0321444B970094FDC2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MyPeoplePlaygroundAccessible;
+			productName = MyPeoplePlaygroundAccessible;
+			productReference = 5C3D6C0521444B970094FDC2 /* MyPeoplePlaygroundAccessible.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -150,6 +302,9 @@
 					5C3D6BB52144474A0094FDC2 = {
 						CreatedOnToolsVersion = 10.0;
 						TestTargetID = 5C3D6BA1214447470094FDC2;
+					};
+					5C3D6C0421444B970094FDC2 = {
+						CreatedOnToolsVersion = 10.0;
 					};
 				};
 			};
@@ -168,6 +323,7 @@
 			targets = (
 				5C3D6BA1214447470094FDC2 /* MyPeople */,
 				5C3D6BB52144474A0094FDC2 /* MyPeopleTests */,
+				5C3D6C0421444B970094FDC2 /* MyPeoplePlaygroundAccessible */,
 			);
 		};
 /* End PBXProject section */
@@ -177,9 +333,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C3D6C1A214455560094FDC2 /* Assets.xcassets in Resources */,
 				5C3D6BB02144474A0094FDC2 /* LaunchScreen.storyboard in Resources */,
-				5C3D6BAD2144474A0094FDC2 /* Assets.xcassets in Resources */,
-				5C3D6BAB214447480094FDC2 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,6 +345,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5C3D6C0321444B970094FDC2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C3D6C1621444C8D0094FDC2 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -197,8 +360,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5C3D6BA8214447480094FDC2 /* ViewController.swift in Sources */,
+				5C3D6BF321444A070094FDC2 /* Person.swift in Sources */,
+				5C3D6C1F21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift in Sources */,
+				5C3D6BFF21444B000094FDC2 /* GroupHeaderView.swift in Sources */,
 				5C3D6BA6214447480094FDC2 /* AppDelegate.swift in Sources */,
+				5C3D6BF521444A140094FDC2 /* Group.swift in Sources */,
+				5C3D6BF721444A710094FDC2 /* PersonProfilePictureView.swift in Sources */,
+				5C3D6BFB21444AE30094FDC2 /* MyPeopleViewController.swift in Sources */,
+				5C3D6C1C214458A60094FDC2 /* SectionBackgroundView.swift in Sources */,
+				5C3D6BFD21444AF30094FDC2 /* PersonCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,6 +377,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				5C3D6BBB2144474A0094FDC2 /* MyPeopleTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5C3D6C0121444B970094FDC2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C3D6C0F21444C820094FDC2 /* Person.swift in Sources */,
+				5C3D6C1021444C820094FDC2 /* Group.swift in Sources */,
+				5C3D6C1121444C820094FDC2 /* PersonCell.swift in Sources */,
+				5C3D6C1D214458A60094FDC2 /* SectionBackgroundView.swift in Sources */,
+				5C3D6C1221444C820094FDC2 /* GroupHeaderView.swift in Sources */,
+				5C3D6C2021445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift in Sources */,
+				5C3D6C1321444C820094FDC2 /* MyPeopleViewController.swift in Sources */,
+				5C3D6C1421444C820094FDC2 /* PersonProfilePictureView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,14 +406,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		5C3D6BA9214447480094FDC2 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				5C3D6BAA214447480094FDC2 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		5C3D6BAE2144474A0094FDC2 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -291,7 +468,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -346,7 +523,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -362,7 +539,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NLWMFUZXT3;
-				INFOPLIST_FILE = MyPeople/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/MyPeople/CoreApp/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -380,7 +558,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NLWMFUZXT3;
-				INFOPLIST_FILE = MyPeople/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/MyPeople/CoreApp/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -434,6 +613,62 @@
 			};
 			name = Release;
 		};
+		5C3D6C0B21444B970094FDC2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = NLWMFUZXT3;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "$(SRCROOT)/MyPeople/CoreApp/PlaygroundAccessible/PlaygroundAccesibleFrameworkInfo.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = josephvb.MyPeoplePlaygroundAccessible;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		5C3D6C0C21444B970094FDC2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = NLWMFUZXT3;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "$(SRCROOT)/MyPeople/CoreApp/PlaygroundAccessible/PlaygroundAccesibleFrameworkInfo.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = josephvb.MyPeoplePlaygroundAccessible;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -460,6 +695,15 @@
 			buildConfigurations = (
 				5C3D6BC32144474A0094FDC2 /* Debug */,
 				5C3D6BC42144474A0094FDC2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5C3D6C0A21444B970094FDC2 /* Build configuration list for PBXNativeTarget "MyPeoplePlaygroundAccessible" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5C3D6C0B21444B970094FDC2 /* Debug */,
+				5C3D6C0C21444B970094FDC2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
