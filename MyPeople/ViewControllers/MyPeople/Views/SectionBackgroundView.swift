@@ -14,21 +14,23 @@ public class SectionBackgroundView: UICollectionReusableView {
     
     public var color: UIColor = .clear {
         didSet {
-            bottomLine.backgroundColor = color
-            topLine.backgroundColor = color
+            bottomLine.backgroundColor = color.cgColor
+            topLine.backgroundColor = color.cgColor
             backgroundColor = color.settingAlpha(to: 0.1)
+            layer.borderColor = color.cgColor
         }
     }
     
-    private let bottomLine: UIView
-    private let topLine: UIView
+    private let bottomLine: CALayer
+    private let topLine: CALayer
     
     public override init(frame: CGRect) {
-        topLine = UIView(frame: .zero)
-        bottomLine = UIView(frame: .zero)
+        topLine = CALayer()
+        bottomLine = CALayer()
+        
         super.init(frame: frame)
-        addSubview(topLine)
-        addSubview(bottomLine)
+        layer.addSublayer(topLine)
+        layer.addSublayer(bottomLine)
     }
     
     required init?(coder aDecoder: NSCoder) {

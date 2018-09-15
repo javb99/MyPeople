@@ -28,6 +28,8 @@
 		5C3D6C1D214458A60094FDC2 /* SectionBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6C1B214458A60094FDC2 /* SectionBackgroundView.swift */; };
 		5C3D6C1F21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6C1E21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift */; };
 		5C3D6C2021445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6C1E21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift */; };
+		5C431618214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C431617214852C3000AF666 /* CollapsibleSectionsDataSource.swift */; };
+		5C431619214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C431617214852C3000AF666 /* CollapsibleSectionsDataSource.swift */; };
 		5CC8F4492146327000965D90 /* CocoaTouchAdditions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C3D6C1821444CC10094FDC2 /* CocoaTouchAdditions.framework */; };
 		5CC8F44A2146327000965D90 /* CocoaTouchAdditions.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5C3D6C1821444CC10094FDC2 /* CocoaTouchAdditions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -77,6 +79,7 @@
 		5C3D6C1821444CC10094FDC2 /* CocoaTouchAdditions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CocoaTouchAdditions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C3D6C1B214458A60094FDC2 /* SectionBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionBackgroundView.swift; sourceTree = "<group>"; };
 		5C3D6C1E21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionBackgroundFlowLayout.swift; sourceTree = "<group>"; };
+		5C431617214852C3000AF666 /* CollapsibleSectionsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsibleSectionsDataSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,6 +180,7 @@
 				5C3D6BF921444ACC0094FDC2 /* Views */,
 				5C3D6BFA21444AE30094FDC2 /* MyPeopleViewController.swift */,
 				5C3D6C1E21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift */,
+				5C431617214852C3000AF666 /* CollapsibleSectionsDataSource.swift */,
 			);
 			path = MyPeople;
 			sourceTree = "<group>";
@@ -369,6 +373,7 @@
 				5C3D6BFB21444AE30094FDC2 /* MyPeopleViewController.swift in Sources */,
 				5C3D6C1C214458A60094FDC2 /* SectionBackgroundView.swift in Sources */,
 				5C3D6BFD21444AF30094FDC2 /* PersonCell.swift in Sources */,
+				5C431618214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -388,6 +393,7 @@
 				5C3D6C1021444C820094FDC2 /* Group.swift in Sources */,
 				5C3D6C1121444C820094FDC2 /* PersonCell.swift in Sources */,
 				5C3D6C1D214458A60094FDC2 /* SectionBackgroundView.swift in Sources */,
+				5C431619214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */,
 				5C3D6C1221444C820094FDC2 /* GroupHeaderView.swift in Sources */,
 				5C3D6C2021445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift in Sources */,
 				5C3D6C1321444C820094FDC2 /* MyPeopleViewController.swift in Sources */,
