@@ -104,6 +104,10 @@ public class MyPeopleViewController: UICollectionViewController {
     var collapsibleDataSource: CollapsibleSectionsDataSource!
     var naiveDataSource: GroupsDataSource!
     
+    var addButton: UIButton!
+    
+    var contactStoreWrapper: ContactStoreWrapper
+    
     public init() {
         let flowLayout = SectionBackgroundFlowLayout()
         flowLayout.sectionHeadersPinToVisibleBounds = true
@@ -112,6 +116,8 @@ public class MyPeopleViewController: UICollectionViewController {
         flowLayout.headerReferenceSize = templateHeader.intrinsicContentSize
         flowLayout.estimatedItemSize = CGSize(width: 80, height: 90)
         flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        
+        contactStoreWrapper = ContactStoreWrapper()
         
         super.init(collectionViewLayout: flowLayout)
     }
@@ -143,9 +149,20 @@ public class MyPeopleViewController: UICollectionViewController {
         collectionView.register(GroupHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MyPeopleViewController.headerIdentifier)
         collectionView.register(SectionBackgroundView.self, forSupplementaryViewOfKind: SectionBackgroundView.kind, withReuseIdentifier: SectionBackgroundView.kind)
         
-        let store = CNContactStore()
-        store.requestAccess(for: .contacts) { (granted, error) in
-            if granted {
+        let addGroupButton = UIButton(type: .custom)
+        addButton = addGroupButton
+        addGroupButton.addTarget(self, action: #selector(newGroupButtonPressed(_:)), for: .touchUpInside)
+        addGroupButton.setTitle("Add", for: .normal)
+        addGroupButton.standardStyle()
+        
+        collectionView.addSubview(addGroupButton)
+        addGroupButton.positionAboveSectionHeaders()
+        addGroupButton.use([
+            addGroupButton.leadingAnchor.constraint(equalToSystemSpacingAfter: collectionView.safeAreaLayoutGuide.leadingAnchor, multiplier: 1.0),
+            collectionView.safeAreaLayoutGuide.bottomAnchor.constraint(equalToSystemSpacingBelow: addGroupButton.bottomAnchor, multiplier: 1.0)])
+        
+        contactStoreWrapper.requestAccess { (result) in
+            if result == .success {
                 do {
                     // Store unique identifier to person pairs.
                     var allContacts: [String: Person] = [:]
@@ -158,11 +175,11 @@ public class MyPeopleViewController: UICollectionViewController {
                         return color
                     }
                     
-                    let contactGroups = try store.groups(matching: nil)
+                    let contactGroups = try self.contactStoreWrapper.backingStore.groups(matching: nil)
                     let groups = contactGroups.map { Group($0, color: nextColor()) }
                     
                     for group in groups {
-                        let contactsInGroup = try store.unifiedContacts(matching: group.containedContactsPredicate!, keysToFetch: Person.requiredContactKeys)
+                        let contactsInGroup = try self.contactStoreWrapper.backingStore.unifiedContacts(matching: group.containedContactsPredicate!, keysToFetch: Person.requiredContactKeys)
                         
                         let peopleInGroup = contactsInGroup.map(Person.init)
                         
@@ -195,6 +212,20 @@ public class MyPeopleViewController: UICollectionViewController {
         if let headerIndexPath = headerIndexPath(at: location) {
             toggleSection(headerIndexPath.section)
         }
+    }
+    
+    @IBAction func newGroupButtonPressed(_ button: UIButton?) {
+        let alertView = UIAlertController(title: "New Group", message: "Enter a group name", preferredStyle: .alert)
+        alertView.addTextField(configurationHandler: nil)
+        let done = UIAlertAction(title: "Add", style: .default) { [weak self] (action)  in
+            let textField = alertView.textFields!.first!
+            guard let text = textField.text, !text.isEmpty else { fatalError() }
+            try! self?.contactStoreWrapper.addGroup(named: text)
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertView.addAction(done)
+        alertView.addAction(cancel)
+        present(alertView, animated: true, completion: nil)
     }
     
     func headerIndexPath(at location: CGPoint) -> IndexPath? {

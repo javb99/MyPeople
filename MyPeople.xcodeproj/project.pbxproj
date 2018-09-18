@@ -30,8 +30,12 @@
 		5C3D6C2021445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6C1E21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift */; };
 		5C431618214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C431617214852C3000AF666 /* CollapsibleSectionsDataSource.swift */; };
 		5C431619214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C431617214852C3000AF666 /* CollapsibleSectionsDataSource.swift */; };
+		5CB2A8B9214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */; };
+		5CB2A8BA214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */; };
 		5CC8F4492146327000965D90 /* CocoaTouchAdditions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C3D6C1821444CC10094FDC2 /* CocoaTouchAdditions.framework */; };
 		5CC8F44A2146327000965D90 /* CocoaTouchAdditions.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5C3D6C1821444CC10094FDC2 /* CocoaTouchAdditions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5CDC479921508F0500FABFCB /* ViewStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC479821508F0500FABFCB /* ViewStyles.swift */; };
+		5CDC479A21508F0500FABFCB /* ViewStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC479821508F0500FABFCB /* ViewStyles.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +84,8 @@
 		5C3D6C1B214458A60094FDC2 /* SectionBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionBackgroundView.swift; sourceTree = "<group>"; };
 		5C3D6C1E21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionBackgroundFlowLayout.swift; sourceTree = "<group>"; };
 		5C431617214852C3000AF666 /* CollapsibleSectionsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsibleSectionsDataSource.swift; sourceTree = "<group>"; };
+		5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactStoreWrapper.swift; sourceTree = "<group>"; };
+		5CDC479821508F0500FABFCB /* ViewStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewStyles.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,6 +176,7 @@
 			children = (
 				5C3D6BF221444A070094FDC2 /* Person.swift */,
 				5C3D6BF421444A140094FDC2 /* Group.swift */,
+				5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -191,6 +198,7 @@
 				5C3D6BFC21444AF30094FDC2 /* PersonCell.swift */,
 				5C3D6BFE21444B000094FDC2 /* GroupHeaderView.swift */,
 				5C3D6C1B214458A60094FDC2 /* SectionBackgroundView.swift */,
+				5CDC479821508F0500FABFCB /* ViewStyles.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -370,8 +378,10 @@
 				5C3D6BA6214447480094FDC2 /* AppDelegate.swift in Sources */,
 				5C3D6BF521444A140094FDC2 /* Group.swift in Sources */,
 				5C3D6BF721444A710094FDC2 /* PersonProfilePictureView.swift in Sources */,
+				5CDC479921508F0500FABFCB /* ViewStyles.swift in Sources */,
 				5C3D6BFB21444AE30094FDC2 /* MyPeopleViewController.swift in Sources */,
 				5C3D6C1C214458A60094FDC2 /* SectionBackgroundView.swift in Sources */,
+				5CB2A8B9214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */,
 				5C3D6BFD21444AF30094FDC2 /* PersonCell.swift in Sources */,
 				5C431618214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */,
 			);
@@ -395,8 +405,10 @@
 				5C3D6C1D214458A60094FDC2 /* SectionBackgroundView.swift in Sources */,
 				5C431619214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */,
 				5C3D6C1221444C820094FDC2 /* GroupHeaderView.swift in Sources */,
+				5CDC479A21508F0500FABFCB /* ViewStyles.swift in Sources */,
 				5C3D6C2021445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift in Sources */,
 				5C3D6C1321444C820094FDC2 /* MyPeopleViewController.swift in Sources */,
+				5CB2A8BA214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */,
 				5C3D6C1421444C820094FDC2 /* PersonProfilePictureView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
