@@ -10,99 +10,13 @@ import UIKit
 import Contacts
 import ContactsUI
 
-func person(name: String, in groups: [Group]) -> Person {
-    let person = Person(name: name)
-    for group in groups {
-        group.add(person)
-    }
-    return person
-}
-
-public class GroupsDataSource: NSObject, UICollectionViewDataSource {
-    
-    public var headerTouchedCallback: ((UITapGestureRecognizer)->())?
-    
-    public var groups: [Group] = []
-    
-    public func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return groups.count
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return groups[section].people.count
-    }
-    
-    func colors(forItemAt indexPath: IndexPath) -> [UIColor] {
-        let person = self.person(at: indexPath)
-        
-        let rotatedGroups = groups[indexPath.section...] + groups[..<indexPath.section]
-        let personsGroupsSorted = rotatedGroups.filter { person.groups.contains($0) }
-        let colors = personsGroupsSorted.map{ $0.color }
-        return colors
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let person = self.person(at: indexPath)
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyPeopleViewController.cellIdentifier, for: indexPath) as! PersonCell
-        
-        cell.profileCircle.bgColors = colors(forItemAt: indexPath)
-        cell.profileCircle.image = person.image
-        cell.nameLabel.text = person.name
-        
-        return cell
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        switch kind {
-        case UICollectionView.elementKindSectionHeader:
-            // Deque GroupHeaderView
-            let view = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MyPeopleViewController.headerIdentifier, for: indexPath) as! GroupHeaderView
-            
-            let group = self.group(atSection: indexPath.section)
-            
-            view.backgroundColor = .white
-            view.title = group.name
-            view.color = group.color
-            
-            // Clear any left over gesture recognizers.
-            view.gestureRecognizers = nil
-            let headerTouchGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap(_:)))
-            view.addGestureRecognizer(headerTouchGestureRecognizer)
-            
-            return view
-            
-        case SectionBackgroundView.kind:
-            // Deque SectionBackgroundView
-            let view = collectionView.dequeueReusableSupplementaryView(ofKind: SectionBackgroundView.kind, withReuseIdentifier: SectionBackgroundView.kind, for: indexPath) as! SectionBackgroundView
-            
-            let group = self.group(atSection: indexPath.section)
-            view.color = group.color
-            return view
-        default:
-            fatalError()
-        }
-    }
-    
-    public func group(atSection section: Int) -> Group {
-        return groups[section]
-    }
-    
-    public func person(at indexPath: IndexPath) -> Person {
-        return groups[indexPath.section].people[indexPath.item]
-    }
-    
-    @IBAction func didTap(_ tapRecognizer: UITapGestureRecognizer) {
-        headerTouchedCallback?(tapRecognizer)
-    }
-}
-
 public class MyPeopleViewController: UICollectionViewController {
     
     static let cellIdentifier: String = "Cell"
     static let headerIdentifier: String = "Header"
     
     var collapsibleDataSource: CollapsibleSectionsDataSource!
-    var naiveDataSource: GroupsDataSource!
+    var naiveDataSource: PeopleByGroupsDataSource!
     
     var addButton: UIButton!
     
@@ -133,10 +47,7 @@ public class MyPeopleViewController: UICollectionViewController {
         
         navigationItem.title = "My People"
         
-        naiveDataSource = GroupsDataSource()
-        naiveDataSource.headerTouchedCallback = { [weak self] gc -> ()  in
-            self?.didTap(gc)
-        }
+        naiveDataSource = PeopleByGroupsDataSource()
         collapsibleDataSource = CollapsibleSectionsDataSource(collectionView: collectionView, sourcingFrom: naiveDataSource, defaultState: .collapsed)
         collectionView.dataSource = collapsibleDataSource
         
@@ -254,6 +165,16 @@ public class MyPeopleViewController: UICollectionViewController {
             collapsibleDataSource.collapse(section)
         case .uncollapsible:
             break
+        }
+    }
+    
+    public override func collectionView(_ collectionView: UICollectionView, willDisplaySupplementaryView view: UICollectionReusableView, forElementKind elementKind: String, at indexPath: IndexPath) {
+        
+        if elementKind == UICollectionView.elementKindSectionHeader {
+            let header = (view as! CollectionViewCollapsibleSectionHeader)
+            header.gestureRecognizers = nil
+            let headerTouchGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap(_:)))
+            header.addGestureRecognizer(headerTouchGestureRecognizer)
         }
     }
     
