@@ -7,94 +7,93 @@
 //
 
 import UIKit
+import CocoaTouchAdditions
 
-enum CollapsibleState {
+public protocol CollapsibleSectionHeader: class {
+    var state: CollapsibleState { get set }
+}
+
+public enum CollapsibleState {
     case collapsed
     case open
     case uncollapsible
 }
 
-class CollapsibleSectionsDataSource: NSObject, UICollectionViewDataSource {
+public typealias CollectionViewCollapsibleSectionHeader = UICollectionReusableView & CollapsibleSectionHeader
+
+/// Holds state about which sections are collapsed. And changes the item count in each section to show that. All headers used must conform to CollapsibleSectionHeader.
+public class CollapsibleSectionsDataSource: ChainableDataSource {
     
-    weak var collectionView: UICollectionView?
-    
-    var wrappedDataSource: UICollectionViewDataSource
+    weak var collectionView: UICollectionView!
     
     var states: [CollapsibleState]
     
     var defaultState: CollapsibleState
     
-    init(collectionView: UICollectionView, wrapping dataSource: UICollectionViewDataSource, defaultState: CollapsibleState = .open) {
+    init(collectionView: UICollectionView, sourcingFrom dataSource: UICollectionViewDataSource, defaultState: CollapsibleState = .open) {
         self.collectionView = collectionView
-        wrappedDataSource = dataSource
         self.defaultState = defaultState
-        let count = wrappedDataSource.numberOfSections?(in: collectionView) ?? 0
+        states = []
+        super.init(sourcingFrom: dataSource)
+        let count = previousDataSource.numberOfSections?(in: collectionView) ?? defaults.numberOfSections
         states = [CollapsibleState].init(repeating: defaultState, count: count)
     }
     
-    func setUncollapsible(_ section: Int) {
-        states[section] = .uncollapsible
-        collectionView!.reloadSections([section])
+    public func header(forSection section: Int) -> CollectionViewCollapsibleSectionHeader {
+        return collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: section)) as! CollectionViewCollapsibleSectionHeader
     }
     
-    func collapse(_ section: Int) {
-        states[section] = .collapsed
-        collectionView!.deleteItems(at: allIndexPaths(for: section))
+    private func set(state: CollapsibleState, forHeaderAt section: Int) {
+        // Change the disclosure indicator
+        states[section] = state
+        header(forSection: section).state = state
     }
     
-    func open(_ section: Int) {
-        states[section] = .open
-        collectionView!.insertItems(at: allIndexPaths(for: section))
+    public func setUncollapsible(_ section: Int) {
+        set(state: .uncollapsible, forHeaderAt: section)
+        collectionView.reloadSections([section])
+    }
+    
+    public func collapse(_ section: Int) {
+        set(state: .collapsed, forHeaderAt: section)
+        collectionView.deleteItems(at: allIndexPaths(for: section))
+    }
+    
+    public func open(_ section: Int) {
+        set(state: .open, forHeaderAt: section)
+        collectionView.insertItems(at: allIndexPaths(for: section))
     }
     
     func allIndexPaths(for section: Int) -> [IndexPath] {
-        let itemCount = wrappedDataSource.collectionView(collectionView!, numberOfItemsInSection: section)
+        let itemCount = previousDataSource.collectionView(collectionView, numberOfItemsInSection: section)
         guard itemCount > 0 else { return [] }
         return (0..<itemCount).map { IndexPath(item: $0, section: section) }
     }
     
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        let newSectionCount = wrappedDataSource.numberOfSections?(in: collectionView) ?? 0
+    override public func numberOfSections(in collectionView: UICollectionView) -> Int {
+        let newSectionCount = previousDataSource.numberOfSections?(in: collectionView) ?? defaults.numberOfSections
         let oldSectionCount = states.count
-        // By this implementation everytime the section count changes ALL sections are reset to the default state.
+        // By this implementation every time the section count changes ALL sections are reset to the default state.
         if oldSectionCount != newSectionCount {
             states = [CollapsibleState].init(repeating: defaultState, count: newSectionCount)
         }
         return newSectionCount
     }
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch states[section] {
         case .collapsed:
             return 0
         case .open, .uncollapsible:
-            return wrappedDataSource.collectionView(collectionView, numberOfItemsInSection: section)
+            return previousDataSource.collectionView(collectionView, numberOfItemsInSection: section)
         }
     }
     
-    // MARK: Pass on to wrapped DataSource
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        return wrappedDataSource.collectionView(collectionView, cellForItemAt: indexPath)
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        return wrappedDataSource.collectionView!(collectionView, viewForSupplementaryElementOfKind: kind, at: indexPath)
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
-        return wrappedDataSource.collectionView?(collectionView, canMoveItemAt: indexPath) ?? false
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        wrappedDataSource.collectionView?(collectionView, moveItemAt: sourceIndexPath, to: destinationIndexPath)
-    }
-    
-    public func indexTitles(for collectionView: UICollectionView) -> [String]? {
-        return wrappedDataSource.indexTitles?(for: collectionView)
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, indexPathForIndexTitle title: String, at index: Int) -> IndexPath {
-        return wrappedDataSource.collectionView!(collectionView, indexPathForIndexTitle: title, at: index)
+    public override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let view = previousDataSource.collectionView!(collectionView, viewForSupplementaryElementOfKind: kind, at: indexPath)
+        if kind == UICollectionView.elementKindSectionHeader {
+            (view as! CollectionViewCollapsibleSectionHeader).state = states[indexPath.section]
+        }
+        return view
     }
 }

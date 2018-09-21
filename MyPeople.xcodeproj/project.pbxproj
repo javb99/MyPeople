@@ -36,6 +36,8 @@
 		5CC8F44A2146327000965D90 /* CocoaTouchAdditions.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5C3D6C1821444CC10094FDC2 /* CocoaTouchAdditions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5CDC479921508F0500FABFCB /* ViewStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC479821508F0500FABFCB /* ViewStyles.swift */; };
 		5CDC479A21508F0500FABFCB /* ViewStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC479821508F0500FABFCB /* ViewStyles.swift */; };
+		5CDC479C2150A5D800FABFCB /* RotatableChevronView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC479B2150A5D800FABFCB /* RotatableChevronView.swift */; };
+		5CDC479D2150A5D800FABFCB /* RotatableChevronView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC479B2150A5D800FABFCB /* RotatableChevronView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +88,7 @@
 		5C431617214852C3000AF666 /* CollapsibleSectionsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsibleSectionsDataSource.swift; sourceTree = "<group>"; };
 		5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactStoreWrapper.swift; sourceTree = "<group>"; };
 		5CDC479821508F0500FABFCB /* ViewStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewStyles.swift; sourceTree = "<group>"; };
+		5CDC479B2150A5D800FABFCB /* RotatableChevronView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatableChevronView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,6 +162,7 @@
 			isa = PBXGroup;
 			children = (
 				5C3D6BF621444A710094FDC2 /* PersonProfilePictureView.swift */,
+				5CDC479B2150A5D800FABFCB /* RotatableChevronView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -382,6 +386,7 @@
 				5C3D6BFB21444AE30094FDC2 /* MyPeopleViewController.swift in Sources */,
 				5C3D6C1C214458A60094FDC2 /* SectionBackgroundView.swift in Sources */,
 				5CB2A8B9214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */,
+				5CDC479C2150A5D800FABFCB /* RotatableChevronView.swift in Sources */,
 				5C3D6BFD21444AF30094FDC2 /* PersonCell.swift in Sources */,
 				5C431618214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */,
 			);
@@ -401,6 +406,7 @@
 			files = (
 				5C3D6C0F21444C820094FDC2 /* Person.swift in Sources */,
 				5C3D6C1021444C820094FDC2 /* Group.swift in Sources */,
+				5CDC479D2150A5D800FABFCB /* RotatableChevronView.swift in Sources */,
 				5C3D6C1121444C820094FDC2 /* PersonCell.swift in Sources */,
 				5C3D6C1D214458A60094FDC2 /* SectionBackgroundView.swift in Sources */,
 				5C431619214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */,

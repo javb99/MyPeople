@@ -61,7 +61,7 @@ public class GroupsDataSource: NSObject, UICollectionViewDataSource {
             let group = self.group(atSection: indexPath.section)
             
             view.backgroundColor = .white
-            view.label.text = group.name
+            view.title = group.name
             view.color = group.color
             
             // Clear any left over gesture recognizers.
@@ -112,10 +112,10 @@ public class MyPeopleViewController: UICollectionViewController {
         let flowLayout = SectionBackgroundFlowLayout()
         flowLayout.sectionHeadersPinToVisibleBounds = true
         let templateHeader = GroupHeaderView(frame: .zero)
-        templateHeader.label.text = "Hello World"
+        templateHeader.title = "Hello World"
         flowLayout.headerReferenceSize = templateHeader.intrinsicContentSize
-        flowLayout.estimatedItemSize = CGSize(width: 80, height: 90)
-        flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        flowLayout.estimatedItemSize = CGSize(width: 80, height: 82.5)
+        flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 6, bottom: 8, right: 6)
         
         contactStoreWrapper = ContactStoreWrapper()
         
@@ -137,7 +137,7 @@ public class MyPeopleViewController: UICollectionViewController {
         naiveDataSource.headerTouchedCallback = { [weak self] gc -> ()  in
             self?.didTap(gc)
         }
-        collapsibleDataSource = CollapsibleSectionsDataSource(collectionView: collectionView, wrapping: naiveDataSource, defaultState: .collapsed)
+        collapsibleDataSource = CollapsibleSectionsDataSource(collectionView: collectionView, sourcingFrom: naiveDataSource, defaultState: .collapsed)
         collectionView.dataSource = collapsibleDataSource
         
         let bgView = UIView()
@@ -246,7 +246,8 @@ public class MyPeopleViewController: UICollectionViewController {
     }
     
     func toggleSection(_ section: Int) {
-        switch collapsibleDataSource.states[section]  {
+        let state = collapsibleDataSource.states[section]
+        switch state  {
         case .collapsed:
             collapsibleDataSource.open(section)
         case .open:
