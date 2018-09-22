@@ -41,8 +41,6 @@ public class MyPeopleViewController: UICollectionViewController {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    static let colors: [UIColor] = [.red, .blue, .purple, .green, .cyan, .orange, .black]
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -81,15 +79,12 @@ public class MyPeopleViewController: UICollectionViewController {
                     var allContacts: [String: Person] = [:]
                     
                     var colorIndex = 0
-                    let colors = MyPeopleViewController.colors
-                    func nextColor() -> UIColor {
-                        let color = colors[colorIndex % colors.count]
-                        colorIndex += 1
-                        return color
-                    }
                     
                     let contactGroups = try self.contactStoreWrapper.backingStore.groups(matching: nil)
-                    let groups = contactGroups.map { Group($0, color: nextColor()) }
+                    let groups = contactGroups.map { contactGroup -> Group in
+                        colorIndex += 1
+                        return Group(contactGroup, color: UIColor.color(for: colorIndex))
+                    }
                     
                     for group in groups {
                         let contactsInGroup = try self.contactStoreWrapper.backingStore.unifiedContacts(matching: group.containedContactsPredicate!, keysToFetch: Person.requiredContactKeys)
@@ -120,10 +115,15 @@ public class MyPeopleViewController: UICollectionViewController {
         }
     }
     
+    
+    
     @IBAction func didTap(_ tapRecognizer: UITapGestureRecognizer) {
         let location = tapRecognizer.location(in: collectionView)
         if let headerIndexPath = headerIndexPath(at: location) {
-            toggleSection(headerIndexPath.section)
+            //toggleSection(headerIndexPath.section)
+            let groupDetailController = GroupDetailViewController()
+            groupDetailController.group = naiveDataSource.groups[headerIndexPath.section]
+            navigationController?.pushViewController(groupDetailController, animated: true)
         }
     }
     
@@ -181,7 +181,7 @@ public class MyPeopleViewController: UICollectionViewController {
     }
     
     public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let person = naiveDataSource.person(at: indexPath)
+        let person = naiveDataSource.groups[indexPath.section].people[indexPath.item]
         guard person.isBackedByContact else { return }
         
         let store = CNContactStore()

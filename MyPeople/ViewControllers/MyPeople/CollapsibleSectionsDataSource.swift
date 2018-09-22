@@ -35,7 +35,7 @@ public class CollapsibleSectionsDataSource: ChainableDataSource {
         self.defaultState = defaultState
         states = []
         super.init(sourcingFrom: dataSource)
-        let count = previousDataSource.numberOfSections?(in: collectionView) ?? defaults.numberOfSections
+        let count = previousDataSource?.numberOfSections?(in: collectionView) ?? defaults.numberOfSections
         states = [CollapsibleState].init(repeating: defaultState, count: count)
     }
     
@@ -65,13 +65,13 @@ public class CollapsibleSectionsDataSource: ChainableDataSource {
     }
     
     func allIndexPaths(for section: Int) -> [IndexPath] {
-        let itemCount = previousDataSource.collectionView(collectionView, numberOfItemsInSection: section)
+        let itemCount = previousDataSource!.collectionView(collectionView, numberOfItemsInSection: section)
         guard itemCount > 0 else { return [] }
         return (0..<itemCount).map { IndexPath(item: $0, section: section) }
     }
     
     override public func numberOfSections(in collectionView: UICollectionView) -> Int {
-        let newSectionCount = previousDataSource.numberOfSections?(in: collectionView) ?? defaults.numberOfSections
+        let newSectionCount = previousDataSource!.numberOfSections!(in: collectionView)
         let oldSectionCount = states.count
         // By this implementation every time the section count changes ALL sections are reset to the default state.
         if oldSectionCount != newSectionCount {
@@ -85,12 +85,12 @@ public class CollapsibleSectionsDataSource: ChainableDataSource {
         case .collapsed:
             return 0
         case .open, .uncollapsible:
-            return previousDataSource.collectionView(collectionView, numberOfItemsInSection: section)
+            return previousDataSource!.collectionView(collectionView, numberOfItemsInSection: section)
         }
     }
     
     public override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let view = previousDataSource.collectionView!(collectionView, viewForSupplementaryElementOfKind: kind, at: indexPath)
+        let view = previousDataSource!.collectionView!(collectionView, viewForSupplementaryElementOfKind: kind, at: indexPath)
         if kind == UICollectionView.elementKindSectionHeader {
             (view as! CollectionViewCollapsibleSectionHeader).state = states[indexPath.section]
         }

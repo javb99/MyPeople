@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C224CE12155EB8E00AE6735 /* CocoaTouchAdditions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C224CE02155EB8E00AE6735 /* CocoaTouchAdditions.framework */; };
+		5C224CE72155EFBE00AE6735 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C224CE62155EFBE00AE6735 /* UIColor.swift */; };
+		5C224CE82155EFBE00AE6735 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C224CE62155EFBE00AE6735 /* UIColor.swift */; };
+		5C224CEA2155F22D00AE6735 /* CocoaTouchAdditions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C224CE02155EB8E00AE6735 /* CocoaTouchAdditions.framework */; };
+		5C224CEB2155F22D00AE6735 /* CocoaTouchAdditions.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5C224CE02155EB8E00AE6735 /* CocoaTouchAdditions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5C3D6BA6214447480094FDC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BA5214447480094FDC2 /* AppDelegate.swift */; };
 		5C3D6BB02144474A0094FDC2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C3D6BAE2144474A0094FDC2 /* LaunchScreen.storyboard */; };
 		5C3D6BBB2144474A0094FDC2 /* MyPeopleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BBA2144474A0094FDC2 /* MyPeopleTests.swift */; };
@@ -32,10 +37,14 @@
 		5C431619214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C431617214852C3000AF666 /* CollapsibleSectionsDataSource.swift */; };
 		5CB2A8B9214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */; };
 		5CB2A8BA214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */; };
-		5CC8F4492146327000965D90 /* CocoaTouchAdditions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C3D6C1821444CC10094FDC2 /* CocoaTouchAdditions.framework */; };
-		5CC8F44A2146327000965D90 /* CocoaTouchAdditions.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5C3D6C1821444CC10094FDC2 /* CocoaTouchAdditions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5CD4212821556A9900CAC397 /* PeopleByGroupsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */; };
 		5CD4212921556A9900CAC397 /* PeopleByGroupsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */; };
+		5CD4212C2155C02700CAC397 /* GroupDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212B2155C02700CAC397 /* GroupDetailViewController.swift */; };
+		5CD4212D2155C02700CAC397 /* GroupDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212B2155C02700CAC397 /* GroupDetailViewController.swift */; };
+		5CD4212F2155C21E00CAC397 /* AppNavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212E2155C21E00CAC397 /* AppNavigationCoordinator.swift */; };
+		5CD421302155C21E00CAC397 /* AppNavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212E2155C21E00CAC397 /* AppNavigationCoordinator.swift */; };
+		5CD421322155D1F700CAC397 /* GroupDetailHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD421312155D1F700CAC397 /* GroupDetailHeaderView.swift */; };
+		5CD421332155D1F700CAC397 /* GroupDetailHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD421312155D1F700CAC397 /* GroupDetailHeaderView.swift */; };
 		5CDC479921508F0500FABFCB /* ViewStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC479821508F0500FABFCB /* ViewStyles.swift */; };
 		5CDC479A21508F0500FABFCB /* ViewStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC479821508F0500FABFCB /* ViewStyles.swift */; };
 		5CDC479C2150A5D800FABFCB /* RotatableChevronView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC479B2150A5D800FABFCB /* RotatableChevronView.swift */; };
@@ -59,7 +68,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				5CC8F44A2146327000965D90 /* CocoaTouchAdditions.framework in Embed Frameworks */,
+				5C224CEB2155F22D00AE6735 /* CocoaTouchAdditions.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -67,6 +76,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5C224CE02155EB8E00AE6735 /* CocoaTouchAdditions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CocoaTouchAdditions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C224CE62155EFBE00AE6735 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		5C3D6BA2214447480094FDC2 /* MyPeople.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyPeople.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C3D6BA5214447480094FDC2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5C3D6BAC2144474A0094FDC2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -84,12 +95,14 @@
 		5C3D6C0521444B970094FDC2 /* MyPeoplePlaygroundAccessible.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MyPeoplePlaygroundAccessible.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C3D6C0721444B970094FDC2 /* MyPeoplePlaygroundAccessible.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyPeoplePlaygroundAccessible.h; sourceTree = "<group>"; };
 		5C3D6C0821444B970094FDC2 /* PlaygroundAccesibleFrameworkInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PlaygroundAccesibleFrameworkInfo.plist; sourceTree = "<group>"; };
-		5C3D6C1821444CC10094FDC2 /* CocoaTouchAdditions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CocoaTouchAdditions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C3D6C1B214458A60094FDC2 /* SectionBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionBackgroundView.swift; sourceTree = "<group>"; };
 		5C3D6C1E21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionBackgroundFlowLayout.swift; sourceTree = "<group>"; };
 		5C431617214852C3000AF666 /* CollapsibleSectionsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsibleSectionsDataSource.swift; sourceTree = "<group>"; };
 		5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactStoreWrapper.swift; sourceTree = "<group>"; };
 		5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleByGroupsDataSource.swift; sourceTree = "<group>"; };
+		5CD4212B2155C02700CAC397 /* GroupDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailViewController.swift; sourceTree = "<group>"; };
+		5CD4212E2155C21E00CAC397 /* AppNavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNavigationCoordinator.swift; sourceTree = "<group>"; };
+		5CD421312155D1F700CAC397 /* GroupDetailHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailHeaderView.swift; sourceTree = "<group>"; };
 		5CDC479821508F0500FABFCB /* ViewStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewStyles.swift; sourceTree = "<group>"; };
 		5CDC479B2150A5D800FABFCB /* RotatableChevronView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatableChevronView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -99,7 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5CC8F4492146327000965D90 /* CocoaTouchAdditions.framework in Frameworks */,
+				5C224CEA2155F22D00AE6735 /* CocoaTouchAdditions.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +127,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C224CE12155EB8E00AE6735 /* CocoaTouchAdditions.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +187,7 @@
 		5C3D6BF0214449D70094FDC2 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				5CD4212A2155C00300CAC397 /* Group */,
 				5C3D6BF821444AB50094FDC2 /* MyPeople */,
 			);
 			path = ViewControllers;
@@ -184,6 +199,7 @@
 				5C3D6BF221444A070094FDC2 /* Person.swift */,
 				5C3D6BF421444A140094FDC2 /* Group.swift */,
 				5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */,
+				5C224CE62155EFBE00AE6735 /* UIColor.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -215,6 +231,7 @@
 			isa = PBXGroup;
 			children = (
 				5C3D6BA5214447480094FDC2 /* AppDelegate.swift */,
+				5CD4212E2155C21E00CAC397 /* AppNavigationCoordinator.swift */,
 				5C3D6BAC2144474A0094FDC2 /* Assets.xcassets */,
 				5C3D6BB12144474A0094FDC2 /* Info.plist */,
 				5C3D6C0E21444BEE0094FDC2 /* PlaygroundAccessible */,
@@ -234,22 +251,21 @@
 		5C3D6C1721444CC10094FDC2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				5C3D6C1821444CC10094FDC2 /* CocoaTouchAdditions.framework */,
+				5C224CE02155EB8E00AE6735 /* CocoaTouchAdditions.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-/* End PBXGroup section */
-
-/* Begin PBXHeadersBuildPhase section */
-		5C3D6C0021444B970094FDC2 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+		5CD4212A2155C00300CAC397 /* Group */ = {
+			isa = PBXGroup;
+			children = (
+				5CD4212B2155C02700CAC397 /* GroupDetailViewController.swift */,
+				5CD421312155D1F700CAC397 /* GroupDetailHeaderView.swift */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			path = Group;
+			sourceTree = "<group>";
 		};
-/* End PBXHeadersBuildPhase section */
+/* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
 		5C3D6BA1214447470094FDC2 /* MyPeople */ = {
@@ -292,7 +308,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5C3D6C0A21444B970094FDC2 /* Build configuration list for PBXNativeTarget "MyPeoplePlaygroundAccessible" */;
 			buildPhases = (
-				5C3D6C0021444B970094FDC2 /* Headers */,
 				5C3D6C0121444B970094FDC2 /* Sources */,
 				5C3D6C0221444B970094FDC2 /* Frameworks */,
 				5C3D6C0321444B970094FDC2 /* Resources */,
@@ -389,10 +404,14 @@
 				5CD4212821556A9900CAC397 /* PeopleByGroupsDataSource.swift in Sources */,
 				5CDC479921508F0500FABFCB /* ViewStyles.swift in Sources */,
 				5C3D6BFB21444AE30094FDC2 /* MyPeopleViewController.swift in Sources */,
+				5CD4212C2155C02700CAC397 /* GroupDetailViewController.swift in Sources */,
 				5C3D6C1C214458A60094FDC2 /* SectionBackgroundView.swift in Sources */,
 				5CB2A8B9214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */,
 				5CDC479C2150A5D800FABFCB /* RotatableChevronView.swift in Sources */,
+				5C224CE72155EFBE00AE6735 /* UIColor.swift in Sources */,
 				5C3D6BFD21444AF30094FDC2 /* PersonCell.swift in Sources */,
+				5CD4212F2155C21E00CAC397 /* AppNavigationCoordinator.swift in Sources */,
+				5CD421322155D1F700CAC397 /* GroupDetailHeaderView.swift in Sources */,
 				5C431618214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -410,13 +429,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				5C3D6C0F21444C820094FDC2 /* Person.swift in Sources */,
+				5CD421302155C21E00CAC397 /* AppNavigationCoordinator.swift in Sources */,
+				5CD4212D2155C02700CAC397 /* GroupDetailViewController.swift in Sources */,
 				5C3D6C1021444C820094FDC2 /* Group.swift in Sources */,
 				5CDC479D2150A5D800FABFCB /* RotatableChevronView.swift in Sources */,
 				5C3D6C1121444C820094FDC2 /* PersonCell.swift in Sources */,
+				5C224CE82155EFBE00AE6735 /* UIColor.swift in Sources */,
 				5C3D6C1D214458A60094FDC2 /* SectionBackgroundView.swift in Sources */,
 				5C431619214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */,
 				5C3D6C1221444C820094FDC2 /* GroupHeaderView.swift in Sources */,
 				5CDC479A21508F0500FABFCB /* ViewStyles.swift in Sources */,
+				5CD421332155D1F700CAC397 /* GroupDetailHeaderView.swift in Sources */,
 				5C3D6C2021445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift in Sources */,
 				5C3D6C1321444C820094FDC2 /* MyPeopleViewController.swift in Sources */,
 				5CB2A8BA214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */,
