@@ -21,6 +21,9 @@ public class PersonCell: UICollectionViewCell {
         }
     }
     
+    private static let circleVerticalSpacingToName: CGFloat = 2
+    private static let profileCircleWidth: CGFloat = 60
+    
     public override init(frame: CGRect) {
         profileCircle = PersonProfilePictureView(frame: .init(squareOfLength: 60))
         nameLabel = UILabel()
@@ -39,10 +42,10 @@ public class PersonCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             profileCircle.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             profileCircle.topAnchor.constraint(equalTo: contentView.topAnchor),
-            profileCircle.widthAnchor.constraint(equalToConstant: 60),
-            profileCircle.heightAnchor.constraint(equalToConstant: 60),
+            profileCircle.widthAnchor.constraint(equalToConstant: PersonCell.profileCircleWidth),
+            profileCircle.heightAnchor.constraint(equalToConstant: PersonCell.profileCircleWidth),
             
-            nameLabel.topAnchor.constraint(equalTo: profileCircle.bottomAnchor, constant: 2),
+            nameLabel.topAnchor.constraint(equalTo: profileCircle.bottomAnchor, constant: PersonCell.circleVerticalSpacingToName),
             
             nameLabel.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor),
             nameLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
@@ -53,6 +56,10 @@ public class PersonCell: UICollectionViewCell {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    public override var intrinsicContentSize: CGSize {
+        return CGSize(width: max(nameLabel.intrinsicContentSize.width, PersonCell.profileCircleWidth), height: PersonCell.profileCircleWidth + PersonCell.circleVerticalSpacingToName + nameLabel.intrinsicContentSize.height)
     }
 }
 

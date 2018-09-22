@@ -28,7 +28,9 @@ public class MyPeopleViewController: UICollectionViewController {
         let templateHeader = GroupHeaderView(frame: .zero)
         templateHeader.title = "Hello World"
         flowLayout.headerReferenceSize = templateHeader.intrinsicContentSize
-        flowLayout.estimatedItemSize = CGSize(width: 80, height: 82.5)
+        let templateCell = PersonCell(frame: .zero)
+        templateCell.viewModel = .init(name: "Khrystyna", profilePicture: nil, colors: [])
+        flowLayout.itemSize = templateCell.intrinsicContentSize
         flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 6, bottom: 8, right: 6)
         
         contactStoreWrapper = ContactStoreWrapper()
