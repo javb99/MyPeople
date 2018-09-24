@@ -12,15 +12,22 @@ import ContactsUI
 
 public class MyPeopleViewController: UICollectionViewController {
     
+    // MARK: Static Members
+    
     static let cellIdentifier: String = "Cell"
     static let headerIdentifier: String = "Header"
+    
+    // MARK: Instance Members
     
     var collapsibleDataSource: CollapsibleSectionsDataSource!
     var naiveDataSource: PeopleByGroupsDataSource!
     
     var addButton: UIButton!
     
-    var contactStoreWrapper: ContactStoreWrapper
+    // MARK: Dependencies
+    
+    var navigationCoordinator: AppNavigationCoordinator!
+    var stateController: StateController!
     
     public init() {
         let flowLayout = SectionBackgroundFlowLayout()
@@ -33,9 +40,9 @@ public class MyPeopleViewController: UICollectionViewController {
         flowLayout.itemSize = templateCell.intrinsicContentSize
         flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 6, bottom: 8, right: 6)
         
-        contactStoreWrapper = ContactStoreWrapper()
-        
         super.init(collectionViewLayout: flowLayout)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(appStateDidChange), name: .stateDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -45,11 +52,18 @@ public class MyPeopleViewController: UICollectionViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
         
+        guard navigationCoordinator != nil, stateController != nil else {
+            fatalError("Dependencies not provided.")
+        }
+        
         navigationItem.title = "My People"
         
         naiveDataSource = PeopleByGroupsDataSource()
         collapsibleDataSource = CollapsibleSectionsDataSource(collectionView: collectionView, sourcingFrom: naiveDataSource, defaultState: .collapsed)
         collectionView.dataSource = collapsibleDataSource
+        
+        loadDataSource()
+        collectionView.reloadData()
         
         let bgView = UIView()
         bgView.frame = collectionView.bounds
@@ -71,58 +85,39 @@ public class MyPeopleViewController: UICollectionViewController {
         addGroupButton.use([
             addGroupButton.leadingAnchor.constraint(equalToSystemSpacingAfter: collectionView.safeAreaLayoutGuide.leadingAnchor, multiplier: 1.0),
             collectionView.safeAreaLayoutGuide.bottomAnchor.constraint(equalToSystemSpacingBelow: addGroupButton.bottomAnchor, multiplier: 1.0)])
-        
-        contactStoreWrapper.requestAccess { (result) in
-            if result == .success {
-                do {
-                    // Store unique identifier to person pairs.
-                    var allContacts: [String: Person] = [:]
-                    
-                    var colorIndex = 0
-                    
-                    let contactGroups = try self.contactStoreWrapper.backingStore.groups(matching: nil)
-                    let groups = contactGroups.map { contactGroup -> Group in
-                        colorIndex += 1
-                        return Group(contactGroup, color: UIColor.color(for: colorIndex))
-                    }
-                    
-                    for group in groups {
-                        let contactsInGroup = try self.contactStoreWrapper.backingStore.unifiedContacts(matching: group.containedContactsPredicate!, keysToFetch: Person.requiredContactKeys)
-                        
-                        let peopleInGroup = contactsInGroup.map(Person.init)
-                        
-                        // Add each person to this group.
-                        for person in peopleInGroup {
-                            // Only create one instance of a Person.
-                            // May need to account for unification using isUnified...
-                            if let matchingPerson = allContacts[person.identifier!] {
-                                group.add(matchingPerson)
-                            } else {
-                                allContacts[person.identifier!] = person
-                                group.add(person)
-                            }
-                        }
-                    }
-                    DispatchQueue.main.async {
-                        self.naiveDataSource.groups = groups
-                        self.collectionView.reloadData()
-                    }
-                    
-                } catch {
-                    print(error.localizedDescription)
-                }
-            }
-        }
     }
     
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        loadDataSource()
+        collectionView.reloadData()
+    }
     
+    func loadDataSource() {
+        let groups = Array(stateController.groups.values)
+        naiveDataSource.groups = groups
+        var people = [[Person]]()
+        for group in groups {
+            people.append(stateController.members(ofGroup: group.identifier!))
+        }
+        naiveDataSource.people = people
+    }
     
-    @IBAction func didTap(_ tapRecognizer: UITapGestureRecognizer) {
+    @objc func appStateDidChange() {
+        loadDataSource()
+        collectionView.reloadData()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    @IBAction func sectionTitleTapped(_ tapRecognizer: UITapGestureRecognizer) {
         let location = tapRecognizer.location(in: collectionView)
-        if let headerIndexPath = headerIndexPath(at: location) {
-            //toggleSection(headerIndexPath.section)
-            let groupDetailController = GroupDetailViewController()
-            groupDetailController.group = naiveDataSource.groups[headerIndexPath.section]
+        if let headerIndexPath = collectionView.headerIndexPath(at: location) {
+            let group = naiveDataSource.groups[headerIndexPath.section]
+            let groupDetailController = navigationCoordinator.prepareGroupDetailViewController(for: group.identifier!)
             navigationController?.pushViewController(groupDetailController, animated: true)
         }
     }
@@ -133,7 +128,8 @@ public class MyPeopleViewController: UICollectionViewController {
         let done = UIAlertAction(title: "Add", style: .default) { [weak self] (action)  in
             let textField = alertView.textFields!.first!
             guard let text = textField.text, !text.isEmpty else { fatalError() }
-            try! self?.contactStoreWrapper.addGroup(named: text)
+            let group = Group(name: text, color: .blue)
+            try! self?.stateController.add(group)
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertView.addAction(done)
@@ -141,56 +137,19 @@ public class MyPeopleViewController: UICollectionViewController {
         present(alertView, animated: true, completion: nil)
     }
     
-    func headerIndexPath(at location: CGPoint) -> IndexPath? {
-        let visibleSupplementaryViews = collectionView.visibleSupplementaryViews(ofKind: UICollectionView.elementKindSectionHeader)
-        let visibleHeaderFrames = visibleSupplementaryViews.map { $0.frame }
-        let visibleIndexPaths = collectionView.indexPathsForVisibleSupplementaryElements(ofKind: UICollectionView.elementKindSectionHeader)
-        
-        let frameContainsLocation: (CGRect, IndexPath) -> Bool = { (frame, _) -> Bool in
-            return frame.contains(location)
-        }
-        
-        // Zip frames to their indexPaths so we can return the first indexPath where its frame contains location.
-        if let (_, indexPath) = zip(visibleHeaderFrames, visibleIndexPaths).first(where: frameContainsLocation) {
-            return indexPath
-        } else {
-            return nil
-        }
-    }
-    
-    func toggleSection(_ section: Int) {
-        let state = collapsibleDataSource.states[section]
-        switch state  {
-        case .collapsed:
-            collapsibleDataSource.open(section)
-        case .open:
-            collapsibleDataSource.collapse(section)
-        case .uncollapsible:
-            break
-        }
-    }
-    
     public override func collectionView(_ collectionView: UICollectionView, willDisplaySupplementaryView view: UICollectionReusableView, forElementKind elementKind: String, at indexPath: IndexPath) {
         
         if elementKind == UICollectionView.elementKindSectionHeader {
-            let header = (view as! CollectionViewCollapsibleSectionHeader)
-            header.gestureRecognizers = nil
-            let headerTouchGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap(_:)))
-            header.addGestureRecognizer(headerTouchGestureRecognizer)
+            let header = (view as! GroupHeaderView)
+            header.titleTouchedCallback = sectionTitleTapped(_:)
         }
     }
     
     public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let person = naiveDataSource.groups[indexPath.section].people[indexPath.item]
+        let person = naiveDataSource.people[indexPath.section][indexPath.item]
         guard person.isBackedByContact else { return }
         
-        let store = CNContactStore()
-        guard let contact = try? store.unifiedContact(withIdentifier: person.identifier!, keysToFetch: [CNContactViewController.descriptorForRequiredKeys()]) else {
-            print("Couldn't fetch full contact")
-            return
-        }
-        let controller = CNContactViewController(for: contact)
-        controller.allowsEditing = false
+        let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier!)
         navigationController?.pushViewController(controller, animated: true)
     }
 }

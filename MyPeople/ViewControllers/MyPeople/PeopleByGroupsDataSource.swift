@@ -18,6 +18,13 @@ public class PeopleByGroupsDataSource: ChainableDataSource {
             supplementaryProvider.groups = groups
         }
     }
+    
+    public var people: [[Person]] = [] {
+        didSet {
+            cellProvider.people = people
+        }
+    }
+    
     var cellProvider: PeopleByGroupsCellsDataSource
     var supplementaryProvider: PeopleByGroupsSupplementaryViewDataSource
     
@@ -32,13 +39,14 @@ public class PeopleByGroupsDataSource: ChainableDataSource {
 public class PeopleByGroupsCellsDataSource: ChainableDataSource {
     
     public var groups: [Group] = []
+    public var people: [[Person]] = []
     
     public override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return groups.count
     }
     
     public override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return groups[section].people.count
+        return people[section].count
     }
     
     /// Rotate the colors for a person based on the section that is being asked for.
@@ -46,7 +54,8 @@ public class PeopleByGroupsCellsDataSource: ChainableDataSource {
         let person = self.person(at: indexPath)
         
         let rotatedGroups = groups[indexPath.section...] + groups[..<indexPath.section]
-        let personsGroupsSorted = rotatedGroups.filter { person.groups.contains($0) }
+        let personsGroupsSorted = rotatedGroups.filter { person.groupIDs.contains($0.identifier!
+            ) }
         let colors = personsGroupsSorted.map{ $0.color }
         return colors
     }
@@ -65,7 +74,7 @@ public class PeopleByGroupsCellsDataSource: ChainableDataSource {
     }
     
     public func person(at indexPath: IndexPath) -> Person {
-        return groups[indexPath.section].people[indexPath.item]
+        return people[indexPath.section][indexPath.item]
     }
 }
 

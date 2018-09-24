@@ -31,6 +31,9 @@ public class GroupHeaderView: UICollectionReusableView, CollapsibleSectionHeader
         }
     }
     
+    public var titleTouchedCallback: ((UITapGestureRecognizer)->())? = nil
+    public var sectionToggleTouchedCallback: ((UITapGestureRecognizer)->())? = nil
+    
     private let label: UILabel
     private let disclosureIndicator: RotatableChevronView
     private let bottomLine: UIView
@@ -52,6 +55,11 @@ public class GroupHeaderView: UICollectionReusableView, CollapsibleSectionHeader
         addSubview(label)
         addSubview(disclosureIndicator)
         addSubview(bottomLine)
+        
+        isUserInteractionEnabled = true
+        
+        let touchGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(touched(_:)))
+        self.addGestureRecognizer(touchGestureRecognizer)
         
         self.usesAutoLayout()
         label.usesAutoLayout()
@@ -86,5 +94,16 @@ public class GroupHeaderView: UICollectionReusableView, CollapsibleSectionHeader
         attributes.bounds.size.height = intrinsicContentSize.height
         attributes.bounds.size.width = 300
         return attributes
+    }
+    
+    @IBAction func touched(_ tapGC: UITapGestureRecognizer) {
+        let location = tapGC.location(in: self)
+        var extendedChevronFrame = CGRect(x: 0, y: 0, width: 50, height: bounds.height)
+        extendedChevronFrame.center = disclosureIndicator.frame.center
+        if label.frame.contains(location) {
+            titleTouchedCallback?(tapGC)
+        } else if extendedChevronFrame.contains(location) {
+            sectionToggleTouchedCallback?(tapGC)
+        }
     }
 }

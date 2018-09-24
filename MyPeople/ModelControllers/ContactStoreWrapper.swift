@@ -13,8 +13,6 @@ public class ContactStoreWrapper {
     
     public let backingStore: CNContactStore
     
-    public private(set) var accessState: AuthenticationResult?
-    
     init() {
         backingStore = CNContactStore()
     }
@@ -44,6 +42,10 @@ public class ContactStoreWrapper {
         }
     }
     
+    public var authorizationStatus: CNAuthorizationStatus {
+        return CNContactStore.authorizationStatus(for: .contacts)
+    }
+    
     public func requestAccess(callback: @escaping (AuthenticationResult)->()) {
         backingStore.requestAccess(for: .contacts) { (granted, error) in
             var result: AuthenticationResult
@@ -53,16 +55,6 @@ public class ContactStoreWrapper {
                 result = .failed(error!)
             }
             callback(result)
-        }
-    }
-    
-    /// Executes the given code if currently authorized. Returns true if allowed.
-    public func doIfAllowed(code: ()->()) -> Bool {
-        if accessState == .success {
-            code()
-            return true
-        } else {
-            return false
         }
     }
     

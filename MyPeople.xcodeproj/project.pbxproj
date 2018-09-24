@@ -12,6 +12,8 @@
 		5C224CE82155EFBE00AE6735 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C224CE62155EFBE00AE6735 /* UIColor.swift */; };
 		5C224CEA2155F22D00AE6735 /* CocoaTouchAdditions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C224CE02155EB8E00AE6735 /* CocoaTouchAdditions.framework */; };
 		5C224CEB2155F22D00AE6735 /* CocoaTouchAdditions.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5C224CE02155EB8E00AE6735 /* CocoaTouchAdditions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5C224CEE21560DB500AE6735 /* StateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C224CED21560DB500AE6735 /* StateController.swift */; };
+		5C224CEF21560DB500AE6735 /* StateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C224CED21560DB500AE6735 /* StateController.swift */; };
 		5C3D6BA6214447480094FDC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BA5214447480094FDC2 /* AppDelegate.swift */; };
 		5C3D6BB02144474A0094FDC2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C3D6BAE2144474A0094FDC2 /* LaunchScreen.storyboard */; };
 		5C3D6BBB2144474A0094FDC2 /* MyPeopleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BBA2144474A0094FDC2 /* MyPeopleTests.swift */; };
@@ -78,6 +80,7 @@
 /* Begin PBXFileReference section */
 		5C224CE02155EB8E00AE6735 /* CocoaTouchAdditions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CocoaTouchAdditions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C224CE62155EFBE00AE6735 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
+		5C224CED21560DB500AE6735 /* StateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateController.swift; sourceTree = "<group>"; };
 		5C3D6BA2214447480094FDC2 /* MyPeople.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyPeople.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C3D6BA5214447480094FDC2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5C3D6BAC2144474A0094FDC2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -134,6 +137,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5C224CEC21560D9D00AE6735 /* ModelControllers */ = {
+			isa = PBXGroup;
+			children = (
+				5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */,
+				5C224CED21560DB500AE6735 /* StateController.swift */,
+			);
+			path = ModelControllers;
+			sourceTree = "<group>";
+		};
 		5C3D6B99214447470094FDC2 = {
 			isa = PBXGroup;
 			children = (
@@ -157,6 +169,7 @@
 		5C3D6BA4214447480094FDC2 /* MyPeople */ = {
 			isa = PBXGroup;
 			children = (
+				5C224CEC21560D9D00AE6735 /* ModelControllers */,
 				5C3D6BF1214449F30094FDC2 /* Models */,
 				5C3D6BF0214449D70094FDC2 /* ViewControllers */,
 				5C3D6BEF214449C20094FDC2 /* Views */,
@@ -198,7 +211,6 @@
 			children = (
 				5C3D6BF221444A070094FDC2 /* Person.swift */,
 				5C3D6BF421444A140094FDC2 /* Group.swift */,
-				5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */,
 				5C224CE62155EFBE00AE6735 /* UIColor.swift */,
 			);
 			path = Models;
@@ -398,6 +410,7 @@
 				5C3D6BF321444A070094FDC2 /* Person.swift in Sources */,
 				5C3D6C1F21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift in Sources */,
 				5C3D6BFF21444B000094FDC2 /* GroupHeaderView.swift in Sources */,
+				5C224CEE21560DB500AE6735 /* StateController.swift in Sources */,
 				5C3D6BA6214447480094FDC2 /* AppDelegate.swift in Sources */,
 				5C3D6BF521444A140094FDC2 /* Group.swift in Sources */,
 				5C3D6BF721444A710094FDC2 /* PersonProfilePictureView.swift in Sources */,
@@ -441,6 +454,7 @@
 				5CDC479A21508F0500FABFCB /* ViewStyles.swift in Sources */,
 				5CD421332155D1F700CAC397 /* GroupDetailHeaderView.swift in Sources */,
 				5C3D6C2021445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift in Sources */,
+				5C224CEF21560DB500AE6735 /* StateController.swift in Sources */,
 				5C3D6C1321444C820094FDC2 /* MyPeopleViewController.swift in Sources */,
 				5CB2A8BA214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */,
 				5C3D6C1421444C820094FDC2 /* PersonProfilePictureView.swift in Sources */,

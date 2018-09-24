@@ -11,6 +11,7 @@ import CocoaTouchAdditions
 
 public protocol CollapsibleSectionHeader: class {
     var state: CollapsibleState { get set }
+    var sectionToggleTouchedCallback: ((UITapGestureRecognizer)->())? { get set }
 }
 
 public enum CollapsibleState {
@@ -26,9 +27,9 @@ public class CollapsibleSectionsDataSource: ChainableDataSource {
     
     weak var collectionView: UICollectionView!
     
-    var states: [CollapsibleState]
-    
     var defaultState: CollapsibleState
+    
+    var states: [CollapsibleState]
     
     init(collectionView: UICollectionView, sourcingFrom dataSource: UICollectionViewDataSource, defaultState: CollapsibleState = .open) {
         self.collectionView = collectionView
@@ -92,8 +93,48 @@ public class CollapsibleSectionsDataSource: ChainableDataSource {
     public override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let view = previousDataSource!.collectionView!(collectionView, viewForSupplementaryElementOfKind: kind, at: indexPath)
         if kind == UICollectionView.elementKindSectionHeader {
-            (view as! CollectionViewCollapsibleSectionHeader).state = states[indexPath.section]
+            let header = (view as! CollectionViewCollapsibleSectionHeader)
+            header.state = states[indexPath.section]
+            header.sectionToggleTouchedCallback = sectionTogglePressed(_:)
         }
         return view
+    }
+    
+    func sectionTogglePressed(_ tapGC: UITapGestureRecognizer) {
+        let location = tapGC.location(in: collectionView)
+        if let headerIndexPath = collectionView.headerIndexPath(at: location) {
+            toggleSection(headerIndexPath.section)
+        }
+    }
+    
+    func toggleSection(_ section: Int) {
+        let state = states[section]
+        switch state  {
+        case .collapsed:
+            open(section)
+        case .open:
+            collapse(section)
+        case .uncollapsible:
+            break
+        }
+    }
+}
+
+extension UICollectionView {
+    func headerIndexPath(at location: CGPoint) -> IndexPath? {
+        let visibleSupplementaryViews = self.visibleSupplementaryViews(ofKind: UICollectionView.elementKindSectionHeader)
+        let visibleHeaderFrames = visibleSupplementaryViews.map { $0.frame }
+        let visibleIndexPaths = self.indexPathsForVisibleSupplementaryElements(ofKind: UICollectionView.elementKindSectionHeader)
+        
+        let frameContainsLocation: (CGRect, IndexPath) -> Bool = { (frame, _) -> Bool in
+            return frame.contains(location)
+        }
+        
+        // Zip frames to their indexPaths so we can return the first indexPath where its frame contains location.
+        if let (_, indexPath) = zip(visibleHeaderFrames, visibleIndexPaths).first(where: frameContainsLocation) {
+            return indexPath
+        } else {
+            return nil
+        }
     }
 }

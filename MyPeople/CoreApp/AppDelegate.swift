@@ -12,13 +12,15 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    var navigationCoordinator: AppNavigationCoordinator!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         window = UIWindow(frame: UIScreen.main.bounds)
         
-        let myPeopleController = MyPeopleViewController()
+        navigationCoordinator = AppNavigationCoordinator()
+        
+        let myPeopleController = navigationCoordinator.prepareMyPeopleViewController()
         let nav = UINavigationController(rootViewController: myPeopleController)
         nav.navigationBar.prefersLargeTitles = true
         

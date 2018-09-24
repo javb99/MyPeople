@@ -9,10 +9,12 @@
 import UIKit
 import Contacts
 
-public class Person {
+public struct Person {
     public var name: String
     public var image: UIImage? = nil
-    public var groups: [Group] = []
+    public var groupIDs: [String] = []
+    public var email: String? = nil
+    public var phoneNumber: String? = nil
     /// The identifier of the CNContact that was used to create this person.
     public var identifier: String?
     
@@ -20,14 +22,16 @@ public class Person {
         self.name = name
     }
     
-    public static let requiredContactKeys: [CNKeyDescriptor] = [CNContactGivenNameKey as CNKeyDescriptor, CNContactThumbnailImageDataKey as CNKeyDescriptor]
+    public static let requiredContactKeys: [CNKeyDescriptor] = [CNContactGivenNameKey as CNKeyDescriptor, CNContactThumbnailImageDataKey as CNKeyDescriptor, CNContactEmailAddressesKey as CNKeyDescriptor, CNContactPhoneNumbersKey as CNKeyDescriptor]
     
-    public convenience init(_ contact: CNContact) {
+    public init(_ contact: CNContact) {
         self.init(name: contact.givenName)
         if let thumnailData = contact.thumbnailImageData {
             image = UIImage(data: thumnailData)
         }
         identifier = contact.identifier
+        email = contact.emailAddresses.first?.value as String?
+        phoneNumber = contact.phoneNumbers.first?.value.stringValue
     }
     
     var thisContact: NSPredicate? {

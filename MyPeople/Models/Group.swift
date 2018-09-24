@@ -9,25 +9,21 @@
 import UIKit
 import Contacts
 
-public class Group: Equatable {
+public struct Group: Equatable {
+    
     public var name: String
     public var color: UIColor
-    public var people: [Person]
+    public var memberIDs: [String]
     /// The identifier of the CNGroup that this group is based on.
     public var identifier: String?
     
     public init(name: String, color: UIColor, people: [Person] = []) {
         self.name = name
         self.color = color
-        self.people = people
+        self.memberIDs = people.map { $0.identifier! }
     }
     
-    public func add(_ person: Person) {
-        people.append(person)
-        person.groups.append(self)
-    }
-    
-    public convenience init(_ group: CNGroup, color: UIColor, people: [Person] = []) {
+    public init(_ group: CNGroup, color: UIColor, people: [Person] = []) {
         self.init(name: group.name, color: color, people: people)
         identifier = group.identifier
     }

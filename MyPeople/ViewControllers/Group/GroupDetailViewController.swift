@@ -39,11 +39,15 @@ public class SingleHeaderDataSource: ChainableDataSource {
 public class GroupDetailViewController: UICollectionViewController {
     
     // MARK: Dependencies
-    public var group: Group!
+    public var navigationCoordinator: AppNavigationCoordinator!
+    public var stateController: StateController!
+    public var groupID: String!
     
     // MARK: Instance members
     private var cellsDataSource: PeopleByGroupsCellsDataSource!
     private var headerDataSource: SingleHeaderDataSource!
+    private var people: [Person]!
+    private var group: Group!
     
     // MARK: Static members
     static let cellIdentifier: String = "Cell"
@@ -59,29 +63,37 @@ public class GroupDetailViewController: UICollectionViewController {
         flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 6, bottom: 8, right: 6)
         
         super.init(collectionViewLayout: flowLayout)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(appStateDidChange), name: .stateDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        guard group != nil else {
+        guard navigationCoordinator != nil, groupID != nil else {
             fatalError("Dependencies not fulfilled.")
         }
+        
+        getData()
+        
+        headerDataSource = SingleHeaderDataSource(sourcingFrom: nil, headerDelegate: self, group: group)
+        // TODO: Color circles don't work correctly without all the groups.
+        cellsDataSource = PeopleByGroupsCellsDataSource(sourcingFrom: headerDataSource)
+        loadDataSource()
+        collectionView.dataSource = cellsDataSource
         
         navigationItem.title = group.name
         navigationItem.largeTitleDisplayMode = .never
         //navigationController?.navigationBar.barTintColor = group.color.settingAlpha(to: 0.2)
         navigationController?.navigationBar.tintColor = group.color
-        
-        headerDataSource = SingleHeaderDataSource(sourcingFrom: nil, headerDelegate: self, group: group)
-        // TODO: Color circles don't work correctly without all the groups.
-        cellsDataSource = PeopleByGroupsCellsDataSource(sourcingFrom: headerDataSource)
-        cellsDataSource.groups = [group]
-        collectionView.dataSource = cellsDataSource
         
         let bgView = UIView()
         bgView.frame = collectionView.bounds
@@ -98,22 +110,40 @@ public class GroupDetailViewController: UICollectionViewController {
     
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        cellsDataSource.groups = [group]
+        loadDataSource()
         collectionView.reloadData()
     }
     
+    /// Loads group and members.
+    func getData() {
+        guard let group = stateController.groups[groupID] else {
+            fatalError("Invalid groupID dependency")
+        }
+        self.group = group
+        people = stateController.members(ofGroup: groupID)
+    }
+    
+    /// Loads data and passes it to the data source.
+    func loadDataSource() {
+        getData()
+        cellsDataSource.groups = [group]
+        cellsDataSource.people = [people]
+    }
+    
+    /// Present detail view controller for the person at the selected IndexPath.
     public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let person = group.people[indexPath.item]
+        let person = people[indexPath.item]
         guard person.isBackedByContact else { return }
         
-        let store = CNContactStore()
-        guard let contact = try? store.unifiedContact(withIdentifier: person.identifier!, keysToFetch: [CNContactViewController.descriptorForRequiredKeys()]) else {
-            print("Couldn't fetch full contact")
-            return
-        }
-        let controller = CNContactViewController(for: contact)
+        let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier!)
         controller.allowsEditing = false
         navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    /// Called when the stateController's state is changed. We use this to reload the collection view.
+    @objc func appStateDidChange() {
+        loadDataSource()
+        collectionView.reloadData()
     }
 }
 
@@ -124,15 +154,14 @@ extension GroupDetailViewController: GroupDetailHeaderViewDelegate {
             print("Send text to group.")
             let controller = MFMessageComposeViewController()
             controller.messageComposeDelegate = self
-            let identifiers = group.people.compactMap { $0.identifier }
+            let identifiers = people.compactMap { $0.phoneNumber }
             controller.recipients = identifiers
             present(controller, animated: true, completion: nil)
         case .email:
             print("Send email to group")
             let controller = MFMailComposeViewController()
             controller.mailComposeDelegate = self
-            let identifiers = group.people.compactMap { $0.name }
-                .map { $0 + "@example.com" }
+            let identifiers = people.compactMap { $0.email }
             controller.setToRecipients(identifiers)
             present(controller, animated: true, completion: nil)
         }
@@ -140,6 +169,29 @@ extension GroupDetailViewController: GroupDetailHeaderViewDelegate {
     
     public func addMembersButtonPressed() {
         print("Add members")
+        let picker = CNContactPickerViewController()
+        picker.delegate = self
+        picker.predicateForSelectionOfProperty = nil
+        present(picker, animated: true, completion: nil)
+    }
+}
+
+extension GroupDetailViewController: CNContactPickerDelegate {
+    public func contactPickerDidCancel(_ picker: CNContactPickerViewController) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    public func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
+        addContactsToGroup(contacts)
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func addContactsToGroup(_ contacts: [CNContact]) {
+        for contact in contacts {
+            stateController.add(person: contact.identifier, toGroup: group.identifier!)
+        }
+        loadDataSource()
+        collectionView.reloadData()
     }
 }
 
