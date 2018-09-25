@@ -28,7 +28,7 @@ public class AppNavigationCoordinator: NSObject {
         return controller
     }
     
-    public func prepareGroupDetailViewController(for groupID: String) -> GroupDetailViewController {
+    public func prepareGroupDetailViewController(for groupID: Group.ID) -> GroupDetailViewController {
         let controller = GroupDetailViewController()
         controller.navigationCoordinator = self
         controller.stateController = stateController

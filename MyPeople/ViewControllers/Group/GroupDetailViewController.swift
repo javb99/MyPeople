@@ -41,7 +41,7 @@ public class GroupDetailViewController: UICollectionViewController {
     // MARK: Dependencies
     public var navigationCoordinator: AppNavigationCoordinator!
     public var stateController: StateController!
-    public var groupID: String!
+    public var groupID: Group.ID!
     
     // MARK: Instance members
     private var cellsDataSource: PeopleByGroupsCellsDataSource!
@@ -135,7 +135,7 @@ public class GroupDetailViewController: UICollectionViewController {
         let person = people[indexPath.item]
         guard person.isBackedByContact else { return }
         
-        let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier!)
+        let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier!.rawValue)
         controller.allowsEditing = false
         navigationController?.pushViewController(controller, animated: true)
     }
@@ -155,14 +155,14 @@ extension GroupDetailViewController: GroupDetailHeaderViewDelegate {
             let controller = MFMessageComposeViewController()
             controller.messageComposeDelegate = self
             let identifiers = people.compactMap { $0.phoneNumber }
-            controller.recipients = identifiers
+            controller.recipients = identifiers.map { $0.rawValue }
             present(controller, animated: true, completion: nil)
         case .email:
             print("Send email to group")
             let controller = MFMailComposeViewController()
             controller.mailComposeDelegate = self
             let identifiers = people.compactMap { $0.email }
-            controller.setToRecipients(identifiers)
+            controller.setToRecipients(identifiers.map { $0.rawValue })
             present(controller, animated: true, completion: nil)
         }
     }
@@ -188,7 +188,7 @@ extension GroupDetailViewController: CNContactPickerDelegate {
     
     func addContactsToGroup(_ contacts: [CNContact]) {
         for contact in contacts {
-            stateController.add(person: contact.identifier, toGroup: group.identifier!)
+            stateController.add(person: Person.ID(rawValue: contact.identifier), toGroup: group.identifier!)
         }
         loadDataSource()
         collectionView.reloadData()

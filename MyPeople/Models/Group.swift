@@ -8,14 +8,18 @@
 
 import UIKit
 import Contacts
+import CocoaTouchAdditions
 
 public struct Group: Equatable {
     
+    public enum _IDTag {}
+    public typealias ID = Tagged<_IDTag, String>
+    
     public var name: String
     public var color: UIColor
-    public var memberIDs: [String]
+    public var memberIDs: [Person.ID]
     /// The identifier of the CNGroup that this group is based on.
-    public var identifier: String?
+    public var identifier: ID?
     
     public init(name: String, color: UIColor, people: [Person] = []) {
         self.name = name
@@ -25,12 +29,12 @@ public struct Group: Equatable {
     
     public init(_ group: CNGroup, color: UIColor, people: [Person] = []) {
         self.init(name: group.name, color: color, people: people)
-        identifier = group.identifier
+        identifier = ID(rawValue: group.identifier)
     }
     
     var containedContactsPredicate: NSPredicate? {
         guard let identifier = identifier else { return nil }
-        return CNContact.predicateForContactsInGroup(withIdentifier: identifier)
+        return CNContact.predicateForContactsInGroup(withIdentifier: identifier.rawValue)
     }
 }
 

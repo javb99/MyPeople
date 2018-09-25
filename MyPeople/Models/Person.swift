@@ -8,15 +8,25 @@
 
 import UIKit
 import Contacts
+import CocoaTouchAdditions
+
+public enum _EmailTag {}
+public typealias Email = Tagged<_EmailTag, String>
+
+public enum _PhoneNumberTag {}
+public typealias PhoneNumber = Tagged<_PhoneNumberTag, String>
 
 public struct Person {
+    public enum _IDTag {}
+    public typealias ID = Tagged<_IDTag, String>
+    
     public var name: String
     public var image: UIImage? = nil
-    public var groupIDs: [String] = []
-    public var email: String? = nil
-    public var phoneNumber: String? = nil
+    public var groupIDs: [Group.ID] = []
+    public var email: Email? = nil
+    public var phoneNumber: PhoneNumber? = nil
     /// The identifier of the CNContact that was used to create this person.
-    public var identifier: String?
+    public var identifier: ID?
     
     public init(name: String) {
         self.name = name
@@ -29,13 +39,23 @@ public struct Person {
         if let thumnailData = contact.thumbnailImageData {
             image = UIImage(data: thumnailData)
         }
-        identifier = contact.identifier
-        email = contact.emailAddresses.first?.value as String?
-        phoneNumber = contact.phoneNumbers.first?.value.stringValue
+        identifier = .init(rawValue: contact.identifier)
+        
+        if let emailString = contact.emailAddresses.first?.value as String? {
+            email = .init(rawValue: emailString)
+        } else {
+            email = nil
+        }
+        
+        if let phoneNumberString = contact.phoneNumbers.first?.value.stringValue {
+            phoneNumber = .init(rawValue: phoneNumberString)
+        } else {
+            phoneNumber = nil
+        }
     }
     
     var thisContact: NSPredicate? {
-        guard let identifier = identifier else { return nil }
+        guard let identifier = identifier?.rawValue else { return nil }
         return CNContact.predicateForContacts(withIdentifiers: [identifier])
     }
     

@@ -17,10 +17,10 @@ extension Notification.Name {
 public class StateController {
     
     // Store unique identifier to group pairs.
-    var groups: [String: Group] = [:]
+    var groups: [Group.ID: Group] = [:]
     
     // Store unique identifier to person pairs.
-    var people: [String: Person] = [:]
+    var people: [Person.ID: Person] = [:]
     
     private var contactsStoreWrapper: ContactStoreWrapper
     
@@ -52,7 +52,7 @@ public class StateController {
     }
     
     /// A non-Optional wrapper for the subscript operation on `groups`.
-    func group(forID identifier: String) -> Group {
+    func group(forID identifier: Group.ID) -> Group {
         guard let group = groups[identifier] else {
             fatalError("No group identified by groupID")
         }
@@ -60,7 +60,7 @@ public class StateController {
     }
     
     /// A non-Optional wrapper for the subscript operation on `people`.
-    func person(forID identifier: String) -> Person {
+    func person(forID identifier: Person.ID) -> Person {
         guard let person = people[identifier] else {
             fatalError("No person identified by personID")
         }
@@ -68,12 +68,12 @@ public class StateController {
     }
     
     /// The group objects for the groupIDs property of the person referenced by the given identifier.
-    func groups(forPerson identifier: String) -> [Group] {
+    func groups(forPerson identifier: Person.ID) -> [Group] {
         return person(forID: identifier).groupIDs.compactMap { groups[$0] }
     }
     
     /// The person objects for the memberIDs property of the group referenced by the given identifier.
-    func members(ofGroup identifier: String) -> [Person] {
+    func members(ofGroup identifier: Group.ID) -> [Person] {
         return group(forID: identifier).memberIDs.compactMap { people[$0] }
     }
     
@@ -83,7 +83,7 @@ public class StateController {
     }
     
     /// Link the person and the group together. Connects both directions. The private implementation of connecting a person to a group when they are added.
-    private func link(person personID: String, toGroup groupID: String) {
+    private func link(person personID: Person.ID, toGroup groupID: Group.ID) {
         // Add the person as a member of the group.
         var group = self.group(forID: groupID)
         group.memberIDs.append(personID)
@@ -95,9 +95,9 @@ public class StateController {
     }
     
     /// Add the person to the group.
-    public func add(person personID: String, toGroup groupID: String) {
+    public func add(person personID: Person.ID, toGroup groupID: Group.ID) {
         do {
-            try contactsStoreWrapper.addContact(identifiedBy: personID, toGroupIdentifiedBy: groupID)
+            try contactsStoreWrapper.addContact(identifiedBy: personID.rawValue, toGroupIdentifiedBy: groupID.rawValue)
             link(person: personID, toGroup: groupID)
         } catch {
             print("Failed to add person")
@@ -105,7 +105,7 @@ public class StateController {
     }
     
     /// Removes the link between the person and the group. Disconnects both directions.
-    func remove(person personID: String, fromGroup groupID: String) {
+    func remove(person personID: Person.ID, fromGroup groupID: Group.ID) {
         /// Remove the person from the group.
         guard let personIndex = self.group(forID: groupID).memberIDs.firstIndex(of: personID) else {
             fatalError("Given person not a member of given group.")
@@ -123,7 +123,7 @@ public class StateController {
         people[personID] = person
     }
     
-    func delete(group identifier: String) {
+    func delete(group identifier: Group.ID) {
         // TODO: implement
     }
     

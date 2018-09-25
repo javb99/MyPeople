@@ -149,7 +149,7 @@ public class MyPeopleViewController: UICollectionViewController {
         let person = naiveDataSource.people[indexPath.section][indexPath.item]
         guard person.isBackedByContact else { return }
         
-        let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier!)
+        let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier!.rawValue)
         navigationController?.pushViewController(controller, animated: true)
     }
 }
