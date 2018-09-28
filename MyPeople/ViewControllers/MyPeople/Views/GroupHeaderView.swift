@@ -66,13 +66,13 @@ public class GroupHeaderView: UICollectionReusableView, CollapsibleSectionHeader
         disclosureIndicator.usesAutoLayout()
         bottomLine.usesAutoLayout()
         
-        label.leadingAnchor.constraint(equalToSystemSpacingAfter: self.leadingAnchor, multiplier: 1.0).isActive = true
+        label.leadingAnchor.constraint(equalToSystemSpacingAfter: self.safeAreaLayoutGuide.leadingAnchor, multiplier: 1.0).isActive = true
         label.topAnchor.constraint(equalTo: self.topAnchor, constant: GroupHeaderView.topConstant).isActive = true
         label.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -GroupHeaderView.bottomConstant).isActive = true
         
         disclosureIndicator.widthAnchor.constraint(equalToConstant: disclosureIndicator.frame.width).isActive = true
         disclosureIndicator.heightAnchor.constraint(equalToConstant: disclosureIndicator.frame.height).isActive = true
-        self.trailingAnchor.constraint(equalTo: disclosureIndicator.trailingAnchor, constant: 16).isActive = true
+        self.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: disclosureIndicator.trailingAnchor, constant: 16).isActive = true
         disclosureIndicator.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: 0).isActive = true
         
         bottomLine.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1.0).isActive = true

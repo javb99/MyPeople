@@ -97,12 +97,10 @@ public class GroupDetailViewController: UICollectionViewController {
         
         let bgView = UIView()
         bgView.frame = collectionView.bounds
-        bgView.backgroundColor = .white
-        let coloredView = UIView()
-        coloredView.frame = bgView.bounds
-        coloredView.backgroundColor = group.color.settingAlpha(to: 0.1)
-        bgView.addSubview(coloredView)
+        bgView.backgroundColor = UIColor.white.overlay(group.color.settingAlpha(to: 0.1))
         collectionView.backgroundView = bgView
+        bgView.usesAutoLayout()
+        bgView.constrain(to: collectionView)
         
         collectionView.register(PersonCell.self, forCellWithReuseIdentifier: MyPeopleViewController.cellIdentifier)
         collectionView.register(GroupDetailHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: GroupDetailViewController.headerIdentifier)
