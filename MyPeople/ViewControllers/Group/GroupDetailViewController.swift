@@ -36,7 +36,7 @@ public class SingleHeaderDataSource: ChainableDataSource {
     }
 }
 
-public class GroupDetailViewController: UICollectionViewController {
+public class GroupDetailViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
     // MARK: Dependencies
     public var navigationCoordinator: AppNavigationCoordinator!
@@ -49,6 +49,16 @@ public class GroupDetailViewController: UICollectionViewController {
     private var people: [Person]!
     private var group: Group!
     
+    private var templateHeader: GroupDetailHeaderView = {
+        let headerCell = GroupDetailHeaderView()
+        return headerCell
+    }()
+    private var templateCell: PersonCell = {
+        let cell = PersonCell(frame: .zero)
+        cell.viewModel = .init(name: "Khrystyna", profilePicture: nil, colors: [])
+        return cell
+    }()
+    
     // MARK: Static members
     static let cellIdentifier: String = "Cell"
     static let headerIdentifier: String = "GroupDetailViewController.Header"
@@ -57,10 +67,9 @@ public class GroupDetailViewController: UICollectionViewController {
     public init() {
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.headerReferenceSize = CGSize(width: 300, height: 150)
-        let templateCell = PersonCell(frame: .zero)
-        templateCell.viewModel = .init(name: "Khrystyna", profilePicture: nil, colors: [])
         flowLayout.itemSize = templateCell.intrinsicContentSize
-        flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 6, bottom: 8, right: 6)
+        flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        flowLayout.sectionInsetReference = .fromSafeArea
         
         super.init(collectionViewLayout: flowLayout)
         
@@ -124,6 +133,7 @@ public class GroupDetailViewController: UICollectionViewController {
     /// Loads data and passes it to the data source.
     func loadDataSource() {
         getData()
+        templateHeader.model = .init(group: group)
         cellsDataSource.groups = [group]
         cellsDataSource.people = [people]
     }
@@ -136,6 +146,19 @@ public class GroupDetailViewController: UICollectionViewController {
         let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier!.rawValue)
         controller.allowsEditing = false
         navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return templateHeader.sizeThatFits(collectionView.bounds.size)
+    }
+    
+    public override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.willTransition(to: newCollection, with: coordinator)
+        // Check if this is a rotation.
+        // Without this, the layout is only invalidated when rotating into landscape.
+        if !coordinator.targetTransform.isIdentity {
+            collectionViewLayout.invalidateLayout()
+        }
     }
     
     /// Called when the stateController's state is changed. We use this to reload the collection view.

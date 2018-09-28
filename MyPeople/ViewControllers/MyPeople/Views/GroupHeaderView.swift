@@ -92,7 +92,6 @@ public class GroupHeaderView: UICollectionReusableView, CollapsibleSectionHeader
     public override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attributes = super.preferredLayoutAttributesFitting(layoutAttributes)
         attributes.bounds.size.height = intrinsicContentSize.height
-        attributes.bounds.size.width = 300
         return attributes
     }
     

@@ -41,7 +41,12 @@ public class GroupDetailHeaderView: UICollectionReusableView {
     private var gradientView: AxialGradientView
     private var groupNameLabel: UILabel
     private var addMembersButton: UIButton
+    private var actionButtonsStackView: UIStackView!
     private var actionButtons: [UIButton]
+    
+    private let actionButtonWidth: CGFloat = 44
+    private static let titleToActionsSpacing: CGFloat = 8
+    private static let actionsToBottomSpacing: CGFloat = 8
     
     public override init(frame: CGRect) {
         gradientView = AxialGradientView()
@@ -82,11 +87,11 @@ public class GroupDetailHeaderView: UICollectionReusableView {
         }
         
         actionButtons.forEach { button in
-            button.maskToCorners(ofRadius: 22)
+            button.maskToCorners(ofRadius: actionButtonWidth/2)
             button.backgroundColor = .white
         }
         
-        let actionButtonsStackView = UIStackView(arrangedSubviews: actionButtons)
+        actionButtonsStackView = UIStackView(arrangedSubviews: actionButtons)
         actionButtonsStackView.axis = .horizontal
         actionButtonsStackView.spacing = 10
         
@@ -116,23 +121,40 @@ public class GroupDetailHeaderView: UICollectionReusableView {
         groupNameLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         groupNameLabel.trailingAnchor.constraint(lessThanOrEqualToSystemSpacingAfter: trailingAnchor, multiplier: 1.0).isActive = true
         groupNameLabel.leadingAnchor.constraint(greaterThanOrEqualToSystemSpacingAfter: leadingAnchor, multiplier: 1.0).isActive = true
-        groupNameLabel.numberOfLines = 2
+        groupNameLabel.numberOfLines = 0
+        groupNameLabel.lineBreakMode = .byWordWrapping
         
         addMembersButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
         addMembersButton.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
         
         actionButtons.forEach { button in
-            button.widthAnchor.constraint(equalToConstant: 44).isActive = true
+            button.widthAnchor.constraint(equalToConstant: actionButtonWidth).isActive = true
             button.heightAnchor.constraint(equalTo: button.widthAnchor, multiplier: 1.0).isActive = true
         }
         
-        actionButtonsStackView.topAnchor.constraint(equalTo: groupNameLabel.bottomAnchor, constant: 8).isActive = true
+        actionButtonsStackView.topAnchor.constraint(equalTo: groupNameLabel.bottomAnchor, constant: GroupDetailHeaderView.titleToActionsSpacing).isActive = true
         actionButtonsStackView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        actionButtonsStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 8)
+        actionButtonsStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -GroupDetailHeaderView.actionsToBottomSpacing).isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    public override var intrinsicContentSize: CGSize {
+        return sizeThatFits(CGSize.init(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude))
+    }
+    
+    public override func sizeThatFits(_ size: CGSize) -> CGSize {
+        let titleContentSize = groupNameLabel.sizeThatFits(size)
+        let halfHeight = titleContentSize.height/2
+            + GroupDetailHeaderView.titleToActionsSpacing
+            + actionButtonWidth
+            + GroupDetailHeaderView.actionsToBottomSpacing
+        let size = CGSize(width: titleContentSize.width,
+                          height: halfHeight*2)
+        
+        return size
     }
     
     @IBAction func addMembersButtonPressed(_ button: UIButton) {

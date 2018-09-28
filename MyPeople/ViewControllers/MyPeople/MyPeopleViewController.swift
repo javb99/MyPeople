@@ -38,7 +38,8 @@ public class MyPeopleViewController: UICollectionViewController {
         let templateCell = PersonCell(frame: .zero)
         templateCell.viewModel = .init(name: "Khrystyna", profilePicture: nil, colors: [])
         flowLayout.itemSize = templateCell.intrinsicContentSize
-        flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 6, bottom: 8, right: 6)
+        flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        flowLayout.sectionInsetReference = .fromSafeArea
         
         super.init(collectionViewLayout: flowLayout)
         
