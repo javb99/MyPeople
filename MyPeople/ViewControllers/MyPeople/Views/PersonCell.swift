@@ -36,6 +36,7 @@ public class PersonCell: UICollectionViewCell {
         profileCircle.usesAutoLayout()
         nameLabel.usesAutoLayout()
         
+        nameLabel.font = UIFont.preferredFont(forTextStyle: .body)
         nameLabel.adjustsFontSizeToFitWidth = true
         nameLabel.minimumScaleFactor = 0.8
         

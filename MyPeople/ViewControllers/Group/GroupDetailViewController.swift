@@ -68,7 +68,7 @@ public class GroupDetailViewController: UICollectionViewController, UICollection
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.headerReferenceSize = CGSize(width: 300, height: 150)
         flowLayout.itemSize = templateCell.intrinsicContentSize
-        flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 6, bottom: 8, right: 6)
         flowLayout.sectionInsetReference = .fromSafeArea
         
         super.init(collectionViewLayout: flowLayout)
