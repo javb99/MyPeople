@@ -24,12 +24,14 @@ public class GroupDetailHeaderView: UICollectionReusableView {
     
     var model: Model {
         didSet {
-            backgroundColor = model.color
-            addMembersButton.layer.borderColor = model.color.cgColor
-            addMembersButton.setTitleColor(model.color, for: .normal)
-            gradientView.colors = [model.color.brighter(by: 0.25)!, model.color]
-            actionButtons.forEach { button in
-                button.setTitleColor(model.color, for: .normal)
+            // Check that the color actually changed before updating. This saves image rendering time for the bordered button BGs.
+            if model.color != oldValue.color {
+                backgroundColor = model.color
+                addMembersButton.styleAsDoubleBordered(with: model.color, radius: 8)
+                gradientView.colors = [model.color.brighter(by: 0.25)!, model.color]
+                actionButtons.forEach { button in
+                    button.styleAsDoubleBordered(with: model.color, radius: actionButtonWidth/2)
+                }
             }
             
             groupNameLabel.text = model.name
@@ -64,16 +66,13 @@ public class GroupDetailHeaderView: UICollectionReusableView {
         addMembersButton.setTitle("Add", for: .normal)
         addMembersButton.addTarget(self, action: #selector(addMembersButtonPressed(_:)), for: .touchUpInside)
         addMembersButton.roundedAndInset()
-        addMembersButton.backgroundColor = .white
-        addMembersButton.layer.borderWidth = 1
-        
         groupNameLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
         groupNameLabel.textColor = .white
         
         // Add text/iMessage button
         if MFMessageComposeViewController.canSendText() {
             let textButton = UIButton()
-            textButton.setTitle("text", for: .normal)
+            textButton.setImage(AssetCatalog.messageBubble, for: .normal)
             textButton.addTarget(self, action: #selector(sendText(_:)), for: .touchUpInside)
             actionButtons.append(textButton)
         }
@@ -81,14 +80,9 @@ public class GroupDetailHeaderView: UICollectionReusableView {
         // Add email button
         if MFMailComposeViewController.canSendMail() {
             let emailButton = UIButton()
-            emailButton.setTitle("mail", for: .normal)
+            emailButton.setImage(AssetCatalog.emailEnvelope, for: .normal)
             emailButton.addTarget(self, action: #selector(sendEmail(_:)), for: .touchUpInside)
             actionButtons.append(emailButton)
-        }
-        
-        actionButtons.forEach { button in
-            button.maskToCorners(ofRadius: actionButtonWidth/2)
-            button.backgroundColor = .white
         }
         
         actionButtonsStackView = UIStackView(arrangedSubviews: actionButtons)
