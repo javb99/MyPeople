@@ -16,7 +16,7 @@ public class SectionBackgroundView: UICollectionReusableView {
         didSet {
             bottomLine.backgroundColor = color.cgColor
             topLine.backgroundColor = color.cgColor
-            backgroundColor = color.settingAlpha(to: 0.1)
+            backgroundColor = color.withAlphaComponent(0.1)
             layer.borderColor = color.cgColor
         }
     }

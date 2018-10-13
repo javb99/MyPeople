@@ -14,8 +14,6 @@ public class PersonProfilePictureView: UIView {
     private var circlesView: UIView
     private let imageView: UIImageView
     
-    public static let placeholderProfileImage: UIImage = UIImage(named: "templateProfileImage", in: Bundle(for: PersonProfilePictureView.self), compatibleWith: nil)!
-    
     public var bgColors: [UIColor] {
         didSet {
             reloadCirclesView()
@@ -24,7 +22,7 @@ public class PersonProfilePictureView: UIView {
     
     public var image: UIImage? {
         didSet {
-            imageView.image = image ?? PersonProfilePictureView.placeholderProfileImage
+            imageView.image = image ?? AssetCatalog.image(.templateProfilePicture)
         }
     }
     
@@ -33,13 +31,16 @@ public class PersonProfilePictureView: UIView {
         self.image = image
         circlesParentLayer = CALayer()
         circlesView = UIView()
-        imageView = UIImageView(frame: frame.insetBy(dx: floor(frame.width/20), dy: floor(frame.height/20)))
+        imageView = UIImageView(frame: .zero)
         
         super.init(frame: frame)
-        
+        let totalBorderWidth = floor(bounds.width/20)
+        let colorBorderWidth = floor(totalBorderWidth*2/3)
+        let whiteBorderWidth = floor(totalBorderWidth/3)
+        imageView.frame = bounds.inset(by: UIEdgeInsets(singleValue: colorBorderWidth-whiteBorderWidth))
         imageView.contentMode = .scaleAspectFit
-        imageView.image = image ?? PersonProfilePictureView.placeholderProfileImage
-        imageView.circleBordered(by: .white, width: 2)
+        imageView.image = image ?? AssetCatalog.image(.templateProfilePicture)
+        imageView.circleBordered(by: .white, width: whiteBorderWidth)
         
         reloadCirclesView()
         

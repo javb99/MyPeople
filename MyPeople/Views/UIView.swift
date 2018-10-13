@@ -18,14 +18,14 @@ extension UIButton {
         let normalBGImage = UIImage.resizableBorderedColor(main: .white, border: color, outerBorder: .white, borderRadius: radius, borderThickness: 3)
         setBackgroundImage(normalBGImage, for: .normal)
         
-        let selectedBGImage = UIImage.resizableBorderedColor(main: UIColor.white.overlay(color.settingAlpha(to: 0.2)), border: color, outerBorder: .white, borderRadius: radius, borderThickness: 3)
+        let selectedBGImage = UIImage.resizableBorderedColor(main: UIColor.white.overlay(color.withAlphaComponent(0.2)), border: color, outerBorder: .white, borderRadius: radius, borderThickness: 3)
         setBackgroundImage(selectedBGImage, for: .highlighted)
     }
 }
 
 extension UIEdgeInsets {
     /// Use the same value for all 4 edges.
-    init(singleValue: CGFloat) {
+    public init(singleValue: CGFloat) {
         self.init(top: singleValue,
                      left: singleValue,
                      bottom: singleValue,

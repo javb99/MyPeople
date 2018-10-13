@@ -157,11 +157,12 @@ public class StateController {
     /// Gets the groups from the ContactStoreWrapper.
     private func fetchGroups() throws -> [Group]  {
         var colorIndex = 0
+        let colors = AssetCatalog.Color.groupColors.map { AssetCatalog.color($0) }
         
         let contactGroups = try self.contactsStoreWrapper.backingStore.groups(matching: nil)
         let groups = contactGroups.map { contactGroup -> Group in
             colorIndex += 1
-            return Group(contactGroup, color: UIColor.color(for: colorIndex))
+            return Group(contactGroup, color: colors[colorIndex%colors.count])
         }
         return groups
     }

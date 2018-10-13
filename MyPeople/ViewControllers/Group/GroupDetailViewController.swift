@@ -106,7 +106,7 @@ public class GroupDetailViewController: UICollectionViewController, UICollection
         
         let bgView = UIView()
         bgView.frame = collectionView.bounds
-        bgView.backgroundColor = UIColor.white.overlay(group.color.settingAlpha(to: 0.1))
+        bgView.backgroundColor = UIColor.white.overlay(group.color.withAlphaComponent(0.1))
         collectionView.backgroundView = bgView
         bgView.usesAutoLayout()
         bgView.constrain(to: collectionView)

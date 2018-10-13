@@ -72,7 +72,7 @@ public class GroupDetailHeaderView: UICollectionReusableView {
         // Add text/iMessage button
         if MFMessageComposeViewController.canSendText() {
             let textButton = UIButton()
-            textButton.setImage(AssetCatalog.messageBubble, for: .normal)
+            textButton.setImage(AssetCatalog.image(.messageBubble), for: .normal)
             textButton.addTarget(self, action: #selector(sendText(_:)), for: .touchUpInside)
             actionButtons.append(textButton)
         }
@@ -80,7 +80,7 @@ public class GroupDetailHeaderView: UICollectionReusableView {
         // Add email button
         if MFMailComposeViewController.canSendMail() {
             let emailButton = UIButton()
-            emailButton.setImage(AssetCatalog.emailEnvelope, for: .normal)
+            emailButton.setImage(AssetCatalog.image(.emailEnvelope), for: .normal)
             emailButton.addTarget(self, action: #selector(sendEmail(_:)), for: .touchUpInside)
             actionButtons.append(emailButton)
         }
