@@ -38,6 +38,7 @@ public class PeopleByGroupsDataSource: ChainableDataSource {
 /// Provides the cells divided into sections by their group.
 public class PeopleByGroupsCellsDataSource: ChainableDataSource {
     
+    public var stateController: StateController!
     public var groups: [Group] = []
     public var people: [[Person]] = []
     
@@ -52,11 +53,11 @@ public class PeopleByGroupsCellsDataSource: ChainableDataSource {
     /// Rotate the colors for a person based on the section that is being asked for.
     func colors(forItemAt indexPath: IndexPath) -> [UIColor] {
         let person = self.person(at: indexPath)
+        //let personGroups = stateController.groups(forPerson: person.identifier!)
         
-        let rotatedGroups = groups[indexPath.section...] + groups[..<indexPath.section]
-        let personsGroupsSorted = rotatedGroups.filter { person.groupIDs.contains($0.identifier!
-            ) }
-        let colors = personsGroupsSorted.map{ $0.color }
+        //let rotatedGroups = groups[indexPath.section...] + groups[..<indexPath.section]
+        let personsGroupsSorted = stateController.order(person.groupIDs)
+        let colors = personsGroupsSorted.map{ stateController.group(forID: $0).color }
         return colors
     }
     

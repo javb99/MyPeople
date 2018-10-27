@@ -60,6 +60,7 @@ public class MyPeopleViewController: UICollectionViewController {
         navigationItem.title = "My People"
         
         naiveDataSource = PeopleByGroupsDataSource()
+        naiveDataSource.cellProvider.stateController = stateController
         collapsibleDataSource = CollapsibleSectionsDataSource(collectionView: collectionView, sourcingFrom: naiveDataSource, defaultState: .collapsed)
         collectionView.dataSource = collapsibleDataSource
         

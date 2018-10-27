@@ -94,8 +94,8 @@ public class GroupDetailViewController: UICollectionViewController, UICollection
         getData()
         
         headerDataSource = SingleHeaderDataSource(sourcingFrom: nil, headerDelegate: self, group: group)
-        // TODO: Color circles don't work correctly without all the groups.
         cellsDataSource = PeopleByGroupsCellsDataSource(sourcingFrom: headerDataSource)
+        cellsDataSource.stateController = stateController
         loadDataSource()
         collectionView.dataSource = cellsDataSource
         

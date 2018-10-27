@@ -51,6 +51,16 @@ public class StateController {
         NotificationCenter.default.removeObserver(self)
     }
     
+    /// All the group IDs in a constant order. In the future this order will be changeable by the user.
+    var orderedGroupIDs: [Group.ID] {
+        return groups.keys.sorted()
+    }
+    
+    /// Return the given groups ordered according to the order of `orderedGroupIDs`.
+    func order(_ groups: [Group.ID]) -> [Group.ID] {
+        return orderedGroupIDs.intersection(groups)
+    }
+    
     /// A non-Optional wrapper for the subscript operation on `groups`.
     func group(forID identifier: Group.ID) -> Group {
         guard let group = groups[identifier] else {
