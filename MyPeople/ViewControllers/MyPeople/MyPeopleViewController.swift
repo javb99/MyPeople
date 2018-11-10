@@ -22,8 +22,6 @@ public class MyPeopleViewController: UICollectionViewController {
     var collapsibleDataSource: CollapsibleSectionsDataSource!
     var naiveDataSource: PeopleByGroupsDataSource!
     
-    var addButton: UIButton!
-    
     // MARK: Dependencies
     
     var navigationCoordinator: AppNavigationCoordinator!
@@ -58,6 +56,8 @@ public class MyPeopleViewController: UICollectionViewController {
         }
         
         navigationItem.title = "My People"
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newGroupButtonPressed(_:)))
+        navigationItem.setRightBarButton(addButton, animated: false)
         
         naiveDataSource = PeopleByGroupsDataSource()
         naiveDataSource.cellProvider.stateController = stateController
@@ -75,18 +75,6 @@ public class MyPeopleViewController: UICollectionViewController {
         collectionView.register(PersonCell.self, forCellWithReuseIdentifier: MyPeopleViewController.cellIdentifier)
         collectionView.register(GroupHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MyPeopleViewController.headerIdentifier)
         collectionView.register(SectionBackgroundView.self, forSupplementaryViewOfKind: SectionBackgroundView.kind, withReuseIdentifier: SectionBackgroundView.kind)
-        
-        let addGroupButton = UIButton(type: .custom)
-        addButton = addGroupButton
-        addGroupButton.addTarget(self, action: #selector(newGroupButtonPressed(_:)), for: .touchUpInside)
-        addGroupButton.setTitle("Add", for: .normal)
-        addGroupButton.standardStyle()
-        
-        collectionView.addSubview(addGroupButton)
-        addGroupButton.positionAboveSectionHeaders()
-        addGroupButton.use([
-            addGroupButton.leadingAnchor.constraint(equalToSystemSpacingAfter: collectionView.safeAreaLayoutGuide.leadingAnchor, multiplier: 1.0),
-            collectionView.safeAreaLayoutGuide.bottomAnchor.constraint(equalToSystemSpacingBelow: addGroupButton.bottomAnchor, multiplier: 1.0)])
     }
     
     public override func viewDidAppear(_ animated: Bool) {
