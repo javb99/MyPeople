@@ -58,16 +58,14 @@ public class ContactStoreWrapper {
         }
     }
     
-    public func addGroup(named name: String) throws {
+    /// Throws an error to signal failure.
+    public func addGroup(named name: String) throws -> CNGroup {
         let group = CNMutableGroup()
         group.name = name
         let saveRequest = CNSaveRequest()
         saveRequest.add(group, toContainerWithIdentifier: nil)
-        do {
-            try backingStore.execute(saveRequest)
-        } catch {
-            print(error.localizedDescription)
-        }
+        try backingStore.execute(saveRequest)
+        return group
     }
     
     public func addContact(identifiedBy personIdentifier: String, toGroupIdentifiedBy groupIdentifier: String) throws {

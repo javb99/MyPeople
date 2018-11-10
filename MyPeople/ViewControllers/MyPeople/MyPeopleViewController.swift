@@ -101,7 +101,7 @@ public class MyPeopleViewController: UICollectionViewController {
         naiveDataSource.groups = groups
         var people = [[Person]]()
         for group in groups {
-            people.append(stateController.members(ofGroup: group.identifier!))
+            people.append(stateController.members(ofGroup: group.identifier))
         }
         naiveDataSource.people = people
     }
@@ -119,7 +119,7 @@ public class MyPeopleViewController: UICollectionViewController {
         let location = tapRecognizer.location(in: collectionView)
         if let headerIndexPath = collectionView.headerIndexPath(at: location) {
             let group = naiveDataSource.groups[headerIndexPath.section]
-            let groupDetailController = navigationCoordinator.prepareGroupDetailViewController(for: group.identifier!)
+            let groupDetailController = navigationCoordinator.prepareGroupDetailViewController(for: group.identifier)
             navigationController?.pushViewController(groupDetailController, animated: true)
         }
     }
@@ -130,8 +130,7 @@ public class MyPeopleViewController: UICollectionViewController {
         let done = UIAlertAction(title: "Add", style: .default) { [weak self] (action)  in
             let textField = alertView.textFields!.first!
             guard let text = textField.text, !text.isEmpty else { fatalError() }
-            let group = Group(name: text, color: .blue)
-            try! self?.stateController.add(group)
+            self?.stateController.createNewGroup(text, meta: GroupMeta(color: AssetCatalog.Color.groupColors.randomElement()!))
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertView.addAction(done)
@@ -149,9 +148,8 @@ public class MyPeopleViewController: UICollectionViewController {
     
     public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let person = naiveDataSource.people[indexPath.section][indexPath.item]
-        guard person.isBackedByContact else { return }
         
-        let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier!.rawValue)
+        let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier.rawValue)
         navigationController?.pushViewController(controller, animated: true)
     }
 }

@@ -180,7 +180,7 @@ extension GroupDetailHeaderView.Model {
 
 extension GroupDetailHeaderView.Model {
     init(group: Group) {
-        color = group.color
+        color = group.meta.color
         name = group.name
     }
 }

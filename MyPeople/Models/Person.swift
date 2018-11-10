@@ -22,20 +22,21 @@ public struct Person {
     
     public var name: String
     public var image: UIImage? = nil
-    public var groupIDs: [Group.ID] = []
     public var email: Email? = nil
     public var phoneNumber: PhoneNumber? = nil
     /// The identifier of the CNContact that was used to create this person.
-    public var identifier: ID?
-    
-    public init(name: String) {
-        self.name = name
-    }
+    public let identifier: ID
+    public let cnContact: CNContact
+    /// Set from the outside.
+    public var groupIDs: [Group.ID] = []
     
     public static let requiredContactKeys: [CNKeyDescriptor] = [CNContactGivenNameKey as CNKeyDescriptor, CNContactThumbnailImageDataKey as CNKeyDescriptor, CNContactEmailAddressesKey as CNKeyDescriptor, CNContactPhoneNumbersKey as CNKeyDescriptor]
     
     public init(_ contact: CNContact) {
-        self.init(name: contact.givenName)
+        cnContact = contact
+        
+        name = contact.givenName
+        
         if let thumnailData = contact.thumbnailImageData {
             image = UIImage(data: thumnailData)
         }
@@ -55,11 +56,6 @@ public struct Person {
     }
     
     var thisContact: NSPredicate? {
-        guard let identifier = identifier?.rawValue else { return nil }
-        return CNContact.predicateForContacts(withIdentifiers: [identifier])
-    }
-    
-    var isBackedByContact: Bool {
-        return identifier != nil
+        return CNContact.predicateForContacts(withIdentifiers: [identifier.rawValue])
     }
 }

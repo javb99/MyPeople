@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Contacts
 
 extension Notification.Name {
     static let stateDidChange = Notification.Name("StateControllerStateDidChange")
@@ -17,13 +18,18 @@ extension Notification.Name {
 public class StateController {
     
     // Store unique identifier to group pairs.
-    var groups: [Group.ID: Group] = [:]
+    private(set) var groupsTable: [Group.ID: Group] = [:]
     
     // Store unique identifier to person pairs.
-    var people: [Person.ID: Person] = [:]
+    private(set) var people: [Person.ID: Person] = [:]
     
-    /// The index in the group colors array used for the last new group.
-    private var lastGroupColorIndex: Int = 0
+    /// All the group IDs in a constant order. In the future this order will be changeable by the user.
+    private(set) var orderedGroupIDs: [Group.ID] = []
+    
+    private(set) var needsToSave: Bool = false
+    
+    /// Used when adding a group to avoid a race condition that prohibits using user defined meta.
+    private(set) var shouldReloadOnCNStoreChange: Bool = true
     
     private var contactsStoreWrapper: ContactStoreWrapper
     
@@ -47,26 +53,26 @@ public class StateController {
     }
     
     @objc func contactStoreDidChange() {
-        refreshState()
+        if shouldReloadOnCNStoreChange {
+            refreshState()
+        } else {
+            print("Refresh ignored.")
+        }
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
     
-    /// All the group IDs in a constant order. In the future this order will be changeable by the user.
-    var orderedGroupIDs: [Group.ID] {
-        return groups.keys.sorted()
-    }
-    
     /// Return the given groups ordered according to the order of `orderedGroupIDs`.
-    func order(_ groups: [Group.ID]) -> [Group.ID] {
-        return orderedGroupIDs.intersection(groups)
+    func order(_ groupIDs: [Group.ID]) -> [Group.ID] {
+        return groupIDs.sorted { orderedGroupIDs.does($0, appearBefore: $1) }
+        //return orderedGroupIDs.intersection(groups)
     }
     
     /// A non-Optional wrapper for the subscript operation on `groups`.
     func group(forID identifier: Group.ID) -> Group {
-        guard let group = groups[identifier] else {
+        guard let group = groupsTable[identifier] else {
             fatalError("No group identified by groupID")
         }
         return group
@@ -82,7 +88,7 @@ public class StateController {
     
     /// The group objects for the groupIDs property of the person referenced by the given identifier.
     func groups(forPerson identifier: Person.ID) -> [Group] {
-        return person(forID: identifier).groupIDs.compactMap { groups[$0] }
+        return person(forID: identifier).groupIDs.compactMap { groupsTable[$0] }
     }
     
     /// The person objects for the memberIDs property of the group referenced by the given identifier.
@@ -91,8 +97,26 @@ public class StateController {
     }
     
     /// Add the group. Currently only uses the name. In the future the color will be configurable that is why this is wrapping the call.
-    func add(_ group: Group) throws {
-        try contactsStoreWrapper.addGroup(named: group.name)
+    @discardableResult
+    func createNewGroup(_ name: String, meta: GroupMeta) -> Group? {
+        let incomingValue = shouldReloadOnCNStoreChange
+        defer {
+            print("Defer statement")
+            shouldReloadOnCNStoreChange = incomingValue
+        }
+        do {
+            shouldReloadOnCNStoreChange = false
+            let cnGroup = try contactsStoreWrapper.addGroup(named: name)
+            print("New Group created.")
+            let group = Group(cnGroup, meta: meta)
+            rememberGroup(group)
+            NotificationCenter.default.post(name: .stateDidChange, object: self)
+            saveGroupsToDisk()
+            return group
+        } catch {
+            print("Failed to create new group: \(error.localizedDescription)")
+            return nil
+        }
     }
     
     /// Link the person and the group together. Connects both directions. The private implementation of connecting a person to a group when they are added.
@@ -100,7 +124,7 @@ public class StateController {
         // Add the person as a member of the group.
         var group = self.group(forID: groupID)
         group.memberIDs.append(personID)
-        groups[groupID] = group
+        groupsTable[groupID] = group
         // Add the group to the person's groupIDs array.
         var person = self.person(forID: personID)
         person.groupIDs.append(groupID)
@@ -125,7 +149,7 @@ public class StateController {
         }
         var group = self.group(forID: groupID)
         group.memberIDs.remove(at: personIndex)
-        groups[groupID] = group
+        groupsTable[groupID] = group
         
         /// Remove the group from the person's groupIDs array.
         guard let groupIndex = self.person(forID: personID).groupIDs.firstIndex(of: groupID) else {
@@ -140,95 +164,145 @@ public class StateController {
         // TODO: implement
     }
     
+    private func rememberGroup(_ group: Group) {
+        groupsTable[group.identifier] = group
+        orderedGroupIDs.append(group.identifier)
+    }
+    
     func refreshState() {
         do {
-            groups = [:]
+            saveIfNeeded()
+            
+            groupsTable = [:]
             people = [:]
+            orderedGroupIDs = []
             
             let fetchedGroups = try self.fetchGroups()
             for group in fetchedGroups {
-                groups[group.identifier!] = group
+                rememberGroup(group)
                 
                 let peopleInGroup = try self.fetchPeople(in: group)
                 
                 // Add each person to this group.
-                // Each person is guaranteed to have an identifier because they come straight from the contact store wrapper and the same for the group.
                 for person in peopleInGroup {
                     // Only keep one instance of a Person.
-                    if people[person.identifier!] == nil {
-                        people[person.identifier!] = person
+                    if people[person.identifier] == nil {
+                        people[person.identifier] = person
                     }
-                    link(person: person.identifier!, toGroup: group.identifier!)
+                    link(person: person.identifier, toGroup: group.identifier)
                 }
             }
             NotificationCenter.default.post(name: .stateDidChange, object: self)
-            saveGroupsToDisk()
         } catch {
             print(error.localizedDescription)
         }
     }
     
-    /// The next color to use for a new group. Each time this is called it cycles.
-    private func nextGroupColor() -> AssetCatalog.Color {
+    /// Creates a GroupMeta value for the CNGroup. The return value will be the same everytime it is called with the same CNGroup.
+    private func createGroupMeta(for cnGroup: CNGroup) -> GroupMeta {
         let colors = AssetCatalog.Color.groupColors
-        lastGroupColorIndex += 1
-        return colors[lastGroupColorIndex % colors.count]
+        let color = colors[abs(cnGroup.identifier.hashValue) % colors.count]
+        return GroupMeta(color: color)
     }
     
-    private let groupsURL: URL = {
+    /// Gets the members of the given group from the ContactStoreWrapper.
+    private func fetchPeople(in group: Group) throws -> [Person] {
+        let contactsInGroup = try self.contactsStoreWrapper.backingStore.unifiedContacts(matching: group.containedContactsPredicate, keysToFetch: Person.requiredContactKeys)
+        
+        return contactsInGroup.map(Person.init)
+    }
+    
+    /// Gets the `CNGroup`s from the `ContactStoreWrapper` and the `Group`s stored locally on disk and matches them up creating new `Group`s as needed. Returns the groups sorted according to the stored order if any.
+    private func fetchGroups() throws -> [Group]  {
+        let groupStorage = try? GroupStorage.loadFromDisk()
+        
+        let contactGroups = try self.contactsStoreWrapper.backingStore.groups(matching: nil)
+        var groups = contactGroups.map { contactGroup -> Group in
+            let id = Group.ID(rawValue: contactGroup.identifier)
+            
+            // Use a stored group meta or create a new one.
+            var groupMeta: GroupMeta
+            if let meta = groupStorage?.groupMetas[id] {
+                groupMeta = meta
+            } else {
+                print("Created a new GroupMeta for \"\(contactGroup.name)\" (\(contactGroup.identifier))")
+                groupMeta = createGroupMeta(for: contactGroup)
+                needsToSave = true
+            }
+            return Group(contactGroup, meta: groupMeta)
+        }
+        // Sort if order was stored.
+        if let order = groupStorage?.groupOrder {
+            groups.sort { order.does($0.identifier, appearBefore: $1.identifier) }
+        }
+        return groups
+    }
+    
+    public func saveIfNeeded() {
+        if needsToSave {
+            saveGroupsToDisk()
+        }
+    }
+    
+    private func saveGroupsToDisk() {
+        let groupMetas = Dictionary(uniqueKeysWithValues: groupsTable.map({ (key, value) -> (Group.ID, GroupMeta) in
+            return (key, value.meta)
+        }))
+        let groupStorage = GroupStorage(groupOrder: orderedGroupIDs, groupMetas: groupMetas)
+        groupStorage.saveToDisk()
+        needsToSave = false
+    }
+}
+
+
+
+private struct GroupStorage: Codable {
+    let groupMetas: [Group.ID: GroupMeta]
+    let groupOrder: [Group.ID]
+    
+    init(groupOrder: [Group.ID], groupMetas: [Group.ID: GroupMeta]) {
+        self.groupOrder = groupOrder
+        self.groupMetas = groupMetas
+    }
+    
+    /// URL to store the groups json file at.
+    private static let groupsURL: URL = {
         let documentDirs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let documentDir = documentDirs[0]
         return documentDir.appendingPathComponent("StateController_groups").appendingPathExtension("json")
     }()
     
-    private struct GroupStorage {
-        var groups: [Group.ID: Group] = [:]
-        var groupOrder: [Group.ID]
-    }
-    
-    private func loadGroupsFromDisk() -> [Group.ID: Group] {
+    /// Could fail and throw an error while reading from the file and decoding the data.
+    static func loadFromDisk() throws -> GroupStorage {
         let decoder = JSONDecoder()
-        do {
-            let data = try Data(contentsOf: groupsURL)
-            let groups: [Group.ID: Group] = try decoder.decode([Group.ID: Group].self, from: data)
-            return groups
-        } catch {
-            print("Error loading groups from disk: \(error.localizedDescription)")
-        }
-        return [:]
+        let data = try Data(contentsOf: GroupStorage.groupsURL)
+        let groups: GroupStorage = try decoder.decode(GroupStorage.self, from: data)
+        return groups
     }
     
-    private func saveGroupsToDisk() {
+    func saveToDisk() {
         let encoder = JSONEncoder()
         do {
-            let data = try encoder.encode(groups)
-            try data.write(to: groupsURL)
-            print("Saved groups to \(groupsURL.absoluteString)")
+            let data = try encoder.encode(self)
+            try data.write(to: GroupStorage.groupsURL)
+            print("Saved groups to \(GroupStorage.groupsURL.absoluteString)")
         } catch {
             print("Error saving groups to disk: \(error.localizedDescription)")
         }
     }
-    
-    /// Gets the `CNGroup`s from the `ContactStoreWrapper` and the `Group`s stored locally on disk and matches them up creating new `Group`s as needed.
-    private func fetchGroups() throws -> [Group]  {
-        let groupsFromDisk = loadGroupsFromDisk()
-        let contactGroups = try self.contactsStoreWrapper.backingStore.groups(matching: nil)
-        let groups = contactGroups.map { contactGroup -> Group in
-            let id = Group.ID(rawValue: contactGroup.identifier)
-            if let diskGroup = groupsFromDisk[id] {
-                return diskGroup
-            } else {
-                print("Created a new group for \(contactGroup.name) - \(contactGroup.identifier)")
-                return Group(contactGroup, color: nextGroupColor())
+}
+
+extension Array where Element: Equatable {
+    /// Complexity: O(n)
+    func does(_ a: Element, appearBefore b: Element) -> Bool {
+        for element in self {
+            if element == a {
+                return true
+            } else if element == b {
+                return false
             }
         }
-        return groups
-    }
-    
-    /// Gets the members of the given group from the ContactStoreWrapper.
-    private func fetchPeople(in group: Group) throws -> [Person] {
-        let contactsInGroup = try self.contactsStoreWrapper.backingStore.unifiedContacts(matching: group.containedContactsPredicate!, keysToFetch: Person.requiredContactKeys)
-        
-        return contactsInGroup.map(Person.init)
+        assertionFailure("Neither element is contained.")
+        return false
     }
 }

@@ -102,11 +102,11 @@ public class GroupDetailViewController: UICollectionViewController, UICollection
         navigationItem.title = group.name
         navigationItem.largeTitleDisplayMode = .never
         //navigationController?.navigationBar.barTintColor = group.color.settingAlpha(to: 0.2)
-        navigationController?.navigationBar.tintColor = group.color
+        navigationController?.navigationBar.tintColor = group.meta.color
         
         let bgView = UIView()
         bgView.frame = collectionView.bounds
-        bgView.backgroundColor = UIColor.white.overlay(group.color.withAlphaComponent(0.1))
+        bgView.backgroundColor = UIColor.white.overlay(group.meta.color.withAlphaComponent(0.1))
         collectionView.backgroundView = bgView
         bgView.usesAutoLayout()
         bgView.constrain(to: collectionView)
@@ -123,7 +123,7 @@ public class GroupDetailViewController: UICollectionViewController, UICollection
     
     /// Loads group and members.
     func getData() {
-        guard let group = stateController.groups[groupID] else {
+        guard let group = stateController.groupsTable[groupID] else {
             fatalError("Invalid groupID dependency")
         }
         self.group = group
@@ -141,9 +141,8 @@ public class GroupDetailViewController: UICollectionViewController, UICollection
     /// Present detail view controller for the person at the selected IndexPath.
     public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let person = people[indexPath.item]
-        guard person.isBackedByContact else { return }
         
-        let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier!.rawValue)
+        let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier.rawValue)
         controller.allowsEditing = false
         navigationController?.pushViewController(controller, animated: true)
     }
@@ -209,7 +208,7 @@ extension GroupDetailViewController: CNContactPickerDelegate {
     
     func addContactsToGroup(_ contacts: [CNContact]) {
         for contact in contacts {
-            stateController.add(person: Person.ID(rawValue: contact.identifier), toGroup: group.identifier!)
+            stateController.add(person: Person.ID(rawValue: contact.identifier), toGroup: group.identifier)
         }
         loadDataSource()
         collectionView.reloadData()

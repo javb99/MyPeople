@@ -57,7 +57,7 @@ public class PeopleByGroupsCellsDataSource: ChainableDataSource {
         
         //let rotatedGroups = groups[indexPath.section...] + groups[..<indexPath.section]
         let personsGroupsSorted = stateController.order(person.groupIDs)
-        let colors = personsGroupsSorted.map{ stateController.group(forID: $0).color }
+        let colors = personsGroupsSorted.map{ stateController.group(forID: $0).meta.color }
         return colors
     }
     
@@ -92,7 +92,7 @@ class PeopleByGroupsSupplementaryViewDataSource: ChainableDataSource {
             
             let group = groups[indexPath.section]
             header.title = group.name
-            header.color = group.color
+            header.color = group.meta.color
             
             return header
             
@@ -101,7 +101,7 @@ class PeopleByGroupsSupplementaryViewDataSource: ChainableDataSource {
             let view = collectionView.dequeueReusableSupplementaryView(ofKind: SectionBackgroundView.kind, withReuseIdentifier: SectionBackgroundView.kind, for: indexPath) as! SectionBackgroundView
             
             let group = groups[indexPath.section]
-            view.color = group.color
+            view.color = group.meta.color
             return view
         default:
             fatalError()

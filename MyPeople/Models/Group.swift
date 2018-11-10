@@ -10,62 +10,72 @@ import UIKit
 import Contacts
 import CocoaTouchAdditions
 
-public struct Group: Equatable {
+/// A logical pairing of a CNGroup with a GroupMeta object.
+public struct Group {
     
     public enum _IDTag {}
+    /// A special string that is an identifier for a CNGroup.
     public typealias ID = Tagged<_IDTag, String>
     
-    public var name: String
+    // MARK: Stored Properties
+    public let cnGroup: CNGroup
+    public let meta: GroupMeta
+    
+    // Intended to be filled by the outside.
+    public var memberIDs: [Person.ID] = []
+    
+    // MARK: Computed Properties
+    
+    /// The name of the CNGroup that this group is based on.
+    public var name: String {
+        return cnGroup.name
+    }
+    
+    /// The identifier of the CNGroup that this group is based on.
+    public var identifier: ID {
+        return ID(rawValue: cnGroup.identifier)
+    }
+    
+    /// A predicate to fetch all the contacts that belong to this group.
+    public var containedContactsPredicate: NSPredicate {
+        return CNContact.predicateForContactsInGroup(withIdentifier: identifier.rawValue)
+    }
+    
+    public init(_ group: CNGroup, meta: GroupMeta) {
+        cnGroup = group
+        self.meta = meta
+    }
+}
+
+extension Group: Equatable {
+    public static func == (lhs: Group, rhs: Group) -> Bool {
+        return lhs.name == rhs.name
+    }
+}
+
+public struct GroupMeta {
     public var colorName: AssetCatalog.Color
     public var color: UIColor {
         return AssetCatalog.color(colorName)
     }
-    public var memberIDs: [Person.ID]
-    /// The identifier of the CNGroup that this group is based on.
-    public var identifier: ID?
     
-    public init(name: String, color: AssetCatalog.Color, people: [Person] = []) {
-        self.name = name
-        self.colorName = color
-        self.memberIDs = people.map { $0.identifier! }
-    }
-    
-    public init(_ group: CNGroup, color: AssetCatalog.Color, people: [Person] = []) {
-        self.init(name: group.name, color: color, people: people)
-        identifier = ID(rawValue: group.identifier)
-    }
-    
-    var containedContactsPredicate: NSPredicate? {
-        guard let identifier = identifier else { return nil }
-        return CNContact.predicateForContactsInGroup(withIdentifier: identifier.rawValue)
+    init(color: AssetCatalog.Color) {
+        colorName = color
     }
 }
 
-extension Group: Codable {
+extension GroupMeta: Codable {
     enum CodingKeys: String, CodingKey {
-        case identifier
         case colorName
-        case name
     }
     
     public init(from decoder: Decoder) throws {
         let keyedDecoder = try decoder.container(keyedBy: CodingKeys.self)
-        identifier = try keyedDecoder.decode(ID?.self, forKey: .identifier)
         colorName = try keyedDecoder.decode(AssetCatalog.Color.self, forKey: .colorName)
-        name = try keyedDecoder.decode(String.self, forKey: .name)
-        memberIDs = []
     }
     
     public func encode(into coder: Encoder) throws {
         var keyedEncoder = coder.container(keyedBy: CodingKeys.self)
-        try keyedEncoder.encode(identifier, forKey: .identifier)
         try keyedEncoder.encode(colorName, forKey: .colorName)
-        try keyedEncoder.encode(name, forKey: .name)
-    }
-}
-
-public extension Group {
-    static func == (lhs: Group, rhs: Group) -> Bool {
-        return lhs.name == rhs.name
     }
 }
