@@ -97,7 +97,7 @@ public class MyPeopleViewController: UICollectionViewController {
     }
     
     func loadDataSource() {
-        let groups = Array(stateController.groups.values)
+        let groups = stateController.orderedGroupIDs.map { stateController.group(forID: $0) }
         naiveDataSource.groups = groups
         var people = [[Person]]()
         for group in groups {

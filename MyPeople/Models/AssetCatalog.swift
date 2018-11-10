@@ -29,7 +29,7 @@ public class AssetCatalog {
         return UIColor(named: identifier.rawValue, in: AssetCatalog.bundle, compatibleWith: traitCollection)!
     }
     
-    public enum Color: String {
+    public enum Color: String, Codable {
         case amaranth
         case aqua
         case funGreen

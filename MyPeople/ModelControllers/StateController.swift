@@ -22,6 +22,9 @@ public class StateController {
     // Store unique identifier to person pairs.
     var people: [Person.ID: Person] = [:]
     
+    /// The index in the group colors array used for the last new group.
+    private var lastGroupColorIndex: Int = 0
+    
     private var contactsStoreWrapper: ContactStoreWrapper
     
     init(contactsStoreWrapper: ContactStoreWrapper) {
@@ -159,20 +162,65 @@ public class StateController {
                 }
             }
             NotificationCenter.default.post(name: .stateDidChange, object: self)
+            saveGroupsToDisk()
         } catch {
             print(error.localizedDescription)
         }
     }
     
-    /// Gets the groups from the ContactStoreWrapper.
+    /// The next color to use for a new group. Each time this is called it cycles.
+    private func nextGroupColor() -> AssetCatalog.Color {
+        let colors = AssetCatalog.Color.groupColors
+        lastGroupColorIndex += 1
+        return colors[lastGroupColorIndex % colors.count]
+    }
+    
+    private let groupsURL: URL = {
+        let documentDirs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentDir = documentDirs[0]
+        return documentDir.appendingPathComponent("StateController_groups").appendingPathExtension("json")
+    }()
+    
+    private struct GroupStorage {
+        var groups: [Group.ID: Group] = [:]
+        var groupOrder: [Group.ID]
+    }
+    
+    private func loadGroupsFromDisk() -> [Group.ID: Group] {
+        let decoder = JSONDecoder()
+        do {
+            let data = try Data(contentsOf: groupsURL)
+            let groups: [Group.ID: Group] = try decoder.decode([Group.ID: Group].self, from: data)
+            return groups
+        } catch {
+            print("Error loading groups from disk: \(error.localizedDescription)")
+        }
+        return [:]
+    }
+    
+    private func saveGroupsToDisk() {
+        let encoder = JSONEncoder()
+        do {
+            let data = try encoder.encode(groups)
+            try data.write(to: groupsURL)
+            print("Saved groups to \(groupsURL.absoluteString)")
+        } catch {
+            print("Error saving groups to disk: \(error.localizedDescription)")
+        }
+    }
+    
+    /// Gets the `CNGroup`s from the `ContactStoreWrapper` and the `Group`s stored locally on disk and matches them up creating new `Group`s as needed.
     private func fetchGroups() throws -> [Group]  {
-        var colorIndex = 0
-        let colors = AssetCatalog.Color.groupColors.map { AssetCatalog.color($0) }
-        
+        let groupsFromDisk = loadGroupsFromDisk()
         let contactGroups = try self.contactsStoreWrapper.backingStore.groups(matching: nil)
         let groups = contactGroups.map { contactGroup -> Group in
-            colorIndex += 1
-            return Group(contactGroup, color: colors[colorIndex%colors.count])
+            let id = Group.ID(rawValue: contactGroup.identifier)
+            if let diskGroup = groupsFromDisk[id] {
+                return diskGroup
+            } else {
+                print("Created a new group for \(contactGroup.name) - \(contactGroup.identifier)")
+                return Group(contactGroup, color: nextGroupColor())
+            }
         }
         return groups
     }
