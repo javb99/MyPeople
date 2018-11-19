@@ -8,16 +8,10 @@
 
 import UIKit
 import CocoaTouchAdditions
-import MessageUI
 
 public protocol GroupDetailHeaderViewDelegate: class {
     func actionButtonPressed(action: GroupAction)
     func addMembersButtonPressed()
-}
-
-public enum GroupAction {
-    case text
-    case email
 }
 
 public class GroupDetailHeaderView: UICollectionReusableView {
@@ -29,24 +23,23 @@ public class GroupDetailHeaderView: UICollectionReusableView {
                 backgroundColor = model.color
                 addMembersButton.styleAsDoubleBordered(with: model.color, radius: 8)
                 gradientView.colors = [model.color.brighter(by: 0.25)!, model.color]
-                actionButtons.forEach { button in
-                    button.styleAsDoubleBordered(with: model.color, radius: actionButtonWidth/2)
-                }
+                actionButtonsView.buttonTint = model.color
             }
             
             groupNameLabel.text = model.name
         }
     }
     
-    public weak var delegate: GroupDetailHeaderViewDelegate!
+    public weak var delegate: GroupDetailHeaderViewDelegate! {
+        didSet {
+            actionButtonsView.actionPressedCallback = delegate.actionButtonPressed
+        }
+    }
     
     private var gradientView: AxialGradientView
     private var groupNameLabel: UILabel
     private var addMembersButton: UIButton
-    private var actionButtonsStackView: UIStackView!
-    private var actionButtons: [UIButton]
-    
-    private let actionButtonWidth: CGFloat = 44
+    private var actionButtonsView: ActionButtonsView!
     private static let titleToActionsSpacing: CGFloat = 8
     private static let actionsToBottomSpacing: CGFloat = 8
     
@@ -54,7 +47,8 @@ public class GroupDetailHeaderView: UICollectionReusableView {
         gradientView = AxialGradientView()
         groupNameLabel = UILabel()
         addMembersButton = UIButton()
-        actionButtons = []
+        actionButtonsView = ActionButtonsView(frame: .zero)
+        
         model = Model()
         
         super.init(frame: frame)
@@ -69,39 +63,18 @@ public class GroupDetailHeaderView: UICollectionReusableView {
         groupNameLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
         groupNameLabel.textColor = .white
         
-        // Add text/iMessage button
-        if MFMessageComposeViewController.canSendText() {
-            let textButton = UIButton()
-            textButton.setImage(AssetCatalog.image(.messageBubble), for: .normal)
-            textButton.addTarget(self, action: #selector(sendText(_:)), for: .touchUpInside)
-            actionButtons.append(textButton)
-        }
-        
-        // Add email button
-        if MFMailComposeViewController.canSendMail() {
-            let emailButton = UIButton()
-            emailButton.setImage(AssetCatalog.image(.emailEnvelope), for: .normal)
-            emailButton.addTarget(self, action: #selector(sendEmail(_:)), for: .touchUpInside)
-            actionButtons.append(emailButton)
-        }
-        
-        actionButtonsStackView = UIStackView(arrangedSubviews: actionButtons)
-        actionButtonsStackView.axis = .horizontal
-        actionButtonsStackView.spacing = 10
-        
         // add subviews
         addSubview(gradientView)
         addSubview(groupNameLabel)
         addSubview(addMembersButton)
-        addSubview(actionButtonsStackView)
+        addSubview(actionButtonsView)
         
         // set use autolayout
         self.usesAutoLayout()
         gradientView.usesAutoLayout()
         groupNameLabel.usesAutoLayout()
         addMembersButton.usesAutoLayout()
-        actionButtonsStackView.usesAutoLayout()
-        actionButtons.forEach { $0.usesAutoLayout() }
+        actionButtonsView.usesAutoLayout()
         
         // set constraints
         //self.heightAnchor.constraint(equalToConstant: 300).isActive = true
@@ -121,14 +94,9 @@ public class GroupDetailHeaderView: UICollectionReusableView {
         addMembersButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
         addMembersButton.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
         
-        actionButtons.forEach { button in
-            button.widthAnchor.constraint(equalToConstant: actionButtonWidth).isActive = true
-            button.heightAnchor.constraint(equalTo: button.widthAnchor, multiplier: 1.0).isActive = true
-        }
-        
-        actionButtonsStackView.topAnchor.constraint(equalTo: groupNameLabel.bottomAnchor, constant: GroupDetailHeaderView.titleToActionsSpacing).isActive = true
-        actionButtonsStackView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        actionButtonsStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -GroupDetailHeaderView.actionsToBottomSpacing).isActive = true
+        actionButtonsView.topAnchor.constraint(equalTo: groupNameLabel.bottomAnchor, constant: GroupDetailHeaderView.titleToActionsSpacing).isActive = true
+        actionButtonsView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        actionButtonsView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -GroupDetailHeaderView.actionsToBottomSpacing).isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -143,7 +111,7 @@ public class GroupDetailHeaderView: UICollectionReusableView {
         let titleContentSize = groupNameLabel.sizeThatFits(size)
         let halfHeight = titleContentSize.height/2
             + GroupDetailHeaderView.titleToActionsSpacing
-            + actionButtonWidth
+            + ActionButtonsView.actionButtonWidth
             + GroupDetailHeaderView.actionsToBottomSpacing
         let size = CGSize(width: titleContentSize.width,
                           height: halfHeight*2)
