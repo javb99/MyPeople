@@ -23,6 +23,7 @@ public class AssetCatalog {
         case templateProfilePicture = "templateProfileImage"
         case messageBubble = "messageButton"
         case emailEnvelope = "emailButton"
+        case addButton = "addButton"
     }
     
     public static func color(_ identifier: Color, for traitCollection: UITraitCollection? = nil) -> UIColor {

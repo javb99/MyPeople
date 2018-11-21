@@ -14,10 +14,10 @@ import MessageUI
 
 public class SingleHeaderDataSource: ChainableDataSource {
     
-    var headerDelegate: GroupDetailHeaderViewDelegate
+    var headerDelegate: ActionButtonsHeaderDelegate
     var group: Group
     
-    public init(sourcingFrom dataSource: UICollectionViewDataSource? = nil, headerDelegate: GroupDetailHeaderViewDelegate, group: Group) {
+    public init(sourcingFrom dataSource: UICollectionViewDataSource? = nil, headerDelegate: ActionButtonsHeaderDelegate, group: Group) {
         self.headerDelegate = headerDelegate
         self.group = group
         super.init(sourcingFrom: dataSource)
@@ -26,9 +26,9 @@ public class SingleHeaderDataSource: ChainableDataSource {
     public override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         switch kind {
         case UICollectionView.elementKindSectionHeader:
-            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: GroupDetailViewController.headerIdentifier, for: indexPath) as! GroupDetailHeaderView
+            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: GroupDetailViewController.headerIdentifier, for: indexPath) as! ActionButtonsHeader
             header.delegate = headerDelegate
-            header.model = .init(group: group)
+            header.color = group.meta.color
             return header
         default:
             return super.collectionView(collectionView, viewForSupplementaryElementOfKind: kind, at: indexPath)
@@ -44,13 +44,16 @@ public class GroupDetailViewController: UICollectionViewController, UICollection
     public var groupID: Group.ID!
     
     // MARK: Instance members
+    /// THe configuration of the nav bar before changes are made for this controller.
+    private var incomingNavBarConfig: NavBarConfiguration?
+    private var addCellDataSource: AddContactDataSource!
     private var cellsDataSource: PeopleByGroupsCellsDataSource!
     private var headerDataSource: SingleHeaderDataSource!
     private var people: [Person]!
     private var group: Group!
     
-    private var templateHeader: GroupDetailHeaderView = {
-        let headerCell = GroupDetailHeaderView()
+    private var templateHeader: ActionButtonsHeader = {
+        let headerCell = ActionButtonsHeader()
         return headerCell
     }()
     private var templateCell: PersonCell = {
@@ -96,13 +99,22 @@ public class GroupDetailViewController: UICollectionViewController, UICollection
         headerDataSource = SingleHeaderDataSource(sourcingFrom: nil, headerDelegate: self, group: group)
         cellsDataSource = PeopleByGroupsCellsDataSource(sourcingFrom: headerDataSource)
         cellsDataSource.stateController = stateController
-        loadDataSource()
-        collectionView.dataSource = cellsDataSource
+        addCellDataSource = AddContactDataSource(sourcingFrom: cellsDataSource)
+        addCellDataSource.tintColor = group.meta.color
         
+        loadDataSource()
+        collectionView.dataSource = addCellDataSource
+        
+        navigationItem.rightBarButtonItem = editButtonItem
         navigationItem.title = group.name
-        navigationItem.largeTitleDisplayMode = .never
-        //navigationController?.navigationBar.barTintColor = group.color.settingAlpha(to: 0.2)
-        navigationController?.navigationBar.tintColor = group.meta.color
+        navigationItem.largeTitleDisplayMode = .always
+        
+        guard let navController = navigationController else {
+            fatalError("GroupDetailViewController not inside a UINavigationController")
+        }
+        incomingNavBarConfig = navController.navigationBar.currentConfig
+        let config = navBarConfig()
+        navController.navigationBar.apply(config)
         
         let bgView = UIView()
         bgView.frame = collectionView.bounds
@@ -112,7 +124,18 @@ public class GroupDetailViewController: UICollectionViewController, UICollection
         bgView.constrain(to: collectionView)
         
         collectionView.register(PersonCell.self, forCellWithReuseIdentifier: MyPeopleViewController.cellIdentifier)
-        collectionView.register(GroupDetailHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: GroupDetailViewController.headerIdentifier)
+        collectionView.register(AddContactDataSource.cellClass, forCellWithReuseIdentifier: AddContactDataSource.addCellIdentifier)
+        collectionView.register(ActionButtonsHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: GroupDetailViewController.headerIdentifier)
+    }
+    
+    func navBarConfig() -> NavBarConfiguration {
+        var navBarConfig = NavBarConfiguration()
+        navBarConfig.shadowImage = UIImage()
+        navBarConfig.barTintColor = group.meta.color.withAlphaComponent(0.2)
+        navBarConfig.tintColor = .white
+        navBarConfig.barStyle = .blackTranslucent
+        navBarConfig.isTranslucent = false
+        return navBarConfig
     }
     
     public override func viewDidAppear(_ animated: Bool) {
@@ -133,17 +156,37 @@ public class GroupDetailViewController: UICollectionViewController, UICollection
     /// Loads data and passes it to the data source.
     func loadDataSource() {
         getData()
-        templateHeader.model = .init(group: group)
+        templateHeader.color = .black
         cellsDataSource.groups = [group]
         cellsDataSource.people = [people]
     }
     
+    public override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        
+        addCellDataSource.shouldShowAddButton = editing
+        if editing {
+            collectionView.insertItems(at: [IndexPath(item: 0, section: 0)])
+        } else {
+            collectionView.deleteItems(at: [IndexPath(item: 0, section: 0)])
+        }
+    }
+    
     /// Present detail view controller for the person at the selected IndexPath.
     public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let person = people[indexPath.item]
+        // Show the add members dialog.
+        if addCellDataSource.isAddCellIndex(indexPath) {
+            addMembersButtonPressed()
+            return
+        }
+        
+        // Otherwise show the contact detail screen.
+        let transformedIP = addCellDataSource.transform(indexPath)
+        let person = people[transformedIP.item]
         
         let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier.rawValue)
         controller.allowsEditing = false
+        controller.view.tintColor = group.meta.color
         navigationController?.pushViewController(controller, animated: true)
     }
     
@@ -165,9 +208,17 @@ public class GroupDetailViewController: UICollectionViewController, UICollection
         loadDataSource()
         collectionView.reloadData()
     }
+    
+    public func addMembersButtonPressed() {
+        print("Add members")
+        let picker = CNContactPickerViewController()
+        picker.delegate = self
+        picker.predicateForSelectionOfProperty = nil
+        present(picker, animated: true, completion: nil)
+    }
 }
 
-extension GroupDetailViewController: GroupDetailHeaderViewDelegate {
+extension GroupDetailViewController: ActionButtonsHeaderDelegate {
     public func actionButtonPressed(action: GroupAction) {
         switch action {
         case .text:
@@ -185,14 +236,6 @@ extension GroupDetailViewController: GroupDetailHeaderViewDelegate {
             controller.setToRecipients(identifiers.map { $0.rawValue })
             present(controller, animated: true, completion: nil)
         }
-    }
-    
-    public func addMembersButtonPressed() {
-        print("Add members")
-        let picker = CNContactPickerViewController()
-        picker.delegate = self
-        picker.predicateForSelectionOfProperty = nil
-        present(picker, animated: true, completion: nil)
     }
 }
 

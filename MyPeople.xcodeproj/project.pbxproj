@@ -50,8 +50,8 @@
 		5CD4212D2155C02700CAC397 /* GroupDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212B2155C02700CAC397 /* GroupDetailViewController.swift */; };
 		5CD4212F2155C21E00CAC397 /* AppNavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212E2155C21E00CAC397 /* AppNavigationCoordinator.swift */; };
 		5CD421302155C21E00CAC397 /* AppNavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212E2155C21E00CAC397 /* AppNavigationCoordinator.swift */; };
-		5CD421322155D1F700CAC397 /* GroupDetailHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD421312155D1F700CAC397 /* GroupDetailHeaderView.swift */; };
-		5CD421332155D1F700CAC397 /* GroupDetailHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD421312155D1F700CAC397 /* GroupDetailHeaderView.swift */; };
+		5CD8393521A25F700060C85E /* ActionButtonsHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD8393421A25F700060C85E /* ActionButtonsHeader.swift */; };
+		5CD8393721A26FA10060C85E /* AddContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD8393621A26FA10060C85E /* AddContactCell.swift */; };
 		5CDC479921508F0500FABFCB /* ViewStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC479821508F0500FABFCB /* ViewStyles.swift */; };
 		5CDC479A21508F0500FABFCB /* ViewStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC479821508F0500FABFCB /* ViewStyles.swift */; };
 		5CDC479C2150A5D800FABFCB /* RotatableChevronView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC479B2150A5D800FABFCB /* RotatableChevronView.swift */; };
@@ -115,7 +115,8 @@
 		5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleByGroupsDataSource.swift; sourceTree = "<group>"; };
 		5CD4212B2155C02700CAC397 /* GroupDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailViewController.swift; sourceTree = "<group>"; };
 		5CD4212E2155C21E00CAC397 /* AppNavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNavigationCoordinator.swift; sourceTree = "<group>"; };
-		5CD421312155D1F700CAC397 /* GroupDetailHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailHeaderView.swift; sourceTree = "<group>"; };
+		5CD8393421A25F700060C85E /* ActionButtonsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButtonsHeader.swift; sourceTree = "<group>"; };
+		5CD8393621A26FA10060C85E /* AddContactCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddContactCell.swift; sourceTree = "<group>"; };
 		5CDC479821508F0500FABFCB /* ViewStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewStyles.swift; sourceTree = "<group>"; };
 		5CDC479B2150A5D800FABFCB /* RotatableChevronView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatableChevronView.swift; sourceTree = "<group>"; };
 		5CE864A9215F49220060D3C2 /* AssetCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalog.swift; sourceTree = "<group>"; };
@@ -286,8 +287,9 @@
 			isa = PBXGroup;
 			children = (
 				5CD4212B2155C02700CAC397 /* GroupDetailViewController.swift */,
-				5CD421312155D1F700CAC397 /* GroupDetailHeaderView.swift */,
+				5CD8393421A25F700060C85E /* ActionButtonsHeader.swift */,
 				5C352F8E219B509E000FE55F /* ActionButtonsView.swift */,
+				5CD8393621A26FA10060C85E /* AddContactCell.swift */,
 			);
 			path = Group;
 			sourceTree = "<group>";
@@ -436,14 +438,15 @@
 				5C1BB02B215F096300AFB591 /* UIView.swift in Sources */,
 				5CD4212C2155C02700CAC397 /* GroupDetailViewController.swift in Sources */,
 				5C3D6C1C214458A60094FDC2 /* SectionBackgroundView.swift in Sources */,
+				5CD8393721A26FA10060C85E /* AddContactCell.swift in Sources */,
 				5CB2A8B9214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */,
 				5CDC479C2150A5D800FABFCB /* RotatableChevronView.swift in Sources */,
 				5C224CE72155EFBE00AE6735 /* UIColor.swift in Sources */,
 				5C1BB0282159E5FB00AFB591 /* Tagged.swift in Sources */,
+				5CD8393521A25F700060C85E /* ActionButtonsHeader.swift in Sources */,
 				5C3D6BFD21444AF30094FDC2 /* PersonCell.swift in Sources */,
 				5C352F8F219B509E000FE55F /* ActionButtonsView.swift in Sources */,
 				5CD4212F2155C21E00CAC397 /* AppNavigationCoordinator.swift in Sources */,
-				5CD421322155D1F700CAC397 /* GroupDetailHeaderView.swift in Sources */,
 				5C431618214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -473,7 +476,6 @@
 				5C431619214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */,
 				5C3D6C1221444C820094FDC2 /* GroupHeaderView.swift in Sources */,
 				5CDC479A21508F0500FABFCB /* ViewStyles.swift in Sources */,
-				5CD421332155D1F700CAC397 /* GroupDetailHeaderView.swift in Sources */,
 				5C3D6C2021445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift in Sources */,
 				5C224CEF21560DB500AE6735 /* StateController.swift in Sources */,
 				5C3D6C1321444C820094FDC2 /* MyPeopleViewController.swift in Sources */,
