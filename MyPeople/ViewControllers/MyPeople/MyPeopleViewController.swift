@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CocoaTouchAdditions
 import Contacts
 import ContactsUI
 
@@ -77,8 +78,18 @@ public class MyPeopleViewController: UICollectionViewController {
         collectionView.register(SectionBackgroundView.self, forSupplementaryViewOfKind: SectionBackgroundView.kind, withReuseIdentifier: SectionBackgroundView.kind)
     }
     
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    func navBarConfig() -> NavBarConfiguration {
+        var config = NavBarConfiguration()
+        config.tintColor = .black
+        config.barTintColor = .white
+        config.barStyle = .default
+        //config.isTranslucent = false
+        return config
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController!.navigationBar.apply(navBarConfig())
         
         loadDataSource()
         collectionView.reloadData()
