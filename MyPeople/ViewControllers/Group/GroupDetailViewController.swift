@@ -59,15 +59,6 @@ public class GroupDetailViewController: UIViewController {
         navigationController!.navigationBar.apply(navBarConfig())
     }
     
-    public override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        var resetConfig = NavBarConfiguration()
-        resetConfig.backgroundImage = .some(nil)
-        resetConfig.barStyle = .default
-        navigationController!.navigationBar.apply(resetConfig)
-    }
-    
     /// Configure the gradient view's attributes and add it as a subview.
     func addGradient() {
         gradientView.startColor = UIColor.white.overlay(group.meta.color.withAlphaComponent(0.5))
@@ -128,6 +119,8 @@ public class GroupDetailViewController: UIViewController {
         navBarConfig.barStyle = .blackTranslucent
         navBarConfig.isTranslucent = true
         navBarConfig.backgroundImage = UIImage()
+        navBarConfig.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        navBarConfig.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         return navBarConfig
     }
     

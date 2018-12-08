@@ -83,7 +83,8 @@ public class MyPeopleViewController: UICollectionViewController {
         config.tintColor = .black
         config.barTintColor = .white
         config.barStyle = .default
-        //config.isTranslucent = false
+        config.titleTextAttributes = .some(nil)
+        config.largeTitleTextAttributes = .some(nil)
         return config
     }
     
