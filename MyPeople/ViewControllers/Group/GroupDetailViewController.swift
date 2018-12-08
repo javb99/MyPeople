@@ -123,11 +123,4 @@ public class GroupDetailViewController: UIViewController {
         navBarConfig.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         return navBarConfig
     }
-    
-    public override func setEditing(_ editing: Bool, animated: Bool) {
-        super.setEditing(editing, animated: animated)
-        
-        // Allow the collection view to show the add and remove buttons.
-        collectionViewController.setEditing(editing, animated: animated)
-    }
 }

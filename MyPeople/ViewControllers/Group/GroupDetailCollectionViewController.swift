@@ -31,6 +31,8 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     /// Set in getData()
     private var group: Group!
     
+    private var selectedIndexes: Set<IndexPath> = []
+    
     private var templateCell: PersonCell = {
         let cell = PersonCell(frame: .zero)
         cell.viewModel = .init(name: "Khrystyna", profilePicture: nil, colors: [])
@@ -114,32 +116,52 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
         super.setEditing(editing, animated: animated)
         
         addCellDataSource.shouldShowAddButton = editing
+        let addButtonIndex = IndexPath(item: 0, section: 0)
         if editing {
-            // Add the add button
-            collectionView.insertItems(at: [IndexPath(item: 0, section: 0)])
+            collectionView.insertItems(at: [addButtonIndex])
         } else {
-            // Remove the add button
-            collectionView.deleteItems(at: [IndexPath(item: 0, section: 0)])
+            collectionView.deleteItems(at: [addButtonIndex])
         }
+        collectionView.allowsSelection = editing
+        collectionView.allowsMultipleSelection = editing
     }
     
-    /// Present detail view controller for the person at the selected IndexPath.
-    public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // Show the add members dialog.
-        if addCellDataSource.isAddCellIndex(indexPath) {
-            addMembersButtonPressed()
-            return
+    /// Used to intercept the touch on a cell before the selection highlight is applied.
+    /// Special behaviour for the add person cell and touching a cell to show the detail view.
+    public override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        
+        if isEditing {
+            if addCellDataSource.isAddCellIndex(indexPath) {
+                addMembersButtonPressed()
+                return false // Avoid showing the selection highlight
+            }
+            return true
         }
         
         // Otherwise show the contact detail screen.
         let transformedIP = addCellDataSource.transform(indexPath)
         let person = people[transformedIP.item]
+        showContactDetailScreen(for: person)
         
+        return false // Avoid showing the selection highlight
+    }
+    
+    public func showContactDetailScreen(for person: Person) {
         let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier.rawValue)
         controller.allowsEditing = false
         controller.view.tintColor = group.meta.color
         navigationController?.navigationBar.tintColor = group.meta.color
         show(controller, sender: self)
+    }
+    
+    public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if isEditing {
+            selectedIndexes.insert(indexPath)
+        }
+    }
+    
+    public override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        selectedIndexes.remove(indexPath)
     }
     
     public override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {

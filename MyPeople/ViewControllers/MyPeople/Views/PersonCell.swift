@@ -20,6 +20,15 @@ public class PersonCell: UICollectionViewCell {
             profileCircle.image = viewModel.profilePicture
         }
     }
+    public override var isSelected: Bool {
+        didSet {
+            if isSelected {
+                profileCircle.bgColors = [.blue]
+            } else {
+                profileCircle.bgColors = viewModel.colors
+            }
+        }
+    }
     
     private static let circleVerticalSpacingToName: CGFloat = 2
     private static let profileCircleWidth: CGFloat = 60
