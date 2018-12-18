@@ -24,7 +24,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     private var incomingNavBarConfig: NavBarConfiguration?
     
     private var addCellDataSource: AddContactDataSource!
-    private var cellsDataSource: PeopleByGroupsCellsDataSource!
+    private var cellsDataSource: PeopleByGroupsDataSource!
     
     /// Set in getData()
     public private(set) var people: [Person]!
@@ -73,7 +73,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
         
         getData()
         
-        cellsDataSource = PeopleByGroupsCellsDataSource(sourcingFrom: nil)
+        cellsDataSource = PeopleByGroupsDataSource(sourcingFrom: nil)
         cellsDataSource.stateController = stateController
         addCellDataSource = AddContactDataSource(sourcingFrom: cellsDataSource)
         addCellDataSource.tintColor = group.meta.color

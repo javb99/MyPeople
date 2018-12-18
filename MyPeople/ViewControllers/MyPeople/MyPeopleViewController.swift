@@ -11,17 +11,15 @@ import CocoaTouchAdditions
 import Contacts
 import ContactsUI
 
-public class MyPeopleViewController: UICollectionViewController {
+public class MyPeopleViewController: UITableViewController {
     
     // MARK: Static Members
     
-    static let cellIdentifier: String = "Cell"
-    static let headerIdentifier: String = "Header"
+    static let cellIdentifier: String = "GroupCell"
     
     // MARK: Instance Members
     
-    var collapsibleDataSource: CollapsibleSectionsDataSource!
-    var naiveDataSource: PeopleByGroupsDataSource!
+    var groupCounts = [GroupCount]()
     
     // MARK: Dependencies
     
@@ -29,18 +27,7 @@ public class MyPeopleViewController: UICollectionViewController {
     var stateController: StateController!
     
     public init() {
-        let flowLayout = SectionBackgroundFlowLayout()
-        flowLayout.sectionHeadersPinToVisibleBounds = true
-        let templateHeader = GroupHeaderView(frame: .zero)
-        templateHeader.title = "Hello World"
-        flowLayout.headerReferenceSize = templateHeader.intrinsicContentSize
-        let templateCell = PersonCell(frame: .zero)
-        templateCell.viewModel = .init(name: "Khrystyna", profilePicture: nil, colors: [])
-        flowLayout.itemSize = templateCell.intrinsicContentSize
-        flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 6, bottom: 8, right: 6)
-        flowLayout.sectionInsetReference = .fromSafeArea
-        
-        super.init(collectionViewLayout: flowLayout)
+        super.init(style: .plain)
         
         NotificationCenter.default.addObserver(self, selector: #selector(appStateDidChange), name: .stateDidChange, object: nil)
     }
@@ -60,22 +47,11 @@ public class MyPeopleViewController: UICollectionViewController {
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newGroupButtonPressed(_:)))
         navigationItem.setRightBarButton(addButton, animated: false)
         
-        naiveDataSource = PeopleByGroupsDataSource()
-        naiveDataSource.cellProvider.stateController = stateController
-        collapsibleDataSource = CollapsibleSectionsDataSource(collectionView: collectionView, sourcingFrom: naiveDataSource, defaultState: .collapsed)
-        collectionView.dataSource = collapsibleDataSource
+        reloadDataSource()
         
-        loadDataSource()
-        collectionView.reloadData()
-        
-        let bgView = UIView()
-        bgView.frame = collectionView.bounds
-        bgView.backgroundColor = .white
-        collectionView.backgroundView = bgView
-        
-        collectionView.register(PersonCell.self, forCellWithReuseIdentifier: MyPeopleViewController.cellIdentifier)
-        collectionView.register(GroupHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MyPeopleViewController.headerIdentifier)
-        collectionView.register(SectionBackgroundView.self, forSupplementaryViewOfKind: SectionBackgroundView.kind, withReuseIdentifier: SectionBackgroundView.kind)
+        tableView.separatorStyle = .none
+        tableView.contentInsetAdjustmentBehavior = .scrollableAxes
+        tableView.register(GroupCell.self, forCellReuseIdentifier: MyPeopleViewController.cellIdentifier)
     }
     
     func navBarConfig() -> NavBarConfiguration {
@@ -99,36 +75,30 @@ public class MyPeopleViewController: UICollectionViewController {
             self.navigationController!.navigationBar.apply(self.navBarConfig())
         }
         
-        loadDataSource()
-        collectionView.reloadData()
+        reloadDataSource()
     }
     
-    func loadDataSource() {
+    struct GroupCount {
+        let group: Group
+        let memberCount: Int
+    }
+    
+    func reloadDataSource() {
         let groups = stateController.orderedGroupIDs.map { stateController.group(forID: $0) }
-        naiveDataSource.groups = groups
-        var people = [[Person]]()
+        groupCounts = []
         for group in groups {
-            people.append(stateController.members(ofGroup: group.identifier))
+            let count = stateController.members(ofGroup: group.identifier).count
+            groupCounts.append(GroupCount(group: group, memberCount: count))
         }
-        naiveDataSource.people = people
+        tableView.reloadData()
     }
     
     @objc func appStateDidChange() {
-        loadDataSource()
-        collectionView.reloadData()
+        reloadDataSource()
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
-    }
-    
-    @IBAction func sectionTitleTapped(_ tapRecognizer: UITapGestureRecognizer) {
-        let location = tapRecognizer.location(in: collectionView)
-        if let headerIndexPath = collectionView.headerIndexPath(at: location) {
-            let group = naiveDataSource.groups[headerIndexPath.section]
-            let groupDetailController = navigationCoordinator.prepareGroupDetailViewController(for: group.identifier)
-            navigationController?.pushViewController(groupDetailController, animated: true)
-        }
     }
     
     @IBAction func newGroupButtonPressed(_ button: UIButton?) {
@@ -145,18 +115,30 @@ public class MyPeopleViewController: UICollectionViewController {
         present(alertView, animated: true, completion: nil)
     }
     
-    public override func collectionView(_ collectionView: UICollectionView, willDisplaySupplementaryView view: UICollectionReusableView, forElementKind elementKind: String, at indexPath: IndexPath) {
-        
-        if elementKind == UICollectionView.elementKindSectionHeader {
-            let header = (view as! GroupHeaderView)
-            header.titleTouchedCallback = sectionTitleTapped(_:)
-        }
+    public override func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
     }
     
-    public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let person = naiveDataSource.people[indexPath.section][indexPath.item]
+    public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return groupCounts.count
+    }
+    
+    public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier.rawValue)
-        navigationController?.pushViewController(controller, animated: true)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: MyPeopleViewController.cellIdentifier) as? GroupCell else {
+            fatalError("Could not deque a group cell.")
+        }
+        
+        let group = groupCounts[indexPath.row].group
+        cell.title = group.name
+        cell.color = group.meta.color
+        
+        return cell
+    }
+    
+    public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let group = groupCounts[indexPath.row].group
+        let groupDetailController = navigationCoordinator.prepareGroupDetailViewController(for: group.identifier)
+        navigationController?.pushViewController(groupDetailController, animated: true)
     }
 }
