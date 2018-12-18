@@ -44,6 +44,7 @@
 		5C431619214852C3000AF666 /* CollapsibleSectionsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C431617214852C3000AF666 /* CollapsibleSectionsDataSource.swift */; };
 		5CB2A8B9214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */; };
 		5CB2A8BA214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */; };
+		5CB8EC1921BC603A00B294B4 /* GroupDetailModalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB8EC1821BC603A00B294B4 /* GroupDetailModalListener.swift */; };
 		5CD4212821556A9900CAC397 /* PeopleByGroupsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */; };
 		5CD4212921556A9900CAC397 /* PeopleByGroupsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */; };
 		5CD4212C2155C02700CAC397 /* GroupDetailCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212B2155C02700CAC397 /* GroupDetailCollectionViewController.swift */; };
@@ -115,6 +116,7 @@
 		5C3D6C1E21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionBackgroundFlowLayout.swift; sourceTree = "<group>"; };
 		5C431617214852C3000AF666 /* CollapsibleSectionsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsibleSectionsDataSource.swift; sourceTree = "<group>"; };
 		5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactStoreWrapper.swift; sourceTree = "<group>"; };
+		5CB8EC1821BC603A00B294B4 /* GroupDetailModalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailModalListener.swift; sourceTree = "<group>"; };
 		5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleByGroupsDataSource.swift; sourceTree = "<group>"; };
 		5CD4212B2155C02700CAC397 /* GroupDetailCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailCollectionViewController.swift; sourceTree = "<group>"; };
 		5CD4212E2155C21E00CAC397 /* AppNavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNavigationCoordinator.swift; sourceTree = "<group>"; };
@@ -293,6 +295,7 @@
 				5CD4212B2155C02700CAC397 /* GroupDetailCollectionViewController.swift */,
 				5C352F8E219B509E000FE55F /* ActionButtonsView.swift */,
 				5CD8393621A26FA10060C85E /* AddContactCell.swift */,
+				5CB8EC1821BC603A00B294B4 /* GroupDetailModalListener.swift */,
 			);
 			path = Group;
 			sourceTree = "<group>";
@@ -428,6 +431,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5C3D6BF321444A070094FDC2 /* Person.swift in Sources */,
+				5CB8EC1921BC603A00B294B4 /* GroupDetailModalListener.swift in Sources */,
 				5C3D6C1F21445A4B0094FDC2 /* SectionBackgroundFlowLayout.swift in Sources */,
 				5C3D6BFF21444B000094FDC2 /* GroupHeaderView.swift in Sources */,
 				5CD8394821A8925E0060C85E /* GroupDetailViewController.swift in Sources */,

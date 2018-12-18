@@ -8,7 +8,10 @@
 
 import UIKit
 import CocoaTouchAdditions
+import MessageUI
 
+
+/// Manages the action bar above the collection view along with the naviagation bar.
 public class GroupDetailViewController: UIViewController {
     
     // MARK: Dependencies
@@ -21,12 +24,14 @@ public class GroupDetailViewController: UIViewController {
     private var gradientView: GradientView
     private var actionButtonsView: ActionButtonsView
     
+    private var modalListener: GroupDetailModalListener!
     private var group: Group!
     
     public init() {
         collectionViewController = GroupDetailCollectionViewController()
         gradientView = GradientView(frame: .zero)
         actionButtonsView = ActionButtonsView(frame: .zero)
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -41,6 +46,7 @@ public class GroupDetailViewController: UIViewController {
             fatalError("Invalid groupID dependency")
         }
         self.group = group
+        modalListener = GroupDetailModalListener(group: group, stateController: stateController)
         
         navigationItem.rightBarButtonItem = editButtonItem
         navigationItem.title = group.name
@@ -70,7 +76,7 @@ public class GroupDetailViewController: UIViewController {
     
     /// Configure the action buttons view's attributes and add it as a subview.
     func addActionButtons() {
-        actionButtonsView.actionPressedCallback = collectionViewController.actionButtonPressed
+        actionButtonsView.actionPressedCallback = actionButtonPressed
         actionButtonsView.buttonTint = group.meta.color
         view.addSubview(actionButtonsView)
     }
@@ -80,6 +86,7 @@ public class GroupDetailViewController: UIViewController {
         collectionViewController.navigationCoordinator = navigationCoordinator
         collectionViewController.stateController = stateController
         collectionViewController.groupID = groupID
+        collectionViewController.modalListener = modalListener
         
         addChild(collectionViewController)
         view.addSubview(collectionViewController.view)
@@ -119,8 +126,30 @@ public class GroupDetailViewController: UIViewController {
         navBarConfig.barStyle = .blackTranslucent
         navBarConfig.isTranslucent = true
         navBarConfig.backgroundImage = UIImage()
-        navBarConfig.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-        navBarConfig.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         return navBarConfig
+    }
+    
+    public override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        
+        // Allow the collection view to show the add and remove buttons.
+        collectionViewController.setEditing(editing, animated: animated)
+    }
+    
+    public func actionButtonPressed(action: GroupAction) {
+        switch action {
+        case .text:
+            let controller = MFMessageComposeViewController()
+            controller.messageComposeDelegate = modalListener
+            let identifiers = collectionViewController.people.compactMap { $0.phoneNumber }
+            controller.recipients = identifiers.map { $0.rawValue }
+            present(controller, animated: true, completion: nil)
+        case .email:
+            let controller = MFMailComposeViewController()
+            controller.mailComposeDelegate = modalListener
+            let identifiers = collectionViewController.people.compactMap { $0.email }
+            controller.setToRecipients(identifiers.map { $0.rawValue })
+            present(controller, animated: true, completion: nil)
+        }
     }
 }

@@ -141,6 +141,13 @@ public class StateController {
         }
     }
     
+    /// Add the people to the group.
+    public func add(people peopleIDs: [Person.ID], toGroup groupID: Group.ID) {
+        for person in peopleIDs {
+            add(person: person, toGroup: groupID)
+        }
+    }
+    
     /// Removes the link between the person and the group. Disconnects both directions.
     func remove(person personID: Person.ID, fromGroup groupID: Group.ID) {
         /// Remove the person from the group.

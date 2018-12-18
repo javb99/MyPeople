@@ -10,13 +10,13 @@ import UIKit
 import CocoaTouchAdditions
 import Contacts
 import ContactsUI
-import MessageUI
 
 public class GroupDetailCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
     // MARK: Dependencies
     public var navigationCoordinator: AppNavigationCoordinator!
     public var stateController: StateController!
+    public var modalListener: GroupDetailModalListener!
     public var groupID: Group.ID!
     
     // MARK: Instance members
@@ -27,11 +27,11 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     private var cellsDataSource: PeopleByGroupsCellsDataSource!
     
     /// Set in getData()
-    private var people: [Person]!
+    public private(set) var people: [Person]!
     /// Set in getData()
-    private var group: Group!
+    public private(set) var group: Group!
     
-    private var selectedIndexes: Set<IndexPath> = []
+    public private(set) var selectedIndexes: Set<IndexPath> = []
     
     private var templateCell: PersonCell = {
         let cell = PersonCell(frame: .zero)
@@ -51,6 +51,8 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
         
         super.init(collectionViewLayout: flowLayout)
         
+        clearsSelectionOnViewWillAppear = false
+        
         NotificationCenter.default.addObserver(self, selector: #selector(appStateDidChange), name: .stateDidChange, object: nil)
     }
     
@@ -65,7 +67,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        guard navigationCoordinator != nil, groupID != nil else {
+        guard navigationCoordinator != nil, groupID != nil, modalListener != nil else {
             fatalError("Dependencies not fulfilled.")
         }
         
@@ -76,7 +78,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
         addCellDataSource = AddContactDataSource(sourcingFrom: cellsDataSource)
         addCellDataSource.tintColor = group.meta.color
         
-        loadDataSource()
+        reloadData()
         collectionView.dataSource = addCellDataSource
         
         let bgView = UIView()
@@ -92,8 +94,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        loadDataSource()
-        collectionView.reloadData()
+        reloadData()
     }
     
     /// Loads group and members.
@@ -106,24 +107,38 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     }
     
     /// Loads data and passes it to the data source.
-    func loadDataSource() {
+    func reloadData() {
         getData()
         cellsDataSource.groups = [group]
         cellsDataSource.people = [people]
+        selectedIndexes = [] // Don't maintain selection because items could have moved.
+        collectionView.reloadData()
     }
     
     public override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
         
-        addCellDataSource.shouldShowAddButton = editing
+        if !editing {
+            selectedIndexes = []
+            // Sync with selectedIndexes.
+            collectionView.indexPathsForSelectedItems?.forEach { (indexPath) in
+                collectionView.deselectItem(at: indexPath, animated: true)
+            }
+        }
+        
+        toggleAddButton(to: editing)
+        collectionView.allowsMultipleSelection = editing
+    }
+    
+    /// passing a value of true shows the add button and a value of false hides it. Only mangages the data source and insertion and deletion from the collection view.
+    func toggleAddButton(to shouldShow: Bool) {
+        addCellDataSource.shouldShowAddButton = shouldShow
         let addButtonIndex = IndexPath(item: 0, section: 0)
-        if editing {
+        if shouldShow {
             collectionView.insertItems(at: [addButtonIndex])
         } else {
             collectionView.deleteItems(at: [addButtonIndex])
         }
-        collectionView.allowsSelection = editing
-        collectionView.allowsMultipleSelection = editing
     }
     
     /// Used to intercept the touch on a cell before the selection highlight is applied.
@@ -150,6 +165,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
         let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier.rawValue)
         controller.allowsEditing = false
         controller.view.tintColor = group.meta.color
+        navigationController?.navigationBar.barStyle = .default
         navigationController?.navigationBar.tintColor = group.meta.color
         show(controller, sender: self)
     }
@@ -175,68 +191,15 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     
     /// Called when the stateController's state is changed. We use this to reload the collection view.
     @objc func appStateDidChange() {
-        loadDataSource()
-        collectionView.reloadData()
+        reloadData()
     }
     
     public func addMembersButtonPressed() {
         print("Add members")
         let picker = CNContactPickerViewController()
-        picker.delegate = self
+        picker.delegate = modalListener
         picker.predicateForSelectionOfProperty = nil
         picker.view.tintColor = group.meta.color
         present(picker, animated: true, completion: nil)
-    }
-}
-
-extension GroupDetailCollectionViewController {
-    public func actionButtonPressed(action: GroupAction) {
-        switch action {
-        case .text:
-            print("Send text to group.")
-            let controller = MFMessageComposeViewController()
-            controller.messageComposeDelegate = self
-            let identifiers = people.compactMap { $0.phoneNumber }
-            controller.recipients = identifiers.map { $0.rawValue }
-            present(controller, animated: true, completion: nil)
-        case .email:
-            print("Send email to group")
-            let controller = MFMailComposeViewController()
-            controller.mailComposeDelegate = self
-            let identifiers = people.compactMap { $0.email }
-            controller.setToRecipients(identifiers.map { $0.rawValue })
-            present(controller, animated: true, completion: nil)
-        }
-    }
-}
-
-extension GroupDetailCollectionViewController: CNContactPickerDelegate {
-    public func contactPickerDidCancel(_ picker: CNContactPickerViewController) {
-        dismiss(animated: true, completion: nil)
-    }
-    
-    public func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
-        addContactsToGroup(contacts)
-        dismiss(animated: true, completion: nil)
-    }
-    
-    func addContactsToGroup(_ contacts: [CNContact]) {
-        for contact in contacts {
-            stateController.add(person: Person.ID(rawValue: contact.identifier), toGroup: group.identifier)
-        }
-        loadDataSource()
-        collectionView.reloadData()
-    }
-}
-
-extension GroupDetailCollectionViewController: MFMailComposeViewControllerDelegate {
-    public func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
-        controller.dismiss(animated: true, completion: nil)
-    }
-}
-
-extension GroupDetailCollectionViewController: MFMessageComposeViewControllerDelegate {
-    public func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
-        controller.dismiss(animated: true, completion: nil)
     }
 }

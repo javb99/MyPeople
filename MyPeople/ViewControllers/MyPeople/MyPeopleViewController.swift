@@ -80,17 +80,24 @@ public class MyPeopleViewController: UICollectionViewController {
     
     func navBarConfig() -> NavBarConfiguration {
         var config = NavBarConfiguration()
+        config.shadowImage = .some(nil)
         config.tintColor = .black
         config.barTintColor = .white
         config.barStyle = .default
-        config.titleTextAttributes = .some(nil)
-        config.largeTitleTextAttributes = .some(nil)
+        config.isTranslucent = true
+        config.backgroundImage = .some(nil)
         return config
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController!.navigationBar.apply(navBarConfig())
+        if animated {
+            transitionCoordinator!.animate(alongsideTransition: { (context) in
+                self.navigationController!.navigationBar.apply(self.navBarConfig())
+            }, completion: nil)
+        } else {
+            self.navigationController!.navigationBar.apply(self.navBarConfig())
+        }
         
         loadDataSource()
         collectionView.reloadData()
