@@ -55,8 +55,6 @@ public class StateController {
     @objc func contactStoreDidChange() {
         if shouldReloadOnCNStoreChange {
             refreshState()
-        } else {
-            print("Refresh ignored.")
         }
     }
     
@@ -101,13 +99,11 @@ public class StateController {
     func createNewGroup(_ name: String, meta: GroupMeta) -> Group? {
         let incomingValue = shouldReloadOnCNStoreChange
         defer {
-            print("Defer statement")
             shouldReloadOnCNStoreChange = incomingValue
         }
         do {
             shouldReloadOnCNStoreChange = false
             let cnGroup = try contactsStoreWrapper.addGroup(named: name)
-            print("New Group created.")
             let group = Group(cnGroup, meta: meta)
             rememberGroup(group)
             NotificationCenter.default.post(name: .stateDidChange, object: self)
@@ -170,16 +166,13 @@ public class StateController {
     func delete(group identifier: Group.ID) {
         let incomingValue = shouldReloadOnCNStoreChange
         defer {
-            print("Defer statement")
             shouldReloadOnCNStoreChange = incomingValue
         }
         
         shouldReloadOnCNStoreChange = false
-        print("Before count: \(try! fetchGroups().count)")
         contactsStoreWrapper.deleteGroup(identifier)
         groupsTable[identifier] = nil
         orderedGroupIDs.removeAll(where: { $0 == identifier })
-        print("After count: \(try! fetchGroups().count)")
         needsToSave = true
     }
     
@@ -235,7 +228,7 @@ public class StateController {
     private func fetchGroups() throws -> [Group]  {
         let groupStorage = try? GroupStorage.loadFromDisk()
         
-        let contactGroups = try self.contactsStoreWrapper.backingStore.groups(matching: nil)
+        let contactGroups = try self.contactsStoreWrapper.allGroups()
         var groups = contactGroups.map { contactGroup -> Group in
             let id = Group.ID(rawValue: contactGroup.identifier)
             
