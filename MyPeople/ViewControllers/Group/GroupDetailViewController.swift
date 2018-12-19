@@ -76,7 +76,10 @@ public class GroupDetailViewController: UIViewController {
     
     /// Configure the action buttons view's attributes and add it as a subview.
     func addActionButtons() {
-        actionButtonsView.actionPressedCallback = actionButtonPressed
+        let weakActionButtonPressed: (GroupAction)->() = { [weak self] (action: GroupAction) in
+            self?.actionButtonPressed(action: action)
+        }
+        actionButtonsView.actionPressedCallback = weakActionButtonPressed
         actionButtonsView.buttonTint = group.meta.color
         view.addSubview(actionButtonsView)
     }
