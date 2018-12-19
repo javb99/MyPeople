@@ -83,14 +83,14 @@ public class MyPeopleViewController: UITableViewController {
         let memberCount: Int
     }
     
-    func reloadDataSource() {
+    func reloadDataSource(reloadDisplay: Bool = true) {
         let groups = stateController.orderedGroupIDs.map { stateController.group(forID: $0) }
         groupCounts = []
         for group in groups {
             let count = stateController.members(ofGroup: group.identifier).count
             groupCounts.append(GroupCount(group: group, memberCount: count))
         }
-        tableView.reloadData()
+        if reloadDisplay { tableView.reloadData() }
     }
     
     @objc func appStateDidChange() {
@@ -129,9 +129,10 @@ public class MyPeopleViewController: UITableViewController {
             fatalError("Could not deque a group cell.")
         }
         
-        let group = groupCounts[indexPath.row].group
-        cell.title = group.name
-        cell.color = group.meta.color
+        let groupCount = groupCounts[indexPath.row]
+        cell.title = groupCount.group.name
+        cell.color = groupCount.group.meta.color
+        cell.memberCount = groupCount.memberCount
         
         return cell
     }
@@ -140,5 +141,20 @@ public class MyPeopleViewController: UITableViewController {
         let group = groupCounts[indexPath.row].group
         let groupDetailController = navigationCoordinator.prepareGroupDetailViewController(for: group.identifier)
         navigationController?.pushViewController(groupDetailController, animated: true)
+    }
+    
+    // MARK: Deletion and Reorder.
+    
+    public override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    public override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let group = groupCounts[indexPath.row].group
+            stateController.delete(group: group.identifier)
+            reloadDataSource(reloadDisplay: false)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+        }
     }
 }

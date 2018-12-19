@@ -168,7 +168,19 @@ public class StateController {
     }
     
     func delete(group identifier: Group.ID) {
-        // TODO: implement
+        let incomingValue = shouldReloadOnCNStoreChange
+        defer {
+            print("Defer statement")
+            shouldReloadOnCNStoreChange = incomingValue
+        }
+        
+        shouldReloadOnCNStoreChange = false
+        print("Before count: \(try! fetchGroups().count)")
+        contactsStoreWrapper.deleteGroup(identifier)
+        groupsTable[identifier] = nil
+        orderedGroupIDs.removeAll(where: { $0 == identifier })
+        print("After count: \(try! fetchGroups().count)")
+        needsToSave = true
     }
     
     private func rememberGroup(_ group: Group) {

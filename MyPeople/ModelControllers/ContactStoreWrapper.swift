@@ -68,6 +68,26 @@ public class ContactStoreWrapper {
         return group
     }
     
+    /// Remove the group from the contact store. If the group doesn't exist the operation will fail silently.
+    public func deleteGroup(_ groupID: Group.ID) {
+        let saveRequest = CNSaveRequest()
+        let pred = CNGroup.predicateForGroups(withIdentifiers: [groupID.rawValue])
+        guard let group = (try? backingStore.groups(matching: pred))?.first else {
+            print("Could not find the group to delete it. Continuing as if it has been deleted.")
+            return
+        }
+        
+        let mutgroup = group.mutableCopy() as! CNMutableGroup
+        saveRequest.delete(mutgroup)
+        do {
+            try backingStore.execute(saveRequest)
+        } catch CNError.recordDoesNotExist {
+            print("Group doesn't exist to delete. Continuing as if it has been deleted.")
+        } catch {
+            fatalError("Unexpected error while deleting group: \(error)")
+        }
+    }
+    
     public func addContact(identifiedBy personIdentifier: String, toGroupIdentifiedBy groupIdentifier: String) throws {
         guard let group = try backingStore.groups(matching: CNGroup.predicateForGroups(withIdentifiers: [groupIdentifier])).first else {
             fatalError("Could not fetch Group.")
