@@ -58,6 +58,25 @@ public class ContactStoreWrapper {
         }
     }
     
+    /// Fetch all the groups.
+    public func allGroups() throws -> [CNGroup] {
+        return try backingStore.groups(matching: nil)
+    }
+    
+    public func fetchPerson(identifiedBy identifier: Person.ID) throws -> Person? {
+        guard let contact = try backingStore.unifiedContacts(matching: Person.predicate(for: identifier), keysToFetch: Person.requiredContactKeys).first else {
+            return nil
+        }
+        return Person(contact)
+    }
+    
+    /// Gets the members of the given group.
+    public func fetchPeople(in group: Group) throws -> [Person] {
+        let contactsInGroup = try backingStore.unifiedContacts(matching: group.containedContactsPredicate, keysToFetch: Person.requiredContactKeys)
+        
+        return contactsInGroup.map(Person.init)
+    }
+    
     /// Throws an error to signal failure.
     public func addGroup(named name: String) throws -> CNGroup {
         let group = CNMutableGroup()
@@ -69,15 +88,9 @@ public class ContactStoreWrapper {
     }
     
     /// Remove the group from the contact store. If the group doesn't exist the operation will fail silently.
-    public func deleteGroup(_ groupID: Group.ID) {
+    public func deleteGroup(_ group: Group) {
         let saveRequest = CNSaveRequest()
-        let pred = CNGroup.predicateForGroups(withIdentifiers: [groupID.rawValue])
-        guard let group = (try? backingStore.groups(matching: pred))?.first else {
-            print("Could not find the group to delete it. Continuing as if it has been deleted.")
-            return
-        }
-        
-        let mutgroup = group.mutableCopy() as! CNMutableGroup
+        let mutgroup = group.cnGroup.mutableCopy() as! CNMutableGroup
         saveRequest.delete(mutgroup)
         do {
             try backingStore.execute(saveRequest)
@@ -88,19 +101,9 @@ public class ContactStoreWrapper {
         }
     }
     
-    public func addContact(identifiedBy personIdentifier: String, toGroupIdentifiedBy groupIdentifier: String) throws {
-        guard let group = try backingStore.groups(matching: CNGroup.predicateForGroups(withIdentifiers: [groupIdentifier])).first else {
-            fatalError("Could not fetch Group.")
-        }
-        let contact = try backingStore.unifiedContact(withIdentifier: personIdentifier, keysToFetch: [])
+    public func addContact(_ person: Person, to group: Group) throws {
         let saveRequest = CNSaveRequest()
-        saveRequest.addMember(contact, to: group)
+        saveRequest.addMember(person.cnContact, to: group.cnGroup)
         try backingStore.execute(saveRequest)
-    }
-    
-    public func addContacts(identifiedBy identifiers: [String], toGroupIdentifiedBy groupIdentifier: String) {
-        
-        
-        
     }
 }

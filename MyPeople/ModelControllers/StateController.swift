@@ -16,6 +16,7 @@ extension Notification.Name {
 /// Manages the Group and Person state of the app.
 /// Holds the authority of the current version of each group and person.
 public class StateController {
+    // MARK: Core State
     
     // Store unique identifier to group pairs.
     private(set) var groupsTable: [Group.ID: Group] = [:]
@@ -26,6 +27,9 @@ public class StateController {
     /// All the group IDs in a constant order. In the future this order will be changeable by the user.
     private(set) var orderedGroupIDs: [Group.ID] = []
     
+    // MARK: Other Properties
+    
+    /// True if there are changes that need to be saved to disk.
     private(set) var needsToSave: Bool = false
     
     /// Used when adding a group to avoid a race condition that prohibits using user defined meta.
@@ -47,6 +51,7 @@ public class StateController {
             refreshState()
         case .restricted, .denied:
             print("Could not fetch state because contacts access is blocked.")
+            #warning("Needs a strategy to inform user.")
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(contactStoreDidChange), name: Notification.Name.CNContactStoreDidChange, object: nil)
@@ -62,14 +67,17 @@ public class StateController {
         NotificationCenter.default.removeObserver(self)
     }
     
+    // MARK: - Public Interface -
+    
+    // MARK: Getters
+    
     /// Return the given groups ordered according to the order of `orderedGroupIDs`.
     func order(_ groupIDs: [Group.ID]) -> [Group.ID] {
         return groupIDs.sorted { orderedGroupIDs.does($0, appearBefore: $1) }
-        //return orderedGroupIDs.intersection(groups)
     }
     
     /// A non-Optional wrapper for the subscript operation on `groups`.
-    func group(forID identifier: Group.ID) -> Group {
+    func group(for identifier: Group.ID) -> Group {
         guard let group = groupsTable[identifier] else {
             fatalError("No group identified by groupID")
         }
@@ -77,7 +85,7 @@ public class StateController {
     }
     
     /// A non-Optional wrapper for the subscript operation on `people`.
-    func person(forID identifier: Person.ID) -> Person {
+    func person(for identifier: Person.ID) -> Person {
         guard let person = people[identifier] else {
             fatalError("No person identified by personID")
         }
@@ -86,28 +94,129 @@ public class StateController {
     
     /// The group objects for the groupIDs property of the person referenced by the given identifier.
     func groups(forPerson identifier: Person.ID) -> [Group] {
-        return person(forID: identifier).groupIDs.compactMap { groupsTable[$0] }
+        return person(for: identifier).groupIDs.compactMap { groupsTable[$0] }
     }
     
     /// The person objects for the memberIDs property of the group referenced by the given identifier.
     func members(ofGroup identifier: Group.ID) -> [Person] {
-        return group(forID: identifier).memberIDs.compactMap { people[$0] }
+        return group(for: identifier).memberIDs.compactMap { people[$0] }
     }
     
-    /// Add the group. Currently only uses the name. In the future the color will be configurable that is why this is wrapping the call.
+    // MARK: Operations
+    
+    /// Add the group in the system, in memory, and on disk. Currently only uses the name. In the future the color will be configurable.
     @discardableResult
     func createNewGroup(_ name: String, meta: GroupMeta) -> Group? {
+        return ignoreReloadDuring { p_createNewGroup(name, meta: meta) }
+    }
+    
+    /// Add the person to the group. In memory and in the system.
+    public func add(person personID: Person.ID, toGroup groupID: Group.ID) {
+        do {
+            var person: Person
+            if let p = people[personID] {
+                person = p
+                
+            } else {
+                print("Person wasn't loaded in memory. Fetching them.")
+                guard let p = try contactsStoreWrapper.fetchPerson(identifiedBy: personID) else {
+                    fatalError("Unable to fetch the person to add them to a group. This shouldn't happen because the person was selected from a list of contacts.")
+                }
+                rememberPerson(p)
+                person = p
+            }
+            // Creates the relationship in the system contact store.
+            try contactsStoreWrapper.addContact(person, to: group(for: groupID))
+            // Create the relationship in memory.
+            link(person: personID, toGroup: groupID)
+        } catch {
+            print("Failed to add person")
+        }
+    }
+    
+    /// Add the people to the group. In memory and in the system. A convience wrapper around `add(person:toGroup:)`.
+    public func add(people peopleIDs: [Person.ID], toGroup groupID: Group.ID) {
+        for person in peopleIDs {
+            add(person: person, toGroup: groupID)
+        }
+    }
+    
+    /// Delete the group from the contact store.
+    public func delete(group identifier: Group.ID) {
+        ignoreReloadDuring {
+            // Remove from the system contacts store.
+            contactsStoreWrapper.deleteGroup(group(for: identifier))
+            // Remove from in memory storage
+            groupsTable[identifier] = nil
+            orderedGroupIDs.removeAll(where: { $0 == identifier })
+            // Save changes to disk.
+            needsToSave = true
+            saveIfNeeded()
+        }
+    }
+    
+    /// Save the in-memory state to disk if there are changes to save. Does nothing if `needsToSave` is false.
+    public func saveIfNeeded() {
+        if needsToSave {
+            saveGroupsToDisk()
+        }
+    }
+    
+    /// Stops the reload due to a CNStoreChange notification during the execution of the given code. Returns the return value of the code block untouched.
+    public func ignoreReloadDuring<Return>(_ code: ()->Return) -> Return{
         let incomingValue = shouldReloadOnCNStoreChange
         defer {
             shouldReloadOnCNStoreChange = incomingValue
         }
+        shouldReloadOnCNStoreChange = false
+        return code()
+    }
+    
+    // MARK: - Implementation -
+    
+    /// Link the person and the group together in-memory. Connects both directions. The private implementation of connecting a person to a group when they are added.
+    private func link(person personID: Person.ID, toGroup groupID: Group.ID) {
+        // Add the person as a member of the group.
+        var group = self.group(for: groupID)
+        group.memberIDs.append(personID)
+        groupsTable[groupID] = group
+        // Add the group to the person's groupIDs array.
+        var person = self.person(for: personID)
+        person.groupIDs.append(groupID)
+        people[personID] = person
+    }
+    
+    /// Removes the in-memory link between the person and the group. Disconnects both directions.
+    private func remove(person personID: Person.ID, fromGroup groupID: Group.ID) {
+        /// Remove the person from the group.
+        guard let personIndex = self.group(for: groupID).memberIDs.firstIndex(of: personID) else {
+            fatalError("Given person not a member of given group.")
+        }
+        var group = self.group(for: groupID)
+        group.memberIDs.remove(at: personIndex)
+        groupsTable[groupID] = group
+        
+        /// Remove the group from the person's groupIDs array.
+        guard let groupIndex = self.person(for: personID).groupIDs.firstIndex(of: groupID) else {
+            fatalError("Given person not a member of given group.")
+        }
+        var person = self.person(for: personID)
+        person.groupIDs.remove(at: groupIndex)
+        people[personID] = person
+    }
+    
+    /// Implementation. Don't call this. call `createNewGroup(_:meta:)` instead. That method wraps this method in an ignoreReloadDuring block.
+    private func p_createNewGroup(_ name: String, meta: GroupMeta) -> Group? {
         do {
-            shouldReloadOnCNStoreChange = false
+            // Add to system contacts store.
             let cnGroup = try contactsStoreWrapper.addGroup(named: name)
+            // Add in memory.
             let group = Group(cnGroup, meta: meta)
             rememberGroup(group)
-            NotificationCenter.default.post(name: .stateDidChange, object: self)
-            saveGroupsToDisk()
+            //NotificationCenter.default.post(name: .stateDidChange, object: self)
+            // Save to disk.
+            needsToSave = true
+            saveIfNeeded()
             return group
         } catch {
             print("Failed to create new group: \(error.localizedDescription)")
@@ -115,73 +224,19 @@ public class StateController {
         }
     }
     
-    /// Link the person and the group together. Connects both directions. The private implementation of connecting a person to a group when they are added.
-    private func link(person personID: Person.ID, toGroup groupID: Group.ID) {
-        // Add the person as a member of the group.
-        var group = self.group(forID: groupID)
-        group.memberIDs.append(personID)
-        groupsTable[groupID] = group
-        // Add the group to the person's groupIDs array.
-        var person = self.person(forID: personID)
-        person.groupIDs.append(groupID)
-        people[personID] = person
+    /// Adds the person in memory. Doesn't save the change to disk.
+    private func rememberPerson(_ person: Person) {
+        people[person.identifier] = person
     }
     
-    /// Add the person to the group.
-    public func add(person personID: Person.ID, toGroup groupID: Group.ID) {
-        do {
-            try contactsStoreWrapper.addContact(identifiedBy: personID.rawValue, toGroupIdentifiedBy: groupID.rawValue)
-            link(person: personID, toGroup: groupID)
-        } catch {
-            print("Failed to add person")
-        }
-    }
-    
-    /// Add the people to the group.
-    public func add(people peopleIDs: [Person.ID], toGroup groupID: Group.ID) {
-        for person in peopleIDs {
-            add(person: person, toGroup: groupID)
-        }
-    }
-    
-    /// Removes the link between the person and the group. Disconnects both directions.
-    func remove(person personID: Person.ID, fromGroup groupID: Group.ID) {
-        /// Remove the person from the group.
-        guard let personIndex = self.group(forID: groupID).memberIDs.firstIndex(of: personID) else {
-            fatalError("Given person not a member of given group.")
-        }
-        var group = self.group(forID: groupID)
-        group.memberIDs.remove(at: personIndex)
-        groupsTable[groupID] = group
-        
-        /// Remove the group from the person's groupIDs array.
-        guard let groupIndex = self.person(forID: personID).groupIDs.firstIndex(of: groupID) else {
-            fatalError("Given person not a member of given group.")
-        }
-        var person = self.person(forID: personID)
-        person.groupIDs.remove(at: groupIndex)
-        people[personID] = person
-    }
-    
-    func delete(group identifier: Group.ID) {
-        let incomingValue = shouldReloadOnCNStoreChange
-        defer {
-            shouldReloadOnCNStoreChange = incomingValue
-        }
-        
-        shouldReloadOnCNStoreChange = false
-        contactsStoreWrapper.deleteGroup(identifier)
-        groupsTable[identifier] = nil
-        orderedGroupIDs.removeAll(where: { $0 == identifier })
-        needsToSave = true
-    }
-    
+    /// Adds the group in memory. Doesn't save the change to disk.
     private func rememberGroup(_ group: Group) {
         groupsTable[group.identifier] = group
         orderedGroupIDs.append(group.identifier)
     }
     
-    func refreshState() {
+    /// Used to keep in sync with the system contact store.
+    private func refreshState() {
         do {
             saveIfNeeded()
             
@@ -193,7 +248,7 @@ public class StateController {
             for group in fetchedGroups {
                 rememberGroup(group)
                 
-                let peopleInGroup = try self.fetchPeople(in: group)
+                let peopleInGroup = try contactsStoreWrapper.fetchPeople(in: group)
                 
                 // Add each person to this group.
                 for person in peopleInGroup {
@@ -215,13 +270,6 @@ public class StateController {
         let colors = AssetCatalog.Color.groupColors
         let color = colors[abs(cnGroup.identifier.hashValue) % colors.count]
         return GroupMeta(color: color)
-    }
-    
-    /// Gets the members of the given group from the ContactStoreWrapper.
-    private func fetchPeople(in group: Group) throws -> [Person] {
-        let contactsInGroup = try self.contactsStoreWrapper.backingStore.unifiedContacts(matching: group.containedContactsPredicate, keysToFetch: Person.requiredContactKeys)
-        
-        return contactsInGroup.map(Person.init)
     }
     
     /// Gets the `CNGroup`s from the `ContactStoreWrapper` and the `Group`s stored locally on disk and matches them up creating new `Group`s as needed. Returns the groups sorted according to the stored order if any.
@@ -250,12 +298,7 @@ public class StateController {
         return groups
     }
     
-    public func saveIfNeeded() {
-        if needsToSave {
-            saveGroupsToDisk()
-        }
-    }
-    
+    /// Don't call directly. Set `needsToSave` to true then call `saveIfNeeded()`.
     private func saveGroupsToDisk() {
         let groupMetas = Dictionary(uniqueKeysWithValues: groupsTable.map({ (key, value) -> (Group.ID, GroupMeta) in
             return (key, value.meta)

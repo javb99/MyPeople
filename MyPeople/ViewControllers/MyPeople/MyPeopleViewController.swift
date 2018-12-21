@@ -84,7 +84,7 @@ public class MyPeopleViewController: UITableViewController {
     }
     
     func reloadDataSource(reloadDisplay: Bool = true) {
-        let groups = stateController.orderedGroupIDs.map { stateController.group(forID: $0) }
+        let groups = stateController.orderedGroupIDs.map { stateController.group(for: $0) }
         groupCounts = []
         for group in groups {
             let count = stateController.members(ofGroup: group.identifier).count

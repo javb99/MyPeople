@@ -31,7 +31,7 @@ public class PeopleByGroupsDataSource: ChainableDataSource {
         
         //let rotatedGroups = groups[indexPath.section...] + groups[..<indexPath.section]
         let personsGroupsSorted = stateController.order(person.groupIDs)
-        let colors = personsGroupsSorted.map{ stateController.group(forID: $0).meta.color }
+        let colors = personsGroupsSorted.map{ stateController.group(for: $0).meta.color }
         return colors
     }
     

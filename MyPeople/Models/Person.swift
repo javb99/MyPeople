@@ -55,7 +55,7 @@ public struct Person {
         }
     }
     
-    var thisContact: NSPredicate? {
+    static func predicate(for identifier: Person.ID) -> NSPredicate {
         return CNContact.predicateForContacts(withIdentifiers: [identifier.rawValue])
     }
 }
