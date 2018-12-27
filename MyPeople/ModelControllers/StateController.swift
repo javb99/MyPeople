@@ -9,10 +9,6 @@
 import UIKit
 import Contacts
 
-extension Notification.Name {
-    static let stateDidChange = Notification.Name("StateControllerStateDidChange")
-}
-
 /// Manages the Group and Person state of the app.
 /// Holds the authority of the current version of each group and person.
 public class StateController {
@@ -32,9 +28,6 @@ public class StateController {
     /// True if there are changes that need to be saved to disk.
     private(set) var needsToSave: Bool = false
     
-    /// Used when adding a group to avoid a race condition that prohibits using user defined meta.
-    private(set) var shouldReloadOnCNStoreChange: Bool = true
-    
     private var contactsStoreWrapper: ContactStoreWrapper
     
     init(contactsStoreWrapper: ContactStoreWrapper) {
@@ -53,18 +46,6 @@ public class StateController {
             print("Could not fetch state because contacts access is blocked.")
             #warning("Needs a strategy to inform user.")
         }
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(contactStoreDidChange), name: Notification.Name.CNContactStoreDidChange, object: nil)
-    }
-    
-    @objc func contactStoreDidChange() {
-        if shouldReloadOnCNStoreChange {
-            refreshState()
-        }
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - Public Interface -
@@ -72,7 +53,7 @@ public class StateController {
     // MARK: Getters
     
     /// Return the given groups ordered according to the order of `orderedGroupIDs`.
-    func order(_ groupIDs: [Group.ID]) -> [Group.ID] {
+    func order<Col: Sequence>(_ groupIDs: Col) -> [Group.ID] where Col.Element == Group.ID {
         return groupIDs.sorted { orderedGroupIDs.does($0, appearBefore: $1) }
     }
     
@@ -106,8 +87,22 @@ public class StateController {
     
     /// Add the group in the system, in memory, and on disk. Currently only uses the name. In the future the color will be configurable.
     @discardableResult
-    func createNewGroup(_ name: String, meta: GroupMeta) -> Group? {
-        return ignoreReloadDuring { p_createNewGroup(name, meta: meta) }
+    public func createNewGroup(_ name: String, meta: GroupMeta) -> Group? {
+        do {
+            // Add to system contacts store.
+            let cnGroup = try contactsStoreWrapper.addGroup(named: name)
+            // Add in memory.
+            let group = Group(cnGroup, meta: meta)
+            rememberGroup(group)
+            //NotificationCenter.default.post(name: .stateDidChange, object: self)
+            // Save to disk.
+            needsToSave = true
+            saveIfNeeded()
+            return group
+        } catch {
+            print("Failed to create new group: \(error.localizedDescription)")
+            return nil
+        }
     }
     
     /// Add the person to the group. In memory and in the system.
@@ -143,16 +138,35 @@ public class StateController {
     
     /// Delete the group from the contact store.
     public func delete(group identifier: Group.ID) {
-        ignoreReloadDuring {
-            // Remove from the system contacts store.
-            contactsStoreWrapper.deleteGroup(group(for: identifier))
-            // Remove from in memory storage
-            groupsTable[identifier] = nil
-            orderedGroupIDs.removeAll(where: { $0 == identifier })
-            // Save changes to disk.
-            needsToSave = true
-            saveIfNeeded()
+        // Remove from the system contacts store.
+        contactsStoreWrapper.deleteGroup(group(for: identifier))
+        // Remove from in memory storage
+        groupsTable[identifier] = nil
+        orderedGroupIDs.removeAll(where: { $0 == identifier })
+        // Save changes to disk.
+        needsToSave = true
+        saveIfNeeded()
+    }
+    
+    /// Create a copy of the group with the same meta and the same name with " - Copy" appended. All the members are added to the copy.
+    @discardableResult
+    public func duplicate(group identifier: Group.ID) -> Group? {
+        let original = group(for: identifier)
+        guard let copy = createNewGroup(original.name + " - Copy", meta: original.meta) else {
+            return nil
         }
+        
+        // Position the duplicate directly following the original.
+        let originalIndex = orderedGroupIDs.firstIndex(of: identifier)!
+        let duplicateIndex = orderedGroupIDs.firstIndex(of: copy.identifier)!
+        orderedGroupIDs.remove(at: duplicateIndex)
+        orderedGroupIDs.insert(copy.identifier, at: orderedGroupIDs.index(after: originalIndex))
+        needsToSave = true
+        
+        // Copy the members.
+        add(people: members(ofGroup: identifier).map{ $0.identifier }, toGroup: copy.identifier)
+        
+        return copy
     }
     
     /// Save the in-memory state to disk if there are changes to save. Does nothing if `needsToSave` is false.
@@ -162,27 +176,17 @@ public class StateController {
         }
     }
     
-    /// Stops the reload due to a CNStoreChange notification during the execution of the given code. Returns the return value of the code block untouched.
-    public func ignoreReloadDuring<Return>(_ code: ()->Return) -> Return{
-        let incomingValue = shouldReloadOnCNStoreChange
-        defer {
-            shouldReloadOnCNStoreChange = incomingValue
-        }
-        shouldReloadOnCNStoreChange = false
-        return code()
-    }
-    
     // MARK: - Implementation -
     
     /// Link the person and the group together in-memory. Connects both directions. The private implementation of connecting a person to a group when they are added.
     private func link(person personID: Person.ID, toGroup groupID: Group.ID) {
         // Add the person as a member of the group.
         var group = self.group(for: groupID)
-        group.memberIDs.append(personID)
+        group.memberIDs.insert(personID)
         groupsTable[groupID] = group
         // Add the group to the person's groupIDs array.
         var person = self.person(for: personID)
-        person.groupIDs.append(groupID)
+        person.groupIDs.insert(groupID)
         people[personID] = person
     }
     
@@ -203,25 +207,6 @@ public class StateController {
         var person = self.person(for: personID)
         person.groupIDs.remove(at: groupIndex)
         people[personID] = person
-    }
-    
-    /// Implementation. Don't call this. call `createNewGroup(_:meta:)` instead. That method wraps this method in an ignoreReloadDuring block.
-    private func p_createNewGroup(_ name: String, meta: GroupMeta) -> Group? {
-        do {
-            // Add to system contacts store.
-            let cnGroup = try contactsStoreWrapper.addGroup(named: name)
-            // Add in memory.
-            let group = Group(cnGroup, meta: meta)
-            rememberGroup(group)
-            //NotificationCenter.default.post(name: .stateDidChange, object: self)
-            // Save to disk.
-            needsToSave = true
-            saveIfNeeded()
-            return group
-        } catch {
-            print("Failed to create new group: \(error.localizedDescription)")
-            return nil
-        }
     }
     
     /// Adds the person in memory. Doesn't save the change to disk.
@@ -259,7 +244,6 @@ public class StateController {
                     link(person: person.identifier, toGroup: group.identifier)
                 }
             }
-            NotificationCenter.default.post(name: .stateDidChange, object: self)
         } catch {
             print(error.localizedDescription)
         }

@@ -22,7 +22,7 @@ public struct Group {
     public let meta: GroupMeta
     
     // Intended to be filled by the outside.
-    public var memberIDs: [Person.ID] = []
+    public var memberIDs: Set<Person.ID> = []
     
     // MARK: Computed Properties
     

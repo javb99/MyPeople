@@ -28,8 +28,6 @@ public class MyPeopleViewController: UITableViewController {
     
     public init() {
         super.init(style: .plain)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(appStateDidChange), name: .stateDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -46,8 +44,6 @@ public class MyPeopleViewController: UITableViewController {
         navigationItem.title = "My People"
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newGroupButtonPressed(_:)))
         navigationItem.setRightBarButton(addButton, animated: false)
-        
-        reloadDataSource()
         
         tableView.separatorStyle = .none
         tableView.contentInsetAdjustmentBehavior = .scrollableAxes
@@ -93,21 +89,19 @@ public class MyPeopleViewController: UITableViewController {
         if reloadDisplay { tableView.reloadData() }
     }
     
-    @objc func appStateDidChange() {
-        reloadDataSource()
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
     @IBAction func newGroupButtonPressed(_ button: UIButton?) {
         let alertView = UIAlertController(title: "New Group", message: "Enter a group name", preferredStyle: .alert)
         alertView.addTextField(configurationHandler: nil)
         let done = UIAlertAction(title: "Add", style: .default) { [weak self] (action)  in
+            guard let self = self else { return }
             let textField = alertView.textFields!.first!
             guard let text = textField.text, !text.isEmpty else { fatalError() }
-            self?.stateController.createNewGroup(text, meta: GroupMeta(color: AssetCatalog.Color.groupColors.randomElement()!))
+            self.stateController.createNewGroup(text, meta: GroupMeta(color: AssetCatalog.Color.groupColors.randomElement()!))
+            // Insert the row at the end.
+            self.reloadDataSource(reloadDisplay: false)
+            let count = self.groupCounts.count
+            let indexPath = IndexPath(row: count-1, section: 0)
+            self.tableView.insertRows(at: [indexPath], with: .automatic)
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertView.addAction(done)
@@ -149,12 +143,31 @@ public class MyPeopleViewController: UITableViewController {
         return true
     }
     
-    public override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            let group = groupCounts[indexPath.row].group
-            stateController.delete(group: group.identifier)
-            reloadDataSource(reloadDisplay: false)
-            tableView.deleteRows(at: [indexPath], with: .automatic)
+    public override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let delete = UITableViewRowAction(style: .destructive, title: "Delete") { [weak self] (_, indexPath) in
+            self?.deleteGroup(at: indexPath)
         }
+        let duplicate = UITableViewRowAction(style: .normal, title: "Duplicate") { [weak self] (_, indexPath) in
+            self?.duplicateGroup(at: indexPath)
+        }
+        return [duplicate, delete]
+    }
+    
+    public func deleteGroup(at indexPath: IndexPath) {
+        let group = groupCounts[indexPath.row].group
+        stateController.delete(group: group.identifier)
+        reloadDataSource(reloadDisplay: false)
+        tableView.deleteRows(at: [indexPath], with: .automatic)
+    }
+    
+    public func duplicateGroup(at indexPath: IndexPath) {
+        let group = groupCounts[indexPath.row].group
+        guard let _ = self.stateController.duplicate(group: group.identifier) else {
+            fatalError("Failed to duplicate group")
+        }
+        print("About to insert.")
+        self.reloadDataSource(reloadDisplay: false)
+        let dupIndexPath = IndexPath(row: indexPath.row + 1, section: indexPath.section)
+        tableView.insertRows(at: [dupIndexPath], with: .top)
     }
 }

@@ -53,7 +53,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
         
         clearsSelectionOnViewWillAppear = false
         
-        NotificationCenter.default.addObserver(self, selector: #selector(appStateDidChange), name: .stateDidChange, object: nil)
+        #warning("Fix the add people to group reload.")
     }
     
     required init?(coder aDecoder: NSCoder) {

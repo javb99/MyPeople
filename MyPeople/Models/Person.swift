@@ -28,7 +28,7 @@ public struct Person {
     public let identifier: ID
     public let cnContact: CNContact
     /// Set from the outside.
-    public var groupIDs: [Group.ID] = []
+    public var groupIDs: Set<Group.ID> = []
     
     public static let requiredContactKeys: [CNKeyDescriptor] = [CNContactGivenNameKey as CNKeyDescriptor, CNContactThumbnailImageDataKey as CNKeyDescriptor, CNContactEmailAddressesKey as CNKeyDescriptor, CNContactPhoneNumbersKey as CNKeyDescriptor]
     
