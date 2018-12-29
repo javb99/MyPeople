@@ -30,8 +30,8 @@ public class PeopleByGroupsDataSource: ChainableDataSource {
         //let personGroups = stateController.groups(forPerson: person.identifier!)
         
         //let rotatedGroups = groups[indexPath.section...] + groups[..<indexPath.section]
-        #warning("Unsafe to use person.groupIDs")
-        let personsGroupsSorted = stateController.order(person.groupIDs)
+        let personsGroups = stateController.groups(forPerson: person.identifier).map { $0.identifier }
+        let personsGroupsSorted = stateController.order(personsGroups)
         let colors = personsGroupsSorted.map{ stateController.group(for: $0).meta.color }
         return colors
     }

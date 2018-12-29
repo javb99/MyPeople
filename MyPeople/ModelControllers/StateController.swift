@@ -87,14 +87,16 @@ public class StateController {
     
     /// Add the group in the system, in memory, and on disk. Currently only uses the name. In the future the color will be configurable.
     @discardableResult
-    public func createNewGroup(_ name: String, meta: GroupMeta) -> Group? {
+    public func createNewGroup(name: String, meta: GroupMeta, members: [Person.ID] = []) -> Group? {
         do {
             // Add to system contacts store.
             let cnGroup = try contactsStoreWrapper.addGroup(named: name)
             // Add in memory.
             let group = Group(cnGroup, meta: meta)
             rememberGroup(group)
-            //NotificationCenter.default.post(name: .stateDidChange, object: self)
+            
+            if !members.isEmpty { add(people: members, toGroup: group.identifier) }
+            
             // Save to disk.
             needsToSave = true
             saveIfNeeded()
@@ -152,21 +154,26 @@ public class StateController {
     @discardableResult
     public func duplicate(group identifier: Group.ID) -> Group? {
         let original = group(for: identifier)
-        guard let copy = createNewGroup(original.name + " - Copy", meta: original.meta) else {
+        guard let copy = createNewGroup(name: original.name + " - Copy", meta: original.meta) else {
             return nil
         }
         
-        // Position the duplicate directly following the original.
-        let originalIndex = orderedGroupIDs.firstIndex(of: identifier)!
-        let duplicateIndex = orderedGroupIDs.firstIndex(of: copy.identifier)!
-        orderedGroupIDs.remove(at: duplicateIndex)
-        orderedGroupIDs.insert(copy.identifier, at: orderedGroupIDs.index(after: originalIndex))
-        needsToSave = true
+        // Make the duplicate after the original.
+        move(group: copy.identifier, after: original.identifier)
         
         // Copy the members.
         add(people: members(ofGroup: identifier).map{ $0.identifier }, toGroup: copy.identifier)
         
         return copy
+    }
+    
+    /// Position the movingID directly following the referenceID in orderedGroupIDs.
+    public func move(group movingID: Group.ID, after referenceID: Group.ID) {
+        let originalIndex = orderedGroupIDs.firstIndex(of: referenceID)!
+        let movingIndex = orderedGroupIDs.firstIndex(of: movingID)!
+        orderedGroupIDs.remove(at: movingIndex)
+        orderedGroupIDs.insert(movingID, at: orderedGroupIDs.index(after: originalIndex))
+        needsToSave = true
     }
     
     /// Save the in-memory state to disk if there are changes to save. Does nothing if `needsToSave` is false.

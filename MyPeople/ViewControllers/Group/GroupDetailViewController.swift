@@ -168,19 +168,25 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
         case .text:
             let controller = MFMessageComposeViewController()
             controller.messageComposeDelegate = modalListener
-            let identifiers = collectionViewController.people.compactMap { $0.phoneNumber }
+            let identifiers = collectionViewController.membersOfGroup.compactMap { $0.phoneNumber }
             controller.recipients = identifiers.map { $0.rawValue }
             present(controller, animated: true, completion: nil)
         case .email:
             let controller = MFMailComposeViewController()
             controller.mailComposeDelegate = modalListener
-            let identifiers = collectionViewController.people.compactMap { $0.email }
+            let identifiers = collectionViewController.membersOfGroup.compactMap { $0.email }
             controller.setToRecipients(identifiers.map { $0.rawValue })
             present(controller, animated: true, completion: nil)
         case .remove:
             #warning("Remove people from group")
         case .newGroup:
-            #warning("Create new group from selection")
+            guard let newGroup = stateController.createNewGroup(name: "Selection of \(group.name)", meta: GroupMeta(color: AssetCatalog.Color.groupColors.randomElement()!), members:  collectionViewController.selectedPeople) else {
+                print("Failed to create new group from selection")
+                #warning("Surface to user")
+                return
+            }
+            stateController.move(group: newGroup.identifier, after: group.identifier)
+            navigationController?.popViewController(animated: true)
         }
     }
 }

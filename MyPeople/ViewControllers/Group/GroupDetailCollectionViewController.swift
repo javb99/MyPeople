@@ -34,7 +34,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     private var cellsDataSource: PeopleByGroupsDataSource!
     
     /// Set in getData()
-    public private(set) var people: [Person]!
+    public private(set) var membersOfGroup: [Person]!
     /// Set in getData()
     public private(set) var group: Group!
     
@@ -110,14 +110,14 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
             fatalError("Invalid groupID dependency")
         }
         self.group = group
-        people = stateController.members(ofGroup: groupID)
+        membersOfGroup = stateController.members(ofGroup: groupID)
     }
     
     /// Loads data and passes it to the data source.
     func reloadData() {
         getData()
         cellsDataSource.groups = [group]
-        cellsDataSource.people = [people]
+        cellsDataSource.people = [membersOfGroup]
         selectedIndexes = [] // Don't maintain selection because items could have moved.
         collectionView.reloadData()
     }
@@ -162,7 +162,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
         
         // Otherwise show the contact detail screen.
         let transformedIP = addCellDataSource.transform(indexPath)
-        let person = people[transformedIP.item]
+        let person = membersOfGroup[transformedIP.item]
         showContactDetailScreen(for: person)
         
         return false // Avoid showing the selection highlight
@@ -187,6 +187,11 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     public override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         selectedIndexes.remove(indexPath)
         selectionListener?.indexPathDeselected(indexPath)
+    }
+    
+    /// All of the people that are selected in the collection view.
+    public var selectedPeople: [Person.ID] {
+        return selectedIndexes.map { membersOfGroup[addCellDataSource.transform($0).item].identifier }
     }
     
     public override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {

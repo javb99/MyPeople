@@ -99,7 +99,7 @@ public class MyPeopleViewController: UITableViewController {
             guard let self = self else { return }
             let textField = alertView.textFields!.first!
             guard let text = textField.text, !text.isEmpty else { fatalError() }
-            self.stateController.createNewGroup(text, meta: GroupMeta(color: AssetCatalog.Color.groupColors.randomElement()!))
+            self.stateController.createNewGroup(name: text, meta: GroupMeta(color: AssetCatalog.Color.groupColors.randomElement()!))
             // Insert the row at the end.
             self.reloadDataSource(reloadDisplay: false)
             let count = self.groupCounts.count
