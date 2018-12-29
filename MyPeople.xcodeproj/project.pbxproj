@@ -39,8 +39,8 @@
 		5C61730521D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C61730421D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift */; };
 		5C61730621D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C61730421D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift */; };
 		5C849F5E21C98781000F35EA /* GroupDetailModalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB8EC1821BC603A00B294B4 /* GroupDetailModalListener.swift */; };
-		5CB2A8B9214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */; };
-		5CB2A8BA214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */; };
+		5CB2A8B9214DA10600DF4704 /* ContactStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB2A8B8214DA10600DF4704 /* ContactStore.swift */; };
+		5CB2A8BA214DA10600DF4704 /* ContactStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB2A8B8214DA10600DF4704 /* ContactStore.swift */; };
 		5CB8EC1921BC603A00B294B4 /* GroupDetailModalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB8EC1821BC603A00B294B4 /* GroupDetailModalListener.swift */; };
 		5CD4212821556A9900CAC397 /* PeopleByGroupsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */; };
 		5CD4212921556A9900CAC397 /* PeopleByGroupsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */; };
@@ -106,7 +106,7 @@
 		5C3D6C0721444B970094FDC2 /* MyPeoplePlaygroundAccessible.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyPeoplePlaygroundAccessible.h; sourceTree = "<group>"; };
 		5C3D6C0821444B970094FDC2 /* PlaygroundAccesibleFrameworkInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PlaygroundAccesibleFrameworkInfo.plist; sourceTree = "<group>"; };
 		5C61730421D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailToolbarDataSource.swift; sourceTree = "<group>"; };
-		5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactStoreWrapper.swift; sourceTree = "<group>"; };
+		5CB2A8B8214DA10600DF4704 /* ContactStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactStore.swift; sourceTree = "<group>"; };
 		5CB8EC1821BC603A00B294B4 /* GroupDetailModalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailModalListener.swift; sourceTree = "<group>"; };
 		5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleByGroupsDataSource.swift; sourceTree = "<group>"; };
 		5CD4212B2155C02700CAC397 /* GroupDetailCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailCollectionViewController.swift; sourceTree = "<group>"; };
@@ -146,7 +146,7 @@
 		5C224CEC21560D9D00AE6735 /* ModelControllers */ = {
 			isa = PBXGroup;
 			children = (
-				5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */,
+				5CB2A8B8214DA10600DF4704 /* ContactStore.swift */,
 				5C224CED21560DB500AE6735 /* StateController.swift */,
 			);
 			path = ModelControllers;
@@ -430,7 +430,7 @@
 				5C1BB02B215F096300AFB591 /* UIView.swift in Sources */,
 				5CD4212C2155C02700CAC397 /* GroupDetailCollectionViewController.swift in Sources */,
 				5CD8393721A26FA10060C85E /* AddContactCell.swift in Sources */,
-				5CB2A8B9214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */,
+				5CB2A8B9214DA10600DF4704 /* ContactStore.swift in Sources */,
 				5C224CE72155EFBE00AE6735 /* UIColor.swift in Sources */,
 				5C1BB0282159E5FB00AFB591 /* Tagged.swift in Sources */,
 				5C3D6BFD21444AF30094FDC2 /* PersonCell.swift in Sources */,
@@ -467,7 +467,7 @@
 				5C224CEF21560DB500AE6735 /* StateController.swift in Sources */,
 				5CD8394921A8925E0060C85E /* GroupDetailViewController.swift in Sources */,
 				5C3D6C1321444C820094FDC2 /* MyPeopleViewController.swift in Sources */,
-				5CB2A8BA214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */,
+				5CB2A8BA214DA10600DF4704 /* ContactStore.swift in Sources */,
 				5C3D6C1421444C820094FDC2 /* PersonProfilePictureView.swift in Sources */,
 				5CD4212921556A9900CAC397 /* PeopleByGroupsDataSource.swift in Sources */,
 				5CE864AB215F49220060D3C2 /* AssetCatalog.swift in Sources */,

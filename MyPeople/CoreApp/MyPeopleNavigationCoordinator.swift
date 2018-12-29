@@ -13,18 +13,18 @@ import ContactsUI
 public protocol AppNavigationCoordinator: class {
     func prepareMyPeopleViewController() -> UIViewController
     func prepareGroupDetailViewController(for groupID: Group.ID) -> UIViewController?
-    func prepareContactDetailViewController(forContactIdentifiedBy identifier: String) throws -> UIViewController
+    func prepareContactDetailViewController(for personID: Person.ID) throws -> UIViewController?
 }
 
 /// Holds the depencencies of the ViewControllers and loads them into view controllers.
 public class MyPeopleNavigationCoordinator: AppNavigationCoordinator {
     
-    var contactsStoreWrapper: ContactStoreWrapper
+    var contactStore: HighLevelConstactStore
     var stateController: StateController
     
     public init() {
-        contactsStoreWrapper = ContactStoreWrapper()
-        stateController = StateController(contactsStoreWrapper: contactsStoreWrapper)
+        contactStore = ContactStore()
+        stateController = StateController(contactStore: contactStore)
     }
     
     public func prepareMyPeopleViewController() -> UIViewController {
@@ -38,16 +38,17 @@ public class MyPeopleNavigationCoordinator: AppNavigationCoordinator {
     }
     
     /// Throws an error if authorization is denied or rethrows any error that is encountered while fetching the contact.
-    public func prepareContactDetailViewController(forContactIdentifiedBy identifier: String) throws -> UIViewController {
+    public func prepareContactDetailViewController(for personID: Person.ID) throws -> UIViewController? {
         
-        guard contactsStoreWrapper.authorizationStatus == .authorized else {
+        guard contactStore.authorizationStatus == .authorized else {
             throw CNError(.authorizationDenied)
         }
         
-        let store = contactsStoreWrapper.backingStore
         do {
-            let contact = try store.unifiedContact(withIdentifier: identifier, keysToFetch: [CNContactViewController.descriptorForRequiredKeys()])
-            let controller = CNContactViewController(for: contact)
+            guard let person = try contactStore.fetchPerson(identifiedBy: personID, keysToFetch: [CNContactViewController.descriptorForRequiredKeys()]) else {
+                return nil
+            }
+            let controller = CNContactViewController(for: person.cnContact)
             controller.allowsEditing = false
             return controller
             

@@ -175,7 +175,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     }
     
     public func showContactDetailScreen(for person: Person) {
-        let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier.rawValue)
+        guard let controller = try! navigationCoordinator.prepareContactDetailViewController(for: person.identifier) else { return }
         controller.view.tintColor = group.meta.color
         navigationController?.navigationBar.barStyle = .default
         navigationController?.navigationBar.tintColor = group.meta.color

@@ -28,13 +28,13 @@ public class StateController {
     /// True if there are changes that need to be saved to disk.
     private(set) var needsToSave: Bool = false
     
-    private var contactsStoreWrapper: ContactStoreWrapper
+    private var contactStore: HighLevelConstactStore
     
-    init(contactsStoreWrapper: ContactStoreWrapper) {
-        self.contactsStoreWrapper = contactsStoreWrapper
-        switch contactsStoreWrapper.authorizationStatus {
+    init(contactStore: HighLevelConstactStore) {
+        self.contactStore = contactStore
+        switch contactStore.authorizationStatus {
         case .notDetermined:
-            contactsStoreWrapper.requestAccess { (result) in
+            contactStore.requestAccess { (result) in
                 guard result == .success else { return }
                 DispatchQueue.main.async {
                     self.refreshState()
@@ -72,7 +72,7 @@ public class StateController {
         } else {
             print("Person wasn't loaded in memory. Fetching them.")
             // Needs two stage unwrap because the it is a nested optional.
-            guard let optionalPerson = try? contactsStoreWrapper.fetchPerson(identifiedBy: identifier), let person = optionalPerson else {
+            guard let optionalPerson = try? contactStore.fetchPerson(identifiedBy: identifier), let person = optionalPerson else {
                 fatalError("Unable to fetch the person to add them to a group. This shouldn't happen because the person was selected from a list of contacts.")
             }
             rememberPerson(person)
@@ -97,7 +97,7 @@ public class StateController {
     public func createNewGroup(name: String, meta: GroupMeta, members: [Person.ID] = []) -> Group? {
         do {
             // Add to system contacts store.
-            let cnGroup = try contactsStoreWrapper.addGroup(named: name)
+            let cnGroup = try contactStore.addGroup(named: name)
             // Add in memory.
             let group = Group(cnGroup, meta: meta)
             rememberGroup(group)
@@ -119,7 +119,7 @@ public class StateController {
         do {
             let person = self.person(for: personID)
             // Creates the relationship in the system contact store.
-            try contactsStoreWrapper.addContact(person, to: group(for: groupID))
+            try contactStore.addContact(person, to: group(for: groupID))
             // Create the relationship in memory.
             link(person: personID, toGroup: groupID)
         } catch {
@@ -140,7 +140,7 @@ public class StateController {
         do {
             let person = self.person(for: personID)
             // Remove the relationship in the system contact store.
-            try contactsStoreWrapper.remove(person, from: group(for: groupID))
+            try contactStore.remove(person, from: group(for: groupID))
         } catch {
             print("Failed to add person")
         }
@@ -155,7 +155,7 @@ public class StateController {
     /// Delete the group from the contact store.
     public func delete(group identifier: Group.ID) {
         // Remove from the system contacts store.
-        contactsStoreWrapper.deleteGroup(group(for: identifier))
+        contactStore.deleteGroup(group(for: identifier))
         // Remove from in memory storage
         groupsTable[identifier] = nil
         orderedGroupIDs.removeAll(where: { $0 == identifier })
@@ -254,7 +254,7 @@ public class StateController {
             for group in fetchedGroups {
                 rememberGroup(group)
                 
-                let peopleInGroup = try contactsStoreWrapper.fetchPeople(in: group)
+                let peopleInGroup = try contactStore.fetchPeople(in: group)
                 
                 // Add each person to this group.
                 for person in peopleInGroup {
@@ -281,7 +281,7 @@ public class StateController {
     private func fetchGroups() throws -> [Group]  {
         let groupStorage = try? GroupStorage.loadFromDisk()
         
-        let contactGroups = try self.contactsStoreWrapper.allGroups()
+        let contactGroups = try self.contactStore.allGroups()
         var groups = contactGroups.map { contactGroup -> Group in
             let id = Group.ID(rawValue: contactGroup.identifier)
             
