@@ -1,5 +1,5 @@
 //
-//  AppNavigationCoordinator.swift
+//  MyPeopleNavigationCoordinator.swift
 //  MyPeople
 //
 //  Created by Joseph Van Boxtel on 9/21/18.
@@ -10,33 +10,35 @@ import UIKit
 import Contacts
 import ContactsUI
 
+public protocol AppNavigationCoordinator: class {
+    func prepareMyPeopleViewController() -> UIViewController
+    func prepareGroupDetailViewController(for groupID: Group.ID) -> UIViewController?
+    func prepareContactDetailViewController(forContactIdentifiedBy identifier: String) throws -> UIViewController
+}
+
 /// Holds the depencencies of the ViewControllers and loads them into view controllers.
-public class AppNavigationCoordinator: NSObject {
+public class MyPeopleNavigationCoordinator: AppNavigationCoordinator {
     
     var contactsStoreWrapper: ContactStoreWrapper
     var stateController: StateController
     
-    public override init() {
+    public init() {
         contactsStoreWrapper = ContactStoreWrapper()
         stateController = StateController(contactsStoreWrapper: contactsStoreWrapper)
     }
     
-    public func prepareMyPeopleViewController() -> MyPeopleViewController {
-        let controller = MyPeopleViewController()
-        controller.navigationCoordinator = self
-        controller.stateController = stateController
+    public func prepareMyPeopleViewController() -> UIViewController {
+        let controller = MyPeopleViewController(navigationCoordinator: self, stateController: stateController)
         return controller
     }
     
-    public func prepareGroupDetailViewController(for groupID: Group.ID) -> GroupDetailViewController {
-        let controller = GroupDetailViewController()
-        controller.navigationCoordinator = self
-        controller.stateController = stateController
-        controller.groupID = groupID
+    public func prepareGroupDetailViewController(for groupID: Group.ID) -> UIViewController? {
+        let controller = GroupDetailViewController(navigationCoordinator: self, stateController: stateController, groupID: groupID)
         return controller
     }
     
-    public func prepareContactDetailViewController(forContactIdentifiedBy identifier: String) throws -> CNContactViewController {
+    /// Throws an error if authorization is denied or rethrows any error that is encountered while fetching the contact.
+    public func prepareContactDetailViewController(forContactIdentifiedBy identifier: String) throws -> UIViewController {
         
         guard contactsStoreWrapper.authorizationStatus == .authorized else {
             throw CNError(.authorizationDenied)

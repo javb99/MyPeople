@@ -20,23 +20,25 @@ public protocol SelectionListener: class {
 public class GroupDetailCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
     // MARK: Dependencies
-    public var navigationCoordinator: AppNavigationCoordinator!
-    public var stateController: StateController!
-    public var modalListener: GroupDetailModalListener!
-    public var groupID: Group.ID!
+    public var navigationCoordinator: AppNavigationCoordinator
+    public var stateController: StateController
+    /// Refreshed in getData()
+    public private(set) var group: Group
+    public var groupID: Group.ID
+    
+    public var modalListener: GroupDetailModalListener?
     public var selectionListener: SelectionListener?
     
     // MARK: Instance members
     /// THe configuration of the nav bar before changes are made for this controller.
     private var incomingNavBarConfig: NavBarConfiguration?
     
-    private var addCellDataSource: AddContactDataSource!
-    private var cellsDataSource: PeopleByGroupsDataSource!
+    private var addCellDataSource: AddContactDataSource
+    private var cellsDataSource: PeopleByGroupsDataSource
+    
     
     /// Set in getData()
     public private(set) var membersOfGroup: [Person]!
-    /// Set in getData()
-    public private(set) var group: Group!
     
     public private(set) var selectedIndexes: Set<IndexPath> = []
     
@@ -50,42 +52,35 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     static let cellIdentifier: String = "Cell"
     
     // MARK: Initializers
-    public init() {
+    public init(navigationCoordinator: AppNavigationCoordinator, stateController: StateController, group: Group) {
+        self.navigationCoordinator = navigationCoordinator
+        self.stateController = stateController
+        self.group = group
+        self.groupID = group.identifier
+        
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.itemSize = templateCell.intrinsicContentSize
         flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 6, bottom: 8, right: 6)
         flowLayout.sectionInsetReference = .fromSafeArea
-        
-        super.init(collectionViewLayout: flowLayout)
-        
-        clearsSelectionOnViewWillAppear = false
-        
-        #warning("Fix the add people to group reload.")
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    override public func viewDidLoad() {
-        super.viewDidLoad()
-        
-        guard navigationCoordinator != nil, groupID != nil, modalListener != nil else {
-            fatalError("Dependencies not fulfilled.")
-        }
-        
-        getData()
         
         cellsDataSource = PeopleByGroupsDataSource(sourcingFrom: nil)
         cellsDataSource.stateController = stateController
         addCellDataSource = AddContactDataSource(sourcingFrom: cellsDataSource)
         addCellDataSource.tintColor = group.meta.color
         
-        reloadData()
+        super.init(collectionViewLayout: flowLayout)
+        
+        clearsSelectionOnViewWillAppear = false
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override public func viewDidLoad() {
+        super.viewDidLoad()
+        
+        reloadData(shouldReloadCollectionView: false)
         collectionView.dataSource = addCellDataSource
         
         let bgView = UIView()
@@ -106,6 +101,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     
     /// Loads group and members.
     func getData() {
+        // Refresh the group. The color could have changed.
         guard let group = stateController.groupsTable[groupID] else {
             fatalError("Invalid groupID dependency")
         }
@@ -180,7 +176,6 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     
     public func showContactDetailScreen(for person: Person) {
         let controller = try! navigationCoordinator.prepareContactDetailViewController(forContactIdentifiedBy: person.identifier.rawValue)
-        controller.allowsEditing = false
         controller.view.tintColor = group.meta.color
         navigationController?.navigationBar.barStyle = .default
         navigationController?.navigationBar.tintColor = group.meta.color

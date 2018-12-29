@@ -15,24 +15,36 @@ import MessageUI
 public class GroupDetailViewController: UIViewController, SelectionListener {
     
     // MARK: Dependencies
-    public var navigationCoordinator: AppNavigationCoordinator!
-    public var stateController: StateController!
-    public var groupID: Group.ID!
+    public var navigationCoordinator: AppNavigationCoordinator
+    public var stateController: StateController
+    public var groupID: Group.ID
+    // Filled during init based on the groupID.
+    private var group: Group
     
     // MARK: Instance members
     public var collectionViewController: GroupDetailCollectionViewController
     private var gradientView: GradientView
     private var toolbar: GroupDetailToolbar
     
-    private var modalListener: GroupDetailModalListener!
+    private var modalListener: GroupDetailModalListener
     
     /// Vends the available actions to the toolbar.
     private var toolbarDataSource: GroupDetailToolbarDataSource
     
-    private var group: Group!
     
-    public init() {
-        collectionViewController = GroupDetailCollectionViewController()
+    /// Fails if the groupID doesn't resolve to a Group with the stateController.
+    public init?(navigationCoordinator: AppNavigationCoordinator, stateController: StateController, groupID: Group.ID) {
+        self.navigationCoordinator = navigationCoordinator
+        self.stateController = stateController
+        self.groupID = groupID
+        guard let group = stateController.groupsTable[groupID] else {
+            print("Invalid groupID dependency")
+            return nil
+        }
+        self.group = group
+        modalListener = GroupDetailModalListener(group: group, stateController: stateController)
+        
+        collectionViewController = GroupDetailCollectionViewController(navigationCoordinator: navigationCoordinator, stateController: stateController, group: group)
         gradientView = GradientView(frame: .zero)
         toolbar = GroupDetailToolbar()
         toolbarDataSource = GroupDetailToolbarDataSource()
@@ -47,12 +59,6 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
-        guard let group = stateController.groupsTable[groupID] else {
-            fatalError("Invalid groupID dependency")
-        }
-        self.group = group
-        modalListener = GroupDetailModalListener(group: group, stateController: stateController)
         
         navigationItem.rightBarButtonItem = editButtonItem
         navigationItem.title = group.name

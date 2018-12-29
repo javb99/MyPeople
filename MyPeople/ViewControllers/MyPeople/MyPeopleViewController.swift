@@ -23,10 +23,12 @@ public class MyPeopleViewController: UITableViewController {
     
     // MARK: Dependencies
     
-    var navigationCoordinator: AppNavigationCoordinator!
-    var stateController: StateController!
+    var navigationCoordinator: AppNavigationCoordinator
+    var stateController: StateController
     
-    public init() {
+    public init(navigationCoordinator: AppNavigationCoordinator, stateController: StateController) {
+        self.navigationCoordinator = navigationCoordinator
+        self.stateController = stateController
         super.init(style: .plain)
     }
     
@@ -36,10 +38,6 @@ public class MyPeopleViewController: UITableViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        
-        guard navigationCoordinator != nil, stateController != nil else {
-            fatalError("Dependencies not provided.")
-        }
         
         navigationItem.title = "My People"
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newGroupButtonPressed(_:)))
@@ -136,7 +134,8 @@ public class MyPeopleViewController: UITableViewController {
     
     public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let group = groupCounts[indexPath.row].group
-        let groupDetailController = navigationCoordinator.prepareGroupDetailViewController(for: group.identifier)
+        // Unwrapped because I know this group id is safe. It come from a list of groups from the stateController.
+        let groupDetailController = navigationCoordinator.prepareGroupDetailViewController(for: group.identifier)!
         navigationController?.pushViewController(groupDetailController, animated: true)
     }
     
