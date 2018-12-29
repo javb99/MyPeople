@@ -118,7 +118,10 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
         getData()
         cellsDataSource.groups = [group]
         cellsDataSource.people = [membersOfGroup]
+        let indexes = selectedIndexes
         selectedIndexes = [] // Don't maintain selection because items could have moved.
+        indexes.forEach { selectionListener?.indexPathDeselected($0) }
+        
         if shouldReloadCollectionView { collectionView.reloadData() }
     }
     
