@@ -102,10 +102,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     /// Loads group and members.
     func getData() {
         // Refresh the group. The color could have changed.
-        guard let group = stateController.groupsTable[groupID] else {
-            fatalError("Invalid groupID dependency")
-        }
-        self.group = group
+        group = stateController.group(for: groupID)
         membersOfGroup = stateController.members(ofGroup: groupID)
     }
     

@@ -9,19 +9,72 @@
 import UIKit
 import Contacts
 
+public protocol StateController {
+    
+    // MARK: Getters
+    
+    /// All the group IDs in a constant order. In the future this order will be changeable by the user.
+    var orderedGroupIDs: [Group.ID] { get }
+    
+    /// Return the given groups ordered according to the order of `orderedGroupIDs`.
+    func order<Col: Sequence>(_ groupIDs: Col) -> [Group.ID] where Col.Element == Group.ID
+    
+    /// A non-Optional wrapper for the subscript operation on `groups`.
+    func group(for identifier: Group.ID) -> Group
+    
+    /// A non-Optional wrapper for the subscript operation on `people`. Also tries to fetch the person if there is no person stored in memory for that identifier.
+    func person(for identifier: Person.ID) -> Person
+    
+    /// The group objects for the groupIDs property of the person referenced by the given identifier.
+    func groups(forPerson identifier: Person.ID) -> [Group]
+    
+    /// The person objects for the memberIDs property of the group referenced by the given identifier.
+    func members(ofGroup identifier: Group.ID) -> [Person]
+    
+    // MARK: Operations
+    
+    /// Add the group in the system, in memory, and on disk. Currently only uses the name. In the future the color will be configurable.
+    @discardableResult func createNewGroup(name: String, meta: GroupMeta) -> Group?
+    
+    /// Add the group in the system, in memory, and on disk. Currently only uses the name. In the future the color will be configurable.
+    @discardableResult func createNewGroup(name: String, meta: GroupMeta, members: [Person.ID]) -> Group?
+    
+    /// Add the person to the group. In memory and in the system.
+    func add(person personID: Person.ID, toGroup groupID: Group.ID)
+    
+    /// Add the people to the group. In memory and in the system. A convience wrapper around `add(person:toGroup:)`.
+    func add(people peopleIDs: [Person.ID], toGroup groupID: Group.ID)
+    
+    func remove(person personID: Person.ID, fromGroup groupID: Group.ID)
+    
+    func remove(people peopleIDs: [Person.ID], fromGroup groupID: Group.ID)
+    
+    /// Delete the group from the contact store.
+    func delete(group identifier: Group.ID)
+    
+    /// Create a copy of the group with the same meta and the same name with " - Copy" appended. All the members are added to the copy.
+    @discardableResult func duplicate(group identifier: Group.ID) -> Group?
+    
+    /// Position the movingID directly following the referenceID in orderedGroupIDs.
+    func move(group movingID: Group.ID, after referenceID: Group.ID)
+    
+    /// Save the in-memory state to disk if there are changes to save. Does nothing if `needsToSave` is false.
+    func saveIfNeeded()
+}
+
 /// Manages the Group and Person state of the app.
 /// Holds the authority of the current version of each group and person.
-public class StateController {
+public class GroupStateController: StateController {
     // MARK: Core State
     
     // Store unique identifier to group pairs.
-    private(set) var groupsTable: [Group.ID: Group] = [:]
+    private var groupsTable: [Group.ID: Group] = [:]
     
     // Store unique identifier to person pairs.
-    private(set) var people: [Person.ID: Person] = [:]
+    private var people: [Person.ID: Person] = [:]
     
     /// All the group IDs in a constant order. In the future this order will be changeable by the user.
-    private(set) var orderedGroupIDs: [Group.ID] = []
+    public private(set) var orderedGroupIDs: [Group.ID] = []
     
     // MARK: Other Properties
     
@@ -48,17 +101,15 @@ public class StateController {
         }
     }
     
-    // MARK: - Public Interface -
-    
     // MARK: Getters
     
     /// Return the given groups ordered according to the order of `orderedGroupIDs`.
-    func order<Col: Sequence>(_ groupIDs: Col) -> [Group.ID] where Col.Element == Group.ID {
+    public func order<Col: Sequence>(_ groupIDs: Col) -> [Group.ID] where Col.Element == Group.ID {
         return groupIDs.sorted { orderedGroupIDs.does($0, appearBefore: $1) }
     }
     
     /// A non-Optional wrapper for the subscript operation on `groups`.
-    func group(for identifier: Group.ID) -> Group {
+    public func group(for identifier: Group.ID) -> Group {
         guard let group = groupsTable[identifier] else {
             fatalError("No group identified by groupID")
         }
@@ -66,7 +117,7 @@ public class StateController {
     }
     
     /// A non-Optional wrapper for the subscript operation on `people`. Also tries to fetch the person if there is no person stored in memory for that identifier.
-    func person(for identifier: Person.ID) -> Person {
+    public func person(for identifier: Person.ID) -> Person {
         if let person = people[identifier] {
             return person
         } else {
@@ -81,12 +132,12 @@ public class StateController {
     }
     
     /// The group objects for the groupIDs property of the person referenced by the given identifier.
-    func groups(forPerson identifier: Person.ID) -> [Group] {
+    public func groups(forPerson identifier: Person.ID) -> [Group] {
         return person(for: identifier).groupIDs.compactMap { groupsTable[$0] }
     }
     
     /// The person objects for the memberIDs property of the group referenced by the given identifier.
-    func members(ofGroup identifier: Group.ID) -> [Person] {
+    public func members(ofGroup identifier: Group.ID) -> [Person] {
         return group(for: identifier).memberIDs.compactMap { people[$0] }
     }
     
@@ -94,7 +145,7 @@ public class StateController {
     
     /// Add the group in the system, in memory, and on disk. Currently only uses the name. In the future the color will be configurable.
     @discardableResult
-    public func createNewGroup(name: String, meta: GroupMeta, members: [Person.ID] = []) -> Group? {
+    public func createNewGroup(name: String, meta: GroupMeta, members: [Person.ID]) -> Group? {
         do {
             // Add to system contacts store.
             let cnGroup = try contactStore.addGroup(named: name)
@@ -112,6 +163,12 @@ public class StateController {
             print("Failed to create new group: \(error.localizedDescription)")
             return nil
         }
+    }
+    
+    /// Add the group in the system, in memory, and on disk. Currently only uses the name. In the future the color will be configurable.
+    @discardableResult
+    public func createNewGroup(name: String, meta: GroupMeta) -> Group? {
+        return createNewGroup(name: name, meta: meta, members: [])
     }
     
     /// Add the person to the group. In memory and in the system.

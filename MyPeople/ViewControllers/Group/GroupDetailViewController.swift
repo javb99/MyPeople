@@ -37,11 +37,7 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
         self.navigationCoordinator = navigationCoordinator
         self.stateController = stateController
         self.groupID = groupID
-        guard let group = stateController.groupsTable[groupID] else {
-            print("Invalid groupID dependency")
-            return nil
-        }
-        self.group = group
+        group = stateController.group(for: groupID)
         modalListener = GroupDetailModalListener(group: group, stateController: stateController)
         
         collectionViewController = GroupDetailCollectionViewController(navigationCoordinator: navigationCoordinator, stateController: stateController, group: group)

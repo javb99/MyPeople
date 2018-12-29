@@ -24,7 +24,7 @@ public class MyPeopleNavigationCoordinator: AppNavigationCoordinator {
     
     public init() {
         contactStore = ContactStore()
-        stateController = StateController(contactStore: contactStore)
+        stateController = GroupStateController(contactStore: contactStore)
     }
     
     public func prepareMyPeopleViewController() -> UIViewController {
