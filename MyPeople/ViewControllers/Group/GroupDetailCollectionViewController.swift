@@ -11,6 +11,12 @@ import CocoaTouchAdditions
 import Contacts
 import ContactsUI
 
+/// An object that is notified of changes to the selection of a table view, collection view, or other IndexPath based view.
+public protocol SelectionListener: class {
+    func indexPathSelected(_ indexPath: IndexPath)
+    func indexPathDeselected(_ indexPath: IndexPath)
+}
+
 public class GroupDetailCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
     // MARK: Dependencies
@@ -18,6 +24,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     public var stateController: StateController!
     public var modalListener: GroupDetailModalListener!
     public var groupID: Group.ID!
+    public var selectionListener: SelectionListener?
     
     // MARK: Instance members
     /// THe configuration of the nav bar before changes are made for this controller.
@@ -173,11 +180,13 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if isEditing {
             selectedIndexes.insert(indexPath)
+            selectionListener?.indexPathSelected(indexPath)
         }
     }
     
     public override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         selectedIndexes.remove(indexPath)
+        selectionListener?.indexPathDeselected(indexPath)
     }
     
     public override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {

@@ -25,6 +25,7 @@ public class AssetCatalog {
         case emailEnvelope = "emailButton"
         case addButton = "addButton"
         case people = "people"
+        case removeButton = "removeButton"
     }
     
     public static func color(_ identifier: Color, for traitCollection: UITraitCollection? = nil) -> UIColor {

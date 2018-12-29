@@ -18,7 +18,7 @@
 		5C224CEB2155F22D00AE6735 /* CocoaTouchAdditions.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5C224CE02155EB8E00AE6735 /* CocoaTouchAdditions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5C224CEE21560DB500AE6735 /* StateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C224CED21560DB500AE6735 /* StateController.swift */; };
 		5C224CEF21560DB500AE6735 /* StateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C224CED21560DB500AE6735 /* StateController.swift */; };
-		5C352F8F219B509E000FE55F /* ActionButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C352F8E219B509E000FE55F /* ActionButtonsView.swift */; };
+		5C352F8F219B509E000FE55F /* GroupDetailToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C352F8E219B509E000FE55F /* GroupDetailToolbar.swift */; };
 		5C3D6BA6214447480094FDC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BA5214447480094FDC2 /* AppDelegate.swift */; };
 		5C3D6BB02144474A0094FDC2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C3D6BAE2144474A0094FDC2 /* LaunchScreen.storyboard */; };
 		5C3D6BBB2144474A0094FDC2 /* MyPeopleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BBA2144474A0094FDC2 /* MyPeopleTests.swift */; };
@@ -36,6 +36,8 @@
 		5C3D6C1421444C820094FDC2 /* PersonProfilePictureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BF621444A710094FDC2 /* PersonProfilePictureView.swift */; };
 		5C3D6C1621444C8D0094FDC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C3D6BAC2144474A0094FDC2 /* Assets.xcassets */; };
 		5C3D6C1A214455560094FDC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C3D6BAC2144474A0094FDC2 /* Assets.xcassets */; };
+		5C61730521D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C61730421D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift */; };
+		5C61730621D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C61730421D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift */; };
 		5C849F5E21C98781000F35EA /* GroupDetailModalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB8EC1821BC603A00B294B4 /* GroupDetailModalListener.swift */; };
 		5CB2A8B9214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */; };
 		5CB2A8BA214DA10600DF4704 /* ContactStoreWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */; };
@@ -47,7 +49,7 @@
 		5CD4212F2155C21E00CAC397 /* AppNavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212E2155C21E00CAC397 /* AppNavigationCoordinator.swift */; };
 		5CD421302155C21E00CAC397 /* AppNavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212E2155C21E00CAC397 /* AppNavigationCoordinator.swift */; };
 		5CD8393721A26FA10060C85E /* AddContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD8393621A26FA10060C85E /* AddContactCell.swift */; };
-		5CD8394121A611EF0060C85E /* ActionButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C352F8E219B509E000FE55F /* ActionButtonsView.swift */; };
+		5CD8394121A611EF0060C85E /* GroupDetailToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C352F8E219B509E000FE55F /* GroupDetailToolbar.swift */; };
 		5CD8394221A611F20060C85E /* AddContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD8393621A26FA10060C85E /* AddContactCell.swift */; };
 		5CD8394821A8925E0060C85E /* GroupDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD8394721A8925E0060C85E /* GroupDetailViewController.swift */; };
 		5CD8394921A8925E0060C85E /* GroupDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD8394721A8925E0060C85E /* GroupDetailViewController.swift */; };
@@ -85,7 +87,7 @@
 		5C224CE02155EB8E00AE6735 /* CocoaTouchAdditions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CocoaTouchAdditions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C224CE62155EFBE00AE6735 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		5C224CED21560DB500AE6735 /* StateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateController.swift; sourceTree = "<group>"; };
-		5C352F8E219B509E000FE55F /* ActionButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButtonsView.swift; sourceTree = "<group>"; };
+		5C352F8E219B509E000FE55F /* GroupDetailToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailToolbar.swift; sourceTree = "<group>"; };
 		5C3D6BA2214447480094FDC2 /* MyPeople.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyPeople.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C3D6BA5214447480094FDC2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5C3D6BAC2144474A0094FDC2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 		5C3D6C0521444B970094FDC2 /* MyPeoplePlaygroundAccessible.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MyPeoplePlaygroundAccessible.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C3D6C0721444B970094FDC2 /* MyPeoplePlaygroundAccessible.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyPeoplePlaygroundAccessible.h; sourceTree = "<group>"; };
 		5C3D6C0821444B970094FDC2 /* PlaygroundAccesibleFrameworkInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PlaygroundAccesibleFrameworkInfo.plist; sourceTree = "<group>"; };
+		5C61730421D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailToolbarDataSource.swift; sourceTree = "<group>"; };
 		5CB2A8B8214DA10600DF4704 /* ContactStoreWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactStoreWrapper.swift; sourceTree = "<group>"; };
 		5CB8EC1821BC603A00B294B4 /* GroupDetailModalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailModalListener.swift; sourceTree = "<group>"; };
 		5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleByGroupsDataSource.swift; sourceTree = "<group>"; };
@@ -262,9 +265,10 @@
 		5C849F5F21C997F9000F35EA /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				5C352F8E219B509E000FE55F /* ActionButtonsView.swift */,
+				5C352F8E219B509E000FE55F /* GroupDetailToolbar.swift */,
 				5CD8393621A26FA10060C85E /* AddContactCell.swift */,
 				5C3D6BFC21444AF30094FDC2 /* PersonCell.swift */,
+				5C61730421D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -415,6 +419,7 @@
 				5CB8EC1921BC603A00B294B4 /* GroupDetailModalListener.swift in Sources */,
 				5C3D6BFF21444B000094FDC2 /* GroupCell.swift in Sources */,
 				5CD8394821A8925E0060C85E /* GroupDetailViewController.swift in Sources */,
+				5C61730521D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift in Sources */,
 				5C224CEE21560DB500AE6735 /* StateController.swift in Sources */,
 				5C3D6BA6214447480094FDC2 /* AppDelegate.swift in Sources */,
 				5C3D6BF521444A140094FDC2 /* Group.swift in Sources */,
@@ -429,7 +434,7 @@
 				5C224CE72155EFBE00AE6735 /* UIColor.swift in Sources */,
 				5C1BB0282159E5FB00AFB591 /* Tagged.swift in Sources */,
 				5C3D6BFD21444AF30094FDC2 /* PersonCell.swift in Sources */,
-				5C352F8F219B509E000FE55F /* ActionButtonsView.swift in Sources */,
+				5C352F8F219B509E000FE55F /* GroupDetailToolbar.swift in Sources */,
 				5CD4212F2155C21E00CAC397 /* AppNavigationCoordinator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -449,6 +454,7 @@
 				5C1BB02C215F096300AFB591 /* UIView.swift in Sources */,
 				5C3D6C0F21444C820094FDC2 /* Person.swift in Sources */,
 				5C1BB0292159E5FB00AFB591 /* Tagged.swift in Sources */,
+				5C61730621D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift in Sources */,
 				5CD421302155C21E00CAC397 /* AppNavigationCoordinator.swift in Sources */,
 				5C849F5E21C98781000F35EA /* GroupDetailModalListener.swift in Sources */,
 				5CD4212D2155C02700CAC397 /* GroupDetailCollectionViewController.swift in Sources */,
@@ -457,7 +463,7 @@
 				5C3D6C1121444C820094FDC2 /* PersonCell.swift in Sources */,
 				5C224CE82155EFBE00AE6735 /* UIColor.swift in Sources */,
 				5C3D6C1221444C820094FDC2 /* GroupCell.swift in Sources */,
-				5CD8394121A611EF0060C85E /* ActionButtonsView.swift in Sources */,
+				5CD8394121A611EF0060C85E /* GroupDetailToolbar.swift in Sources */,
 				5C224CEF21560DB500AE6735 /* StateController.swift in Sources */,
 				5CD8394921A8925E0060C85E /* GroupDetailViewController.swift in Sources */,
 				5C3D6C1321444C820094FDC2 /* MyPeopleViewController.swift in Sources */,

@@ -12,7 +12,7 @@ import MessageUI
 
 
 /// Manages the action bar above the collection view along with the naviagation bar.
-public class GroupDetailViewController: UIViewController {
+public class GroupDetailViewController: UIViewController, SelectionListener {
     
     // MARK: Dependencies
     public var navigationCoordinator: AppNavigationCoordinator!
@@ -22,15 +22,21 @@ public class GroupDetailViewController: UIViewController {
     // MARK: Instance members
     public var collectionViewController: GroupDetailCollectionViewController
     private var gradientView: GradientView
-    private var actionButtonsView: ActionButtonsView
+    private var toolbar: GroupDetailToolbar
     
     private var modalListener: GroupDetailModalListener!
+    
+    /// Vends the available actions to the toolbar.
+    private var toolbarDataSource: GroupDetailToolbarDataSource
+    
     private var group: Group!
     
     public init() {
         collectionViewController = GroupDetailCollectionViewController()
         gradientView = GradientView(frame: .zero)
-        actionButtonsView = ActionButtonsView(frame: .zero)
+        toolbar = GroupDetailToolbar()
+        toolbarDataSource = GroupDetailToolbarDataSource()
+        toolbar.dataSource = toolbarDataSource
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -76,12 +82,13 @@ public class GroupDetailViewController: UIViewController {
     
     /// Configure the action buttons view's attributes and add it as a subview.
     func addActionButtons() {
-        let weakActionButtonPressed: (GroupAction)->() = { [weak self] (action: GroupAction) in
+        let weakActionButtonPressed: (Action)->() = { [weak self] action in
             self?.actionButtonPressed(action: action)
         }
-        actionButtonsView.actionPressedCallback = weakActionButtonPressed
-        actionButtonsView.buttonTint = group.meta.color
-        view.addSubview(actionButtonsView)
+        toolbar.buttonPressedCallback = weakActionButtonPressed
+        toolbar.buttonTint = group.meta.color
+        toolbar.reloadButtons()
+        view.addSubview(toolbar)
     }
     
     /// Fill dependencies of the collectionViewController
@@ -90,6 +97,7 @@ public class GroupDetailViewController: UIViewController {
         collectionViewController.stateController = stateController
         collectionViewController.groupID = groupID
         collectionViewController.modalListener = modalListener
+        collectionViewController.selectionListener = self
         
         addChild(collectionViewController)
         view.addSubview(collectionViewController.view)
@@ -97,7 +105,7 @@ public class GroupDetailViewController: UIViewController {
     
     /// Set and activate the layout constraints. Views should already be added as subviews.
     func addConstraints() {
-        guard collectionViewController.view.superview === view, gradientView.superview === view, actionButtonsView.superview === view else {
+        guard collectionViewController.view.superview === view, gradientView.superview === view, toolbar.superview === view else {
             fatalError("Subviews were not added before constraints.")
         }
         
@@ -114,11 +122,11 @@ public class GroupDetailViewController: UIViewController {
         gradientView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         gradientView.bottomAnchor.constraint(equalTo: collectionViewController.view.topAnchor).isActive = true
         
-        actionButtonsView.usesAutoLayout()
-        actionButtonsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        actionButtonsView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        toolbar.usesAutoLayout()
+        toolbar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        toolbar.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         let spaceBelowActionButtons: CGFloat = 6
-        actionButtonsView.bottomAnchor.constraint(equalTo: collectionViewController.view.topAnchor, constant: -spaceBelowActionButtons).isActive = true
+        toolbar.bottomAnchor.constraint(equalTo: collectionViewController.view.topAnchor, constant: -spaceBelowActionButtons).isActive = true
     }
     
     func navBarConfig() -> NavBarConfiguration {
@@ -137,9 +145,25 @@ public class GroupDetailViewController: UIViewController {
         
         // Allow the collection view to show the add and remove buttons.
         collectionViewController.setEditing(editing, animated: animated)
+        
+        // Change the tool bar.
+        toolbarDataSource.isEditing = editing
+        toolbar.reloadButtons()
     }
     
-    public func actionButtonPressed(action: GroupAction) {
+    public func indexPathSelected(_ indexPath: IndexPath) {
+        // Enable any buttons that rely on having a selection.
+        toolbarDataSource.hasSelection = !collectionViewController.selectedIndexes.isEmpty
+        toolbar.reloadButtons()
+    }
+    
+    public func indexPathDeselected(_ indexPath: IndexPath) {
+        // Disable any buttons that rely on having a selection.
+        toolbarDataSource.hasSelection = !collectionViewController.selectedIndexes.isEmpty
+        toolbar.reloadButtons()
+    }
+    
+    public func actionButtonPressed(action: Action) {
         switch action {
         case .text:
             let controller = MFMessageComposeViewController()
@@ -153,6 +177,10 @@ public class GroupDetailViewController: UIViewController {
             let identifiers = collectionViewController.people.compactMap { $0.email }
             controller.setToRecipients(identifiers.map { $0.rawValue })
             present(controller, animated: true, completion: nil)
+        case .remove:
+            #warning("Remove people from group")
+        case .newGroup:
+            #warning("Create new group from selection")
         }
     }
 }

@@ -65,23 +65,33 @@ public class GroupCell: UITableViewCell {
         countLabel.usesAutoLayout()
         
         label.leadingAnchor.constraint(equalToSystemSpacingAfter: contentView.safeAreaLayoutGuide.leadingAnchor, multiplier: 1.0).isActive = true
-        label.topAnchor.constraint(equalTo: contentView.topAnchor, constant: GroupCell.topConstant).isActive = true
+        let topConstantConstraint = label.topAnchor.constraint(equalTo: contentView.topAnchor, constant: GroupCell.topConstant)
+        topConstantConstraint.isActive = true
         
-        bottomLine.topAnchor.constraint(equalToSystemSpacingBelow: label.lastBaselineAnchor, multiplier: 0.5).isActive = true
+        let labelToLineVert = bottomLine.topAnchor.constraint(equalToSystemSpacingBelow: label.lastBaselineAnchor, multiplier: 0.5)
+        labelToLineVert.isActive = true
         bottomLine.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 1.0).isActive = true
         bottomLine.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
-        bottomLine.heightAnchor.constraint(equalToConstant: 2).isActive = true
-        bottomLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
         
-        peopleIconView.topAnchor.constraint(equalTo: countLabel.topAnchor).isActive = true
-        peopleIconView.bottomAnchor.constraint(equalTo: countLabel.bottomAnchor).isActive = true
+        let lineHeightConstraint = bottomLine.heightAnchor.constraint(equalToConstant: 2)
+        lineHeightConstraint.priority = .init(999) // The 999 priority avoids errors when animating the deletion.
+        lineHeightConstraint.isActive = true
+        let lineBottomConstraint = bottomLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        lineBottomConstraint.priority = .init(999) // The 999 priority avoids errors when animating the deletion.
+        lineBottomConstraint.isActive = true
+        
+        let alignTopIconToCount = peopleIconView.topAnchor.constraint(equalTo: countLabel.topAnchor)
+        alignTopIconToCount.isActive = true
+        let alignBottomIconToCount = peopleIconView.bottomAnchor.constraint(equalTo: countLabel.bottomAnchor)
+        alignBottomIconToCount.isActive = true
         peopleIconView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor).isActive = true
         peopleIconView.setContentCompressionResistancePriority(UILayoutPriority(250), for: .vertical)
         countLabel.setContentHuggingPriority(UILayoutPriority(251), for: .vertical)
         
         countLabel.leadingAnchor.constraint(greaterThanOrEqualToSystemSpacingAfter: label.trailingAnchor, multiplier: 1.0).isActive = true
         peopleIconView.leadingAnchor.constraint(equalTo: countLabel.trailingAnchor, constant: 4).isActive = true
-        countLabel.lastBaselineAnchor.constraint(equalTo: label.lastBaselineAnchor).isActive = true
+        let alignBaselineCountToLabel = countLabel.lastBaselineAnchor.constraint(equalTo: label.lastBaselineAnchor)
+        alignBaselineCountToLabel.isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {

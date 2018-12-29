@@ -45,8 +45,11 @@ public class MyPeopleViewController: UITableViewController {
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newGroupButtonPressed(_:)))
         navigationItem.setRightBarButton(addButton, animated: false)
         
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 46.7
+        
         tableView.separatorStyle = .none
-        tableView.contentInsetAdjustmentBehavior = .scrollableAxes
+        tableView.contentInsetAdjustmentBehavior = .always
         tableView.register(GroupCell.self, forCellReuseIdentifier: MyPeopleViewController.cellIdentifier)
     }
     
@@ -157,7 +160,7 @@ public class MyPeopleViewController: UITableViewController {
         let group = groupCounts[indexPath.row].group
         stateController.delete(group: group.identifier)
         reloadDataSource(reloadDisplay: false)
-        tableView.deleteRows(at: [indexPath], with: .automatic)
+        tableView.deleteRows(at: [indexPath], with: .none)
     }
     
     public func duplicateGroup(at indexPath: IndexPath) {
