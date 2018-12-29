@@ -65,12 +65,19 @@ public class StateController {
         return group
     }
     
-    /// A non-Optional wrapper for the subscript operation on `people`.
+    /// A non-Optional wrapper for the subscript operation on `people`. Also tries to fetch the person if there is no person stored in memory for that identifier.
     func person(for identifier: Person.ID) -> Person {
-        guard let person = people[identifier] else {
-            fatalError("No person identified by personID")
+        if let person = people[identifier] {
+            return person
+        } else {
+            print("Person wasn't loaded in memory. Fetching them.")
+            // Needs two stage unwrap because the it is a nested optional.
+            guard let optionalPerson = try? contactsStoreWrapper.fetchPerson(identifiedBy: identifier), let person = optionalPerson else {
+                fatalError("Unable to fetch the person to add them to a group. This shouldn't happen because the person was selected from a list of contacts.")
+            }
+            rememberPerson(person)
+            return person
         }
-        return person
     }
     
     /// The group objects for the groupIDs property of the person referenced by the given identifier.
@@ -110,18 +117,7 @@ public class StateController {
     /// Add the person to the group. In memory and in the system.
     public func add(person personID: Person.ID, toGroup groupID: Group.ID) {
         do {
-            var person: Person
-            if let p = people[personID] {
-                person = p
-                
-            } else {
-                print("Person wasn't loaded in memory. Fetching them.")
-                guard let p = try contactsStoreWrapper.fetchPerson(identifiedBy: personID) else {
-                    fatalError("Unable to fetch the person to add them to a group. This shouldn't happen because the person was selected from a list of contacts.")
-                }
-                rememberPerson(p)
-                person = p
-            }
+            let person = self.person(for: personID)
             // Creates the relationship in the system contact store.
             try contactsStoreWrapper.addContact(person, to: group(for: groupID))
             // Create the relationship in memory.
@@ -137,7 +133,25 @@ public class StateController {
             add(person: person, toGroup: groupID)
         }
     }
+
+    public func remove(person personID: Person.ID, fromGroup groupID: Group.ID) {
+        // Remove the relationship in memory.
+        unlink(person: personID, andGroup: groupID)
+        do {
+            let person = self.person(for: personID)
+            // Remove the relationship in the system contact store.
+            try contactsStoreWrapper.remove(person, from: group(for: groupID))
+        } catch {
+            print("Failed to add person")
+        }
+    }
     
+    public func remove(people peopleIDs: [Person.ID], fromGroup groupID: Group.ID) {
+        for person in peopleIDs {
+            remove(person: person, fromGroup: groupID)
+        }
+    }
+
     /// Delete the group from the contact store.
     public func delete(group identifier: Group.ID) {
         // Remove from the system contacts store.
@@ -198,7 +212,7 @@ public class StateController {
     }
     
     /// Removes the in-memory link between the person and the group. Disconnects both directions.
-    private func remove(person personID: Person.ID, fromGroup groupID: Group.ID) {
+    private func unlink(person personID: Person.ID, andGroup groupID: Group.ID) {
         /// Remove the person from the group.
         guard let personIndex = self.group(for: groupID).memberIDs.firstIndex(of: personID) else {
             fatalError("Given person not a member of given group.")

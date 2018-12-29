@@ -114,12 +114,19 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     }
     
     /// Loads data and passes it to the data source.
-    func reloadData() {
+    func reloadData(shouldReloadCollectionView: Bool = true) {
         getData()
         cellsDataSource.groups = [group]
         cellsDataSource.people = [membersOfGroup]
         selectedIndexes = [] // Don't maintain selection because items could have moved.
-        collectionView.reloadData()
+        if shouldReloadCollectionView { collectionView.reloadData() }
+    }
+    
+    func removeSelectedItems() {
+        // Capture the selection before it is cleared in reloadData()
+        let removedIndexPaths = [IndexPath](selectedIndexes)
+        reloadData(shouldReloadCollectionView: false)
+        collectionView.deleteItems(at: removedIndexPaths)
     }
     
     public override func setEditing(_ editing: Bool, animated: Bool) {
@@ -201,11 +208,6 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
         if !coordinator.targetTransform.isIdentity {
             collectionViewLayout.invalidateLayout()
         }
-    }
-    
-    /// Called when the stateController's state is changed. We use this to reload the collection view.
-    @objc func appStateDidChange() {
-        reloadData()
     }
     
     public func addMembersButtonPressed() {

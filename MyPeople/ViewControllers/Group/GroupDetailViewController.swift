@@ -185,7 +185,7 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
             controller.setToRecipients(emails.map { $0.rawValue })
             present(controller, animated: true, completion: nil)
         case .remove:
-            #warning("Remove people from group")
+            displayRemoveConfirmation()
         case .newGroup:
             guard let newGroup = stateController.createNewGroup(name: "Selection of \(group.name)", meta: GroupMeta(color: AssetCatalog.Color.groupColors.randomElement()!), members:  collectionViewController.selectedPeople) else {
                 print("Failed to create new group from selection")
@@ -195,5 +195,25 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
             stateController.move(group: newGroup.identifier, after: group.identifier)
             navigationController?.popViewController(animated: true)
         }
+    }
+    
+    /// Display an alert controller that allows the user to cancel a remove operation or allow it to continue.
+    func displayRemoveConfirmation() {
+        let selectedCount = collectionViewController.selectedPeople.count
+        let suffix = selectedCount == 1 ? "" : "s"
+        let alertView = UIAlertController(title: "Remove \(selectedCount) contact\(suffix)?", message: "The contacts themselves will remain intact.", preferredStyle: .alert)
+        let yes = UIAlertAction(title: "Yes", style: .destructive) { [weak self] (action)  in
+            guard let self = self else { return }
+            self.removeMembersFromGroup()
+        }
+        let no = UIAlertAction(title: "No", style: .cancel) {_ in }
+        alertView.addAction(yes)
+        alertView.addAction(no)
+        present(alertView, animated: true, completion: nil)
+    }
+    
+    func removeMembersFromGroup() {
+        stateController.remove(people: collectionViewController.selectedPeople, fromGroup: groupID)
+        collectionViewController.removeSelectedItems()
     }
 }

@@ -106,4 +106,10 @@ public class ContactStoreWrapper {
         saveRequest.addMember(person.cnContact, to: group.cnGroup)
         try backingStore.execute(saveRequest)
     }
+    
+    public func remove(_ person: Person, from group: Group) throws {
+        let saveRequest = CNSaveRequest()
+        saveRequest.removeMember(person.cnContact, from: group.cnGroup)
+        try backingStore.execute(saveRequest)
+    }
 }
