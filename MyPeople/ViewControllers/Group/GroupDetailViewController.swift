@@ -163,19 +163,26 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
         toolbar.reloadButtons()
     }
     
+    /// Which members should be contacted using the action buttons.
+    func membersToContact() -> [Person] {
+        let allMembers: [Person] = collectionViewController.membersOfGroup
+        let selectedPeople = collectionViewController.selectedPeople.map { stateController.person(for: $0) }
+        return isEditing ? selectedPeople : allMembers
+    }
+    
     public func actionButtonPressed(action: Action) {
         switch action {
         case .text:
             let controller = MFMessageComposeViewController()
             controller.messageComposeDelegate = modalListener
-            let identifiers = collectionViewController.membersOfGroup.compactMap { $0.phoneNumber }
-            controller.recipients = identifiers.map { $0.rawValue }
+            let phoneNumbers = membersToContact().compactMap { $0.phoneNumber }
+            controller.recipients = phoneNumbers.map { $0.rawValue }
             present(controller, animated: true, completion: nil)
         case .email:
             let controller = MFMailComposeViewController()
             controller.mailComposeDelegate = modalListener
-            let identifiers = collectionViewController.membersOfGroup.compactMap { $0.email }
-            controller.setToRecipients(identifiers.map { $0.rawValue })
+            let emails = membersToContact().compactMap { $0.email }
+            controller.setToRecipients(emails.map { $0.rawValue })
             present(controller, animated: true, completion: nil)
         case .remove:
             #warning("Remove people from group")
