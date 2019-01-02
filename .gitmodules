@@ -1,0 +1,3 @@
+[submodule "CocoaTouchAdditions"]
+	path = CocoaTouchAdditions
+	url = git@github.com:javb99/CocoaTouchAdditions.git
