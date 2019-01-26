@@ -33,25 +33,6 @@ public class AssetCatalog {
     }
     
     public enum Color: String, Codable {
-//        case amaranth
-//        case aqua
-//        case funGreen
-//        case purplePizzazz
-//        case ripeLemon
-//        case royalPurple
-//        case scienceBlue
-        //public static let groupColors: [Color] = [amaranth, aqua, funGreen, purplePizzazz, ripeLemon, royalPurple, scienceBlue]
-        
-//        case blue
-//        case green
-//        case orange
-//        case pink
-//        case purple
-//        case red
-//        case teal
-//        case yellow
-        //public static let groupColors: [Color] = [blue, green, orange, pink, purple, red, teal, yellow]
-        
         case carnation
         case darkLimeGreen
         case lightGrassGreen

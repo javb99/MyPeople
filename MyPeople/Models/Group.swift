@@ -64,18 +64,5 @@ public struct GroupMeta {
     }
 }
 
-extension GroupMeta: Codable {
-    enum CodingKeys: String, CodingKey {
-        case colorName
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let keyedDecoder = try decoder.container(keyedBy: CodingKeys.self)
-        colorName = try keyedDecoder.decode(AssetCatalog.Color.self, forKey: .colorName)
-    }
-    
-    public func encode(into coder: Encoder) throws {
-        var keyedEncoder = coder.container(keyedBy: CodingKeys.self)
-        try keyedEncoder.encode(colorName, forKey: .colorName)
-    }
-}
+/// Synthesize conformance to Codable with the colorName field.
+extension GroupMeta: Codable {}

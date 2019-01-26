@@ -10,7 +10,7 @@ import UIKit
 
 public class PersonCell: UICollectionViewCell {
     
-    private let profileCircle: PersonProfilePictureView
+    private let profileCircle: PersonPictureView
     private let nameLabel: UILabel
     
     public var viewModel: ViewModel {
@@ -34,7 +34,7 @@ public class PersonCell: UICollectionViewCell {
     private static let profileCircleWidth: CGFloat = 60
     
     public override init(frame: CGRect) {
-        profileCircle = PersonProfilePictureView(frame: .init(squareOfLength: 60))
+        profileCircle = PersonPictureView(frame: .init(squareOfLength: 60))
         nameLabel = UILabel()
         viewModel = ViewModel()
         super.init(frame: frame)

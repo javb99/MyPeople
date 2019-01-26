@@ -1,5 +1,5 @@
 //
-//  PersonProfilePictureView.swift
+//  PersonPictureView.swift
 //  MyPeople
 //
 //  Created by Joseph Van Boxtel on 9/8/18.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class PersonProfilePictureView: UIView {
+public class PersonPictureView: UIView {
     
     private var circlesParentLayer: CALayer
     private var circlesView: UIView

@@ -17,26 +17,11 @@ public protocol SelectionListener: class {
     func indexPathDeselected(_ indexPath: IndexPath)
 }
 
-public protocol PeopleViewControllerEditDelegate: class {
-    func didRemovePerson(_ person: Person)
-    func didAddPerson(_ person: Person)
-}
-
 /// A class that displays People and allows the user to drill down into the detail page for each of them. When in editing mode, an add button is displayed. Use the contactPickerDelegate to be informed of new people that should be added.
 public class PeopleViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
     // MARK: Dependencies
     public var navigationCoordinator: AppNavigationCoordinator
-    //public var stateController: StateController
-    
-    /// Refreshed in getData()
-//    public private(set) var group: Group? {
-//        didSet {
-//            groupID = group?.identifier
-//            updateGroupColor()
-//        }
-//    }
-    //public var groupID: Group.ID?
     
     /// The delegate that is assigned to be informed of new contacts to add.
     public var contactPickerDelegate: CNContactPickerDelegate?
@@ -140,7 +125,6 @@ public class PeopleViewController: UICollectionViewController, UICollectionViewD
     public func removeSelectedItems() {
         // Capture the selection before it is cleared in reloadData()
         let removedIndexPaths = [IndexPath](selectedIndexes)
-        //reloadData(shouldReloadCollectionView: false)
         collectionView.deleteItems(at: removedIndexPaths)
     }
     
@@ -225,7 +209,6 @@ public class PeopleViewController: UICollectionViewController, UICollectionViewD
     }
     
     public func addMembersButtonPressed() {
-        print("Add members")
         let picker = CNContactPickerViewController()
         picker.delegate = contactPickerDelegate
         picker.predicateForSelectionOfProperty = nil
