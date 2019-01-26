@@ -107,7 +107,7 @@ public class PeopleViewController: UICollectionViewController, UICollectionViewD
         
         updateTintColor()
         
-        collectionView.register(PersonCell.self, forCellWithReuseIdentifier: MyPeopleViewController.cellIdentifier)
+        collectionView.register(PersonCell.self, forCellWithReuseIdentifier: GroupsViewController.cellIdentifier)
         collectionView.register(AddContactDataSource.cellClass, forCellWithReuseIdentifier: AddContactDataSource.addCellIdentifier)
     }
     

@@ -36,7 +36,7 @@ public class PeopleByGroupsDataSource: ChainableDataSource {
     
     public override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let person = self.person(at: indexPath)
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyPeopleViewController.cellIdentifier, for: indexPath) as! PersonCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GroupsViewController.cellIdentifier, for: indexPath) as! PersonCell
         
         cell.viewModel = .init(person: person, colors: colors(forItemAt: indexPath))
         

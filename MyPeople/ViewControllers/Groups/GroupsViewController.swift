@@ -25,7 +25,7 @@ extension NavBarConfiguration {
     }
 }
 
-public class MyPeopleViewController: UITableViewController {
+public class GroupsViewController: UITableViewController {
     
     // MARK: Static Members
     
@@ -62,7 +62,7 @@ public class MyPeopleViewController: UITableViewController {
         
         tableView.separatorStyle = .none
         tableView.contentInsetAdjustmentBehavior = .always
-        tableView.register(GroupCell.self, forCellReuseIdentifier: MyPeopleViewController.cellIdentifier)
+        tableView.register(GroupCell.self, forCellReuseIdentifier: GroupsViewController.cellIdentifier)
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -128,7 +128,7 @@ public class MyPeopleViewController: UITableViewController {
     
     public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: MyPeopleViewController.cellIdentifier) as? GroupCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: GroupsViewController.cellIdentifier) as? GroupCell else {
             fatalError("Could not deque a group cell.")
         }
         

@@ -28,7 +28,7 @@ public class MyPeopleNavigationCoordinator: AppNavigationCoordinator {
     }
     
     public func prepareMyPeopleViewController() -> UIViewController {
-        let controller = MyPeopleViewController(navigationCoordinator: self, stateController: stateController)
+        let controller = GroupsViewController(navigationCoordinator: self, stateController: stateController)
         return controller
     }
     

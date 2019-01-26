@@ -25,14 +25,14 @@
 		5C3D6BF321444A070094FDC2 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BF221444A070094FDC2 /* Person.swift */; };
 		5C3D6BF521444A140094FDC2 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BF421444A140094FDC2 /* Group.swift */; };
 		5C3D6BF721444A710094FDC2 /* PersonProfilePictureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BF621444A710094FDC2 /* PersonProfilePictureView.swift */; };
-		5C3D6BFB21444AE30094FDC2 /* MyPeopleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BFA21444AE30094FDC2 /* MyPeopleViewController.swift */; };
+		5C3D6BFB21444AE30094FDC2 /* GroupsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BFA21444AE30094FDC2 /* GroupsViewController.swift */; };
 		5C3D6BFD21444AF30094FDC2 /* PersonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BFC21444AF30094FDC2 /* PersonCell.swift */; };
 		5C3D6BFF21444B000094FDC2 /* GroupCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BFE21444B000094FDC2 /* GroupCell.swift */; };
 		5C3D6C0F21444C820094FDC2 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BF221444A070094FDC2 /* Person.swift */; };
 		5C3D6C1021444C820094FDC2 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BF421444A140094FDC2 /* Group.swift */; };
 		5C3D6C1121444C820094FDC2 /* PersonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BFC21444AF30094FDC2 /* PersonCell.swift */; };
 		5C3D6C1221444C820094FDC2 /* GroupCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BFE21444B000094FDC2 /* GroupCell.swift */; };
-		5C3D6C1321444C820094FDC2 /* MyPeopleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BFA21444AE30094FDC2 /* MyPeopleViewController.swift */; };
+		5C3D6C1321444C820094FDC2 /* GroupsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BFA21444AE30094FDC2 /* GroupsViewController.swift */; };
 		5C3D6C1421444C820094FDC2 /* PersonProfilePictureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D6BF621444A710094FDC2 /* PersonProfilePictureView.swift */; };
 		5C3D6C1621444C8D0094FDC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C3D6BAC2144474A0094FDC2 /* Assets.xcassets */; };
 		5C3D6C1A214455560094FDC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C3D6BAC2144474A0094FDC2 /* Assets.xcassets */; };
@@ -101,7 +101,7 @@
 		5C3D6BF221444A070094FDC2 /* Person.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
 		5C3D6BF421444A140094FDC2 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		5C3D6BF621444A710094FDC2 /* PersonProfilePictureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonProfilePictureView.swift; sourceTree = "<group>"; };
-		5C3D6BFA21444AE30094FDC2 /* MyPeopleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPeopleViewController.swift; sourceTree = "<group>"; };
+		5C3D6BFA21444AE30094FDC2 /* GroupsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsViewController.swift; sourceTree = "<group>"; };
 		5C3D6BFC21444AF30094FDC2 /* PersonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonCell.swift; sourceTree = "<group>"; };
 		5C3D6BFE21444B000094FDC2 /* GroupCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCell.swift; sourceTree = "<group>"; };
 		5C3D6C0521444B970094FDC2 /* MyPeoplePlaygroundAccessible.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MyPeoplePlaygroundAccessible.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -210,9 +210,10 @@
 		5C3D6BF0214449D70094FDC2 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				5CB5027121FC557E00144FAB /* People */,
 				5C46E85B21F83F0D00CEF9F1 /* NewGroup */,
 				5CD4212A2155C00300CAC397 /* Group */,
-				5C3D6BF821444AB50094FDC2 /* MyPeople */,
+				5C3D6BF821444AB50094FDC2 /* Groups */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -229,13 +230,13 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		5C3D6BF821444AB50094FDC2 /* MyPeople */ = {
+		5C3D6BF821444AB50094FDC2 /* Groups */ = {
 			isa = PBXGroup;
 			children = (
+				5C3D6BFA21444AE30094FDC2 /* GroupsViewController.swift */,
 				5C3D6BFE21444B000094FDC2 /* GroupCell.swift */,
-				5C3D6BFA21444AE30094FDC2 /* MyPeopleViewController.swift */,
 			);
-			path = MyPeople;
+			path = Groups;
 			sourceTree = "<group>";
 		};
 		5C3D6C0D21444BDA0094FDC2 /* CoreApp */ = {
@@ -276,25 +277,24 @@
 			path = NewGroup;
 			sourceTree = "<group>";
 		};
-		5C849F5F21C997F9000F35EA /* Views */ = {
+		5CB5027121FC557E00144FAB /* People */ = {
 			isa = PBXGroup;
 			children = (
-				5C352F8E219B509E000FE55F /* GroupDetailToolbar.swift */,
-				5CD8393621A26FA10060C85E /* AddContactCell.swift */,
+				5CD4212B2155C02700CAC397 /* PeopleViewController.swift */,
+				5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */,
 				5C3D6BFC21444AF30094FDC2 /* PersonCell.swift */,
-				5C61730421D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift */,
+				5CD8393621A26FA10060C85E /* AddContactCell.swift */,
 			);
-			path = Views;
+			path = People;
 			sourceTree = "<group>";
 		};
 		5CD4212A2155C00300CAC397 /* Group */ = {
 			isa = PBXGroup;
 			children = (
 				5CD8394721A8925E0060C85E /* GroupDetailViewController.swift */,
-				5CD4212B2155C02700CAC397 /* PeopleViewController.swift */,
-				5C849F5F21C997F9000F35EA /* Views */,
-				5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */,
 				5CB8EC1821BC603A00B294B4 /* GroupDetailModalListener.swift */,
+				5C352F8E219B509E000FE55F /* GroupDetailToolbar.swift */,
+				5C61730421D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift */,
 			);
 			path = Group;
 			sourceTree = "<group>";
@@ -439,7 +439,7 @@
 				5C3D6BF521444A140094FDC2 /* Group.swift in Sources */,
 				5C3D6BF721444A710094FDC2 /* PersonProfilePictureView.swift in Sources */,
 				5CD4212821556A9900CAC397 /* PeopleByGroupsDataSource.swift in Sources */,
-				5C3D6BFB21444AE30094FDC2 /* MyPeopleViewController.swift in Sources */,
+				5C3D6BFB21444AE30094FDC2 /* GroupsViewController.swift in Sources */,
 				5CE864AA215F49220060D3C2 /* AssetCatalog.swift in Sources */,
 				5C1BB02B215F096300AFB591 /* UIView.swift in Sources */,
 				5CD4212C2155C02700CAC397 /* PeopleViewController.swift in Sources */,
@@ -482,7 +482,7 @@
 				5CD8394121A611EF0060C85E /* GroupDetailToolbar.swift in Sources */,
 				5C224CEF21560DB500AE6735 /* StateController.swift in Sources */,
 				5CD8394921A8925E0060C85E /* GroupDetailViewController.swift in Sources */,
-				5C3D6C1321444C820094FDC2 /* MyPeopleViewController.swift in Sources */,
+				5C3D6C1321444C820094FDC2 /* GroupsViewController.swift in Sources */,
 				5CB2A8BA214DA10600DF4704 /* ContactStore.swift in Sources */,
 				5C3D6C1421444C820094FDC2 /* PersonProfilePictureView.swift in Sources */,
 				5CD4212921556A9900CAC397 /* PeopleByGroupsDataSource.swift in Sources */,
