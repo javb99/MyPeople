@@ -34,9 +34,9 @@ public class PersonPictureView: UIView {
         imageView = UIImageView(frame: .zero)
         
         super.init(frame: frame)
-        let totalBorderWidth = floor(bounds.width/20)
-        let colorBorderWidth = floor(totalBorderWidth*2/3)
-        let whiteBorderWidth = floor(totalBorderWidth/3)
+        let totalBorderWidth = floor(bounds.width/10)
+        let colorBorderWidth = floor(totalBorderWidth*3/4)
+        let whiteBorderWidth = floor(totalBorderWidth/4)
         imageView.frame = bounds.inset(by: UIEdgeInsets(singleValue: colorBorderWidth-whiteBorderWidth))
         imageView.contentMode = .scaleAspectFit
         imageView.image = image ?? AssetCatalog.image(.templateProfilePicture)
