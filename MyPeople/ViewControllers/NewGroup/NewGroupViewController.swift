@@ -31,11 +31,12 @@ class NewGroupViewController: UIViewController {
     private var nameField: UITextField
     
     // MARK: Instance Variables
-    public var colorName: AssetCatalog.Color {
+    
+    /// The currently selected color name.
+    public var colorName: AssetCatalog.Color? {
         didSet {
-            let color = AssetCatalog.color(colorName)
+            let color = AssetCatalog.color(colorName ?? .slate)
             membersViewController.tintColor = color
-            view.backgroundColor = color
         }
     }
     public private(set) var initialMemberIDs: [Person.ID] {
@@ -49,7 +50,6 @@ class NewGroupViewController: UIViewController {
         self.navigationCoordinator = navigationCoordinator
         self.stateController = stateController
         self.initialMemberIDs = initialMemberIDs
-        colorName = .slate
         
         membersViewController = PeopleViewController(navigationCoordinator: navigationCoordinator, stateController: stateController)
         colorPickerViewController = ColorPickerViewController()
@@ -82,7 +82,13 @@ class NewGroupViewController: UIViewController {
         nameField.font = UIFont.preferredFont(forTextStyle: .headline)
         view.addSubview(nameField)
         
-        colorName = .slate
+        // Dismiss the keyboard on a tap outside the keyboard.
+        let tap = UITapGestureRecognizer(target: view, action: #selector(UIView.endEditing(_:)))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+        
+        colorName = nil
+        view.backgroundColor = AssetCatalog.color(.slate)
         
         addConstraints()
     }
@@ -98,7 +104,7 @@ class NewGroupViewController: UIViewController {
     }
     
     @IBAction func done() {
-        guard let name = nameField.text, !name.isEmpty else {
+        guard let colorName = colorName, let name = nameField.text, !name.isEmpty else {
             #warning("Lift to user")
             return
         }

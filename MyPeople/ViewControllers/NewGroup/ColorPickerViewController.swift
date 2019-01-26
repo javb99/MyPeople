@@ -31,8 +31,15 @@ class ColorPickerViewController: UICollectionViewController {
         }
     }
     
+    private var flowLayout: UICollectionViewFlowLayout {
+        return collectionViewLayout as! UICollectionViewFlowLayout
+    }
+    
+    var checkmarkImage: UIImage!
+    
     init() {
         let flowLayout = UICollectionViewFlowLayout()
+        flowLayout.scrollDirection = .horizontal
         flowLayout.sectionInset = .init(singleValue: 8)
         flowLayout.sectionInsetReference = .fromSafeArea
         super.init(collectionViewLayout: flowLayout)
@@ -45,12 +52,18 @@ class ColorPickerViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Create a slate colored checkmark image the correct size to overlay on the color items.
+        checkmarkImage = CheckmarkVector(size: flowLayout.itemSize, stroke: .white).image
+        
         backgroundColor = .clear
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: colorCellID)
     }
     
     override var preferredContentSize: CGSize {
-        get { return CGSize(width: CGFloat.greatestFiniteMagnitude, height: collectionViewLayout.collectionViewContentSize.height) }
+        get {
+            let height = flowLayout.itemSize.height + flowLayout.sectionInset.top + flowLayout.sectionInset.bottom
+            return CGSize(width: collectionViewLayout.collectionViewContentSize.width, height: height)
+        }
         set {}
     }
     
@@ -65,8 +78,12 @@ class ColorPickerViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: colorCellID, for: indexPath)
         let color = AssetCatalog.color(colors[indexPath.item])
-        cell.contentView.backgroundColor = color
-        cell.contentView.maskToCorners(ofRadius: 8)
+        let bgView = UIView()
+        bgView.backgroundColor = color
+        bgView.maskToCorners(ofRadius: 8)
+        cell.contentView.maskToCorners(ofRadius: 8) // Make sure border is curved too.
+        cell.selectedBackgroundView = UIImageView(image: checkmarkImage)
+        cell.backgroundView = bgView
         updateSelection(in: cell, at: indexPath)
         
         return cell
@@ -83,7 +100,8 @@ class ColorPickerViewController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         guard let cell = collectionView.cellForItem(at: indexPath) else {
-            fatalError("Selected index path doesn't yield a cell. We must have made a false assumption about the cellForItem(at:) method.")
+            // Cell has scrolled off screen.
+            return
         }
         updateSelection(in: cell, at: indexPath)
     }

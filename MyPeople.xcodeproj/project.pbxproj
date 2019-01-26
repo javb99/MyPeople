@@ -42,6 +42,7 @@
 		5CB2A8B9214DA10600DF4704 /* ContactStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB2A8B8214DA10600DF4704 /* ContactStore.swift */; };
 		5CB2A8BA214DA10600DF4704 /* ContactStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB2A8B8214DA10600DF4704 /* ContactStore.swift */; };
 		5CB5027321FC596100144FAB /* StateController-Pr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB5027221FC596100144FAB /* StateController-Pr.swift */; };
+		5CB5027521FCF15C00144FAB /* VectorImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB5027421FCF15C00144FAB /* VectorImages.swift */; };
 		5CB8EC1921BC603A00B294B4 /* GroupDetailModalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB8EC1821BC603A00B294B4 /* GroupDetailModalListener.swift */; };
 		5CD4212821556A9900CAC397 /* PeopleByGroupsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */; };
 		5CD4212921556A9900CAC397 /* PeopleByGroupsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */; };
@@ -110,6 +111,7 @@
 		5C61730421D6D2A500AE3CA9 /* GroupDetailToolbarDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailToolbarDataSource.swift; sourceTree = "<group>"; };
 		5CB2A8B8214DA10600DF4704 /* ContactStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactStore.swift; sourceTree = "<group>"; };
 		5CB5027221FC596100144FAB /* StateController-Pr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StateController-Pr.swift"; sourceTree = "<group>"; };
+		5CB5027421FCF15C00144FAB /* VectorImages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorImages.swift; sourceTree = "<group>"; };
 		5CB8EC1821BC603A00B294B4 /* GroupDetailModalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailModalListener.swift; sourceTree = "<group>"; };
 		5CD4212721556A9900CAC397 /* PeopleByGroupsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleByGroupsDataSource.swift; sourceTree = "<group>"; };
 		5CD4212B2155C02700CAC397 /* PeopleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleViewController.swift; sourceTree = "<group>"; };
@@ -203,6 +205,7 @@
 			children = (
 				5C3D6BF621444A710094FDC2 /* PersonPictureView.swift */,
 				5C1BB02A215F096300AFB591 /* UIView.swift */,
+				5CB5027421FCF15C00144FAB /* VectorImages.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -442,6 +445,7 @@
 				5CE864AA215F49220060D3C2 /* AssetCatalog.swift in Sources */,
 				5C1BB02B215F096300AFB591 /* UIView.swift in Sources */,
 				5CD4212C2155C02700CAC397 /* PeopleViewController.swift in Sources */,
+				5CB5027521FCF15C00144FAB /* VectorImages.swift in Sources */,
 				5C46E85F21F83F8A00CEF9F1 /* ColorPickerViewController.swift in Sources */,
 				5CD8393721A26FA10060C85E /* AddContactCell.swift in Sources */,
 				5CB2A8B9214DA10600DF4704 /* ContactStore.swift in Sources */,
