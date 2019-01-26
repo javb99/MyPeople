@@ -11,6 +11,20 @@ import CocoaTouchAdditions
 import Contacts
 import ContactsUI
 
+extension NavBarConfiguration {
+    /// Dark text on a light bar.
+    public static var darkText: NavBarConfiguration {
+        var config = NavBarConfiguration()
+        config.shadowImage = .some(nil)
+        config.tintColor = .black
+        config.barTintColor = .white
+        config.barStyle = .default
+        config.isTranslucent = true
+        config.backgroundImage = .some(nil)
+        return config
+    }
+}
+
 public class MyPeopleViewController: UITableViewController {
     
     // MARK: Static Members
@@ -51,25 +65,14 @@ public class MyPeopleViewController: UITableViewController {
         tableView.register(GroupCell.self, forCellReuseIdentifier: MyPeopleViewController.cellIdentifier)
     }
     
-    func navBarConfig() -> NavBarConfiguration {
-        var config = NavBarConfiguration()
-        config.shadowImage = .some(nil)
-        config.tintColor = .black
-        config.barTintColor = .white
-        config.barStyle = .default
-        config.isTranslucent = true
-        config.backgroundImage = .some(nil)
-        return config
-    }
-    
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if animated {
             transitionCoordinator!.animate(alongsideTransition: { (context) in
-                self.navigationController!.navigationBar.apply(self.navBarConfig())
+                self.navigationController!.navigationBar.apply(.darkText)
             }, completion: nil)
         } else {
-            self.navigationController!.navigationBar.apply(self.navBarConfig())
+            self.navigationController!.navigationBar.apply(.darkText)
         }
         
         reloadDataSource()
@@ -107,7 +110,12 @@ public class MyPeopleViewController: UITableViewController {
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertView.addAction(done)
         alertView.addAction(cancel)
-        present(alertView, animated: true, completion: nil)
+        
+        let colorPicker = NewGroupViewController(navigationCoordinator: navigationCoordinator, stateController: stateController)
+        let navController = UINavigationController(rootViewController: colorPicker)
+        
+        present(navController, animated: true, completion: nil)
+        //present(alertView, animated: true, completion: nil)
     }
     
     public override func numberOfSections(in tableView: UITableView) -> Int {

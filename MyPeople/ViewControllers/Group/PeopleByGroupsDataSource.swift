@@ -12,24 +12,22 @@ import CocoaTouchAdditions
 /// Provides the people in a group.
 public class PeopleByGroupsDataSource: ChainableDataSource {
     
+    /// A stateController is needed to get the color rings for the groups a person is a member of.
     public var stateController: StateController!
-    public var groups: [Group] = []
-    public var people: [[Person]] = []
+    /// An array of people arrays. Each array corrosponds to a group.
+    public var peopleByGroups: [[Person]] = []
     
     public override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return groups.count
+        return peopleByGroups.count
     }
     
     public override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return people[section].count
+        return peopleByGroups[section].count
     }
     
     /// Rotate the colors for a person based on the section that is being asked for.
     func colors(forItemAt indexPath: IndexPath) -> [UIColor] {
         let person = self.person(at: indexPath)
-        //let personGroups = stateController.groups(forPerson: person.identifier!)
-        
-        //let rotatedGroups = groups[indexPath.section...] + groups[..<indexPath.section]
         let personsGroups = stateController.groups(forPerson: person.identifier).map { $0.identifier }
         let personsGroupsSorted = stateController.order(personsGroups)
         let colors = personsGroupsSorted.map{ stateController.group(for: $0).meta.color }
@@ -45,11 +43,7 @@ public class PeopleByGroupsDataSource: ChainableDataSource {
         return cell
     }
     
-    public func group(atSection section: Int) -> Group {
-        return groups[section]
-    }
-    
     public func person(at indexPath: IndexPath) -> Person {
-        return people[indexPath.section][indexPath.item]
+        return peopleByGroups[indexPath.section][indexPath.item]
     }
 }

@@ -17,16 +17,29 @@ public protocol SelectionListener: class {
     func indexPathDeselected(_ indexPath: IndexPath)
 }
 
-public class GroupDetailCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+public protocol PeopleViewControllerEditDelegate: class {
+    func didRemovePerson(_ person: Person)
+    func didAddPerson(_ person: Person)
+}
+
+/// A class that displays People and allows the user to drill down into the detail page for each of them. When in editing mode, an add button is displayed. Use the contactPickerDelegate to be informed of new people that should be added.
+public class PeopleViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
     // MARK: Dependencies
     public var navigationCoordinator: AppNavigationCoordinator
-    public var stateController: StateController
-    /// Refreshed in getData()
-    public private(set) var group: Group
-    public var groupID: Group.ID
+    //public var stateController: StateController
     
-    public var modalListener: GroupDetailModalListener?
+    /// Refreshed in getData()
+//    public private(set) var group: Group? {
+//        didSet {
+//            groupID = group?.identifier
+//            updateGroupColor()
+//        }
+//    }
+    //public var groupID: Group.ID?
+    
+    /// The delegate that is assigned to be informed of new contacts to add.
+    public var contactPickerDelegate: CNContactPickerDelegate?
     public var selectionListener: SelectionListener?
     
     // MARK: Instance members
@@ -36,9 +49,21 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     private var addCellDataSource: AddContactDataSource
     private var cellsDataSource: PeopleByGroupsDataSource
     
+    /// The people that are displayed.
+    public private(set) var people: [Person] = []
     
-    /// Set in getData()
-    public private(set) var membersOfGroup: [Person]!
+    /// Set the people property and update the collectionView if desired.
+    public func setPeople(_ people: [Person], shouldReloadCollectionView: Bool = true) {
+        self.people = people
+        reloadData(shouldReloadCollectionView: shouldReloadCollectionView)
+    }
+    
+    /// The color used for the background (dimmed) and for the tint color in the detail views.
+    public var tintColor: UIColor? {
+        didSet {
+            updateTintColor()
+        }
+    }
     
     public private(set) var selectedIndexes: Set<IndexPath> = []
     
@@ -52,11 +77,8 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     static let cellIdentifier: String = "Cell"
     
     // MARK: Initializers
-    public init(navigationCoordinator: AppNavigationCoordinator, stateController: StateController, group: Group) {
+    public init(navigationCoordinator: AppNavigationCoordinator, stateController: StateController) {
         self.navigationCoordinator = navigationCoordinator
-        self.stateController = stateController
-        self.group = group
-        self.groupID = group.identifier
         
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.itemSize = templateCell.intrinsicContentSize
@@ -66,7 +88,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
         cellsDataSource = PeopleByGroupsDataSource(sourcingFrom: nil)
         cellsDataSource.stateController = stateController
         addCellDataSource = AddContactDataSource(sourcingFrom: cellsDataSource)
-        addCellDataSource.tintColor = group.meta.color
+        addCellDataSource.tintColor = tintColor ?? .black
         
         super.init(collectionViewLayout: flowLayout)
         
@@ -83,45 +105,42 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
         reloadData(shouldReloadCollectionView: false)
         collectionView.dataSource = addCellDataSource
         
-        let bgView = UIView()
-        bgView.frame = collectionView.bounds
-        bgView.backgroundColor = UIColor.white.overlay(group.meta.color.withAlphaComponent(0.1))
-        collectionView.backgroundView = bgView
-        bgView.usesAutoLayout()
-        bgView.constrain(to: collectionView)
+        updateTintColor()
         
         collectionView.register(PersonCell.self, forCellWithReuseIdentifier: MyPeopleViewController.cellIdentifier)
         collectionView.register(AddContactDataSource.cellClass, forCellWithReuseIdentifier: AddContactDataSource.addCellIdentifier)
     }
     
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        reloadData()
-    }
-    
-    /// Loads group and members.
-    func getData() {
-        // Refresh the group. The color could have changed.
-        group = stateController.group(for: groupID)
-        membersOfGroup = stateController.members(ofGroup: groupID)
-    }
-    
-    /// Loads data and passes it to the data source.
+    /// Passes the data to the data source and optionally refreshes the collectionView.
     func reloadData(shouldReloadCollectionView: Bool = true) {
-        getData()
-        cellsDataSource.groups = [group]
-        cellsDataSource.people = [membersOfGroup]
-        let indexes = selectedIndexes
-        selectedIndexes = [] // Don't maintain selection because items could have moved.
-        indexes.forEach { selectionListener?.indexPathDeselected($0) }
+        cellsDataSource.peopleByGroups = [people] // Only one group so wrap in an array.
         
-        if shouldReloadCollectionView { collectionView.reloadData() }
+        if shouldReloadCollectionView { // Don't lose selection because it is needed to delete.
+            let indexes = selectedIndexes
+            selectedIndexes = [] // Don't maintain selection because items could have moved.
+            indexes.forEach { selectionListener?.indexPathDeselected($0) }
+            collectionView.reloadData()
+        }
     }
     
-    func removeSelectedItems() {
+    /// Update the background color of the collection view to match the group color. Also updates the addCellsDataSource tintColor.
+    func updateTintColor() {
+        let color: UIColor = tintColor ?? .darkGray
+        
+        let bgColor = UIColor.white.overlay(color.withAlphaComponent(0.1))
+        collectionView.setBackgroundColor(bgColor)
+        addCellDataSource.tintColor = color
+        
+        if let addCell = addCellDataSource.addCellIndex { // Reload the add cell if it's displayed.
+            collectionView.reloadItems(at: [addCell])
+        }
+    }
+    
+    /// Inform the receive that it should remove the selected indexes.
+    public func removeSelectedItems() {
         // Capture the selection before it is cleared in reloadData()
         let removedIndexPaths = [IndexPath](selectedIndexes)
-        reloadData(shouldReloadCollectionView: false)
+        //reloadData(shouldReloadCollectionView: false)
         collectionView.deleteItems(at: removedIndexPaths)
     }
     
@@ -165,7 +184,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
         
         // Otherwise show the contact detail screen.
         let transformedIP = addCellDataSource.transform(indexPath)
-        let person = membersOfGroup[transformedIP.item]
+        let person = people[transformedIP.item]
         showContactDetailScreen(for: person)
         
         return false // Avoid showing the selection highlight
@@ -173,9 +192,9 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     
     public func showContactDetailScreen(for person: Person) {
         guard let controller = try! navigationCoordinator.prepareContactDetailViewController(for: person.identifier) else { return }
-        controller.view.tintColor = group.meta.color
+        controller.view.tintColor = tintColor
         navigationController?.navigationBar.barStyle = .default
-        navigationController?.navigationBar.tintColor = group.meta.color
+        navigationController?.navigationBar.tintColor = tintColor
         show(controller, sender: self)
     }
     
@@ -193,7 +212,7 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     
     /// All of the people that are selected in the collection view.
     public var selectedPeople: [Person.ID] {
-        return selectedIndexes.map { membersOfGroup[addCellDataSource.transform($0).item].identifier }
+        return selectedIndexes.map { people[addCellDataSource.transform($0).item].identifier }
     }
     
     public override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -208,9 +227,9 @@ public class GroupDetailCollectionViewController: UICollectionViewController, UI
     public func addMembersButtonPressed() {
         print("Add members")
         let picker = CNContactPickerViewController()
-        picker.delegate = modalListener
+        picker.delegate = contactPickerDelegate
         picker.predicateForSelectionOfProperty = nil
-        picker.view.tintColor = group.meta.color
+        picker.view.tintColor = tintColor
         present(picker, animated: true, completion: nil)
     }
 }

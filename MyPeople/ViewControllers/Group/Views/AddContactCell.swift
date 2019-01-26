@@ -36,6 +36,11 @@ public class AddContactDataSource: ChainableDataSource {
         return shouldShowAddButton && indexPath.section == 0 && indexPath.item == 0
     }
     
+    /// Returns the index of the add cell or nil if it isn't enabled.
+    public var addCellIndex: IndexPath? {
+        return shouldShowAddButton ? IndexPath(item: 0, section: 0) : nil
+    }
+    
     public override init(sourcingFrom dataSource: UICollectionViewDataSource?) {
         super.init(sourcingFrom: dataSource)
         self.indexTransform = IndexPathTransform(

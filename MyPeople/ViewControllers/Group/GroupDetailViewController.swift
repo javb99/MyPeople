@@ -22,7 +22,7 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
     private var group: Group
     
     // MARK: Instance members
-    public var collectionViewController: GroupDetailCollectionViewController
+    public var membersViewController: PeopleViewController
     private var gradientView: GradientView
     private var toolbar: GroupDetailToolbar
     
@@ -40,7 +40,9 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
         group = stateController.group(for: groupID)
         modalListener = GroupDetailModalListener(group: group, stateController: stateController)
         
-        collectionViewController = GroupDetailCollectionViewController(navigationCoordinator: navigationCoordinator, stateController: stateController, group: group)
+        membersViewController = PeopleViewController(navigationCoordinator: navigationCoordinator, stateController: stateController)
+        membersViewController.tintColor = group.meta.color
+        
         gradientView = GradientView(frame: .zero)
         toolbar = GroupDetailToolbar()
         toolbarDataSource = GroupDetailToolbarDataSource()
@@ -65,12 +67,21 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
         addActionButtons()
         
         addConstraints()
+        
+        refreshMembers(shouldUpdateCollectionView: false)
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        refreshMembers()
         navigationController!.navigationBar.apply(navBarConfig())
+    }
+    
+    /// Loads members of the group and load them into the PeopleViewController.
+    func refreshMembers(shouldUpdateCollectionView: Bool = true) {
+        let members = stateController.members(ofGroup: groupID)
+        membersViewController.setPeople(members, shouldReloadCollectionView: shouldUpdateCollectionView)
     }
     
     /// Configure the gradient view's attributes and add it as a subview.
@@ -95,40 +106,37 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
     
     /// Fill dependencies of the collectionViewController
     func configureCollectionViewController() {
-        collectionViewController.navigationCoordinator = navigationCoordinator
-        collectionViewController.stateController = stateController
-        collectionViewController.groupID = groupID
-        collectionViewController.modalListener = modalListener
-        collectionViewController.selectionListener = self
+        membersViewController.contactPickerDelegate = modalListener
+        membersViewController.selectionListener = self
         
-        addChild(collectionViewController)
-        view.addSubview(collectionViewController.view)
+        addChild(membersViewController)
+        view.addSubview(membersViewController.view)
     }
     
     /// Set and activate the layout constraints. Views should already be added as subviews.
     func addConstraints() {
-        guard collectionViewController.view.superview === view, gradientView.superview === view, toolbar.superview === view else {
+        guard membersViewController.view.superview === view, gradientView.superview === view, toolbar.superview === view else {
             fatalError("Subviews were not added before constraints.")
         }
         
-        let collectionView = collectionViewController.view!
-        collectionView.usesAutoLayout()
-        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        let membersView = membersViewController.view!
+        membersView.usesAutoLayout()
+        membersView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        membersView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        membersView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         
         gradientView.usesAutoLayout()
         let navBarHeight = navigationController!.navigationBar.frame.height
         gradientView.topAnchor.constraint(equalTo: view.topAnchor, constant: -navBarHeight).isActive = true
         gradientView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         gradientView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        gradientView.bottomAnchor.constraint(equalTo: collectionViewController.view.topAnchor).isActive = true
+        gradientView.bottomAnchor.constraint(equalTo: membersView.topAnchor).isActive = true
         
         toolbar.usesAutoLayout()
         toolbar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         toolbar.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         let spaceBelowActionButtons: CGFloat = 6
-        toolbar.bottomAnchor.constraint(equalTo: collectionViewController.view.topAnchor, constant: -spaceBelowActionButtons).isActive = true
+        toolbar.bottomAnchor.constraint(equalTo: membersView.topAnchor, constant: -spaceBelowActionButtons).isActive = true
     }
     
     func navBarConfig() -> NavBarConfiguration {
@@ -146,7 +154,7 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
         super.setEditing(editing, animated: animated)
         
         // Allow the collection view to show the add and remove buttons.
-        collectionViewController.setEditing(editing, animated: animated)
+        membersViewController.setEditing(editing, animated: animated)
         
         // Change the tool bar.
         toolbarDataSource.isEditing = editing
@@ -155,21 +163,27 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
     
     public func indexPathSelected(_ indexPath: IndexPath) {
         // Enable any buttons that rely on having a selection.
-        toolbarDataSource.hasSelection = !collectionViewController.selectedIndexes.isEmpty
+        toolbarDataSource.hasSelection = !membersViewController.selectedIndexes.isEmpty
         toolbar.reloadButtons()
     }
     
     public func indexPathDeselected(_ indexPath: IndexPath) {
         // Disable any buttons that rely on having a selection.
-        toolbarDataSource.hasSelection = !collectionViewController.selectedIndexes.isEmpty
+        toolbarDataSource.hasSelection = !membersViewController.selectedIndexes.isEmpty
         toolbar.reloadButtons()
     }
     
     /// Which members should be contacted using the action buttons.
     func membersToContact() -> [Person] {
-        let allMembers: [Person] = collectionViewController.membersOfGroup
-        let selectedPeople = collectionViewController.selectedPeople.map { stateController.person(for: $0) }
-        return isEditing ? selectedPeople : allMembers
+        if isEditing {
+            // Only contact selected members
+            let selectedPeople = membersViewController.selectedPeople.map { stateController.person(for: $0) }
+            return selectedPeople
+        } else {
+            // Contact all the members
+            let allMembers: [Person] = stateController.members(ofGroup: groupID)
+            return allMembers
+        }
     }
     
     public func actionButtonPressed(action: Action) {
@@ -189,7 +203,7 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
         case .remove:
             displayRemoveConfirmation()
         case .newGroup:
-            guard let newGroup = stateController.createNewGroup(name: "Selection of \(group.name)", meta: GroupMeta(color: AssetCatalog.Color.groupColors.randomElement()!), members:  collectionViewController.selectedPeople) else {
+            guard let newGroup = stateController.createNewGroup(name: "Selection of \(group.name)", meta: GroupMeta(color: AssetCatalog.Color.groupColors.randomElement()!), members:  membersViewController.selectedPeople) else {
                 print("Failed to create new group from selection")
                 #warning("Surface to user")
                 return
@@ -201,7 +215,7 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
     
     /// Display an alert controller that allows the user to cancel a remove operation or allow it to continue.
     func displayRemoveConfirmation() {
-        let selectedCount = collectionViewController.selectedPeople.count
+        let selectedCount = membersViewController.selectedPeople.count
         let suffix = selectedCount == 1 ? "" : "s"
         let alertView = UIAlertController(title: "Remove \(selectedCount) contact\(suffix)?", message: "The contacts themselves will remain intact.", preferredStyle: .alert)
         let yes = UIAlertAction(title: "Yes", style: .destructive) { [weak self] (action)  in
@@ -215,7 +229,9 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
     }
     
     func removeMembersFromGroup() {
-        stateController.remove(people: collectionViewController.selectedPeople, fromGroup: groupID)
-        collectionViewController.removeSelectedItems()
+        stateController.remove(people: membersViewController.selectedPeople, fromGroup: groupID)
+        // Refresh the collection view with the removed members.
+        refreshMembers(shouldUpdateCollectionView: false)
+        membersViewController.removeSelectedItems()
     }
 }
