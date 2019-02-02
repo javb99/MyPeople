@@ -94,28 +94,7 @@ public class GroupsViewController: UITableViewController {
     }
     
     @IBAction func newGroupButtonPressed(_ button: UIButton?) {
-        let alertView = UIAlertController(title: "New Group", message: "Enter a group name", preferredStyle: .alert)
-        alertView.addTextField(configurationHandler: nil)
-        let done = UIAlertAction(title: "Add", style: .default) { [weak self] (action)  in
-            guard let self = self else { return }
-            let textField = alertView.textFields!.first!
-            guard let text = textField.text, !text.isEmpty else { fatalError() }
-            self.stateController.createNewGroup(name: text, meta: GroupMeta(color: AssetCatalog.Color.groupColors.randomElement()!))
-            // Insert the row at the end.
-            self.reloadDataSource(reloadDisplay: false)
-            let count = self.groupCounts.count
-            let indexPath = IndexPath(row: count-1, section: 0)
-            self.tableView.insertRows(at: [indexPath], with: .automatic)
-        }
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alertView.addAction(done)
-        alertView.addAction(cancel)
-        
-        let colorPicker = NewGroupViewController(navigationCoordinator: navigationCoordinator, stateController: stateController)
-        let navController = UINavigationController(rootViewController: colorPicker)
-        
-        present(navController, animated: true, completion: nil)
-        //present(alertView, animated: true, completion: nil)
+        presentNewGroupView(duplicateOf: nil)
     }
     
     public override func numberOfSections(in tableView: UITableView) -> Int {
@@ -158,7 +137,9 @@ public class GroupsViewController: UITableViewController {
             self?.deleteGroup(at: indexPath)
         }
         let duplicate = UITableViewRowAction(style: .normal, title: "Duplicate") { [weak self] (_, indexPath) in
-            self?.duplicateGroup(at: indexPath)
+            //self?.duplicateGroup(at: indexPath)
+            let group = self?.groupCounts[indexPath.row].group
+            self?.presentNewGroupView(duplicateOf: group?.identifier)
         }
         return [duplicate, delete]
     }
@@ -168,6 +149,15 @@ public class GroupsViewController: UITableViewController {
         stateController.delete(group: group.identifier)
         reloadDataSource(reloadDisplay: false)
         tableView.deleteRows(at: [indexPath], with: .none)
+    }
+    
+    public func presentNewGroupView(duplicateOf referenceGroup: Group.ID? = nil) {
+        if let referenceGroup = referenceGroup {
+            let memberIDs = stateController.members(ofGroup: referenceGroup).map { $0.identifier }
+            present(navigationCoordinator.prepareNewGroupViewController(withInitialMembers: memberIDs), animated: true, completion: nil)
+        } else {
+            present(navigationCoordinator.prepareNewGroupViewController(withInitialMembers: []), animated: true, completion: nil)
+        }
     }
     
     public func duplicateGroup(at indexPath: IndexPath) {

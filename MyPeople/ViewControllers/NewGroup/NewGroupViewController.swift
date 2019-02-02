@@ -39,17 +39,16 @@ class NewGroupViewController: UIViewController {
             membersViewController.tintColor = color
         }
     }
-    public private(set) var initialMemberIDs: [Person.ID] {
+    public private(set) var initialMemberIDs: Set<Person.ID> {
         didSet {
-            let members = initialMemberIDs.map { stateController.person(for: $0) }
-            membersViewController.setPeople(members)
+            refreshMembers()
         }
     }
 
     public init(navigationCoordinator: AppNavigationCoordinator, stateController: StateController, initialMemberIDs: [Person.ID] = []) {
         self.navigationCoordinator = navigationCoordinator
         self.stateController = stateController
-        self.initialMemberIDs = initialMemberIDs
+        self.initialMemberIDs = Set(initialMemberIDs)
         
         membersViewController = PeopleViewController(navigationCoordinator: navigationCoordinator, stateController: stateController)
         colorPickerViewController = ColorPickerViewController()
@@ -109,7 +108,7 @@ class NewGroupViewController: UIViewController {
             return
         }
         let meta = GroupMeta(color: colorName)
-        stateController.createNewGroup(name: name, meta: meta, members: initialMemberIDs)
+        stateController.createNewGroup(name: name, meta: meta, members: Array(initialMemberIDs))
         dismiss(animated: true, completion: nil)
     }
     
@@ -121,6 +120,8 @@ class NewGroupViewController: UIViewController {
         
         membersViewController.collectionView.numberOfItems(inSection: 0) // Avoid an internal inconsistency by allowing the insertion to be animated.
         membersViewController.isEditing = true
+        
+        refreshMembers()
     }
     
     /// Fill dependencies of the configureColorPicker
@@ -158,6 +159,12 @@ class NewGroupViewController: UIViewController {
         membersView.constrain(\UIView.trailingAnchor, to: view)
         membersView.constrain(\UIView.bottomAnchor, to: view)
     }
+    
+    /// Inform the membersViewController of the current state of the initialMembers.
+    func refreshMembers() {
+        let members = initialMemberIDs.map { stateController.person(for: $0) }
+        membersViewController.setPeople(members)
+    }
 }
 
 extension NewGroupViewController: ColorPickerDelegate {
@@ -173,7 +180,7 @@ extension NewGroupViewController: CNContactPickerDelegate {
     
     public func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
         let people = contacts.map { Person.ID(rawValue: $0.identifier) }
-        initialMemberIDs.append(contentsOf: people)
+        initialMemberIDs.formUnion(people)
         picker.dismiss(animated: true, completion: nil)
     }
 }

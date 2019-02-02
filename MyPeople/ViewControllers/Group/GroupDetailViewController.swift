@@ -203,13 +203,11 @@ public class GroupDetailViewController: UIViewController, SelectionListener {
         case .remove:
             displayRemoveConfirmation()
         case .newGroup:
-            guard let newGroup = stateController.createNewGroup(name: "Selection of \(group.name)", meta: GroupMeta(color: AssetCatalog.Color.groupColors.randomElement()!), members:  membersViewController.selectedPeople) else {
-                print("Failed to create new group from selection")
-                #warning("Surface to user")
-                return
-            }
-            stateController.move(group: newGroup.identifier, after: group.identifier)
-            navigationController?.popViewController(animated: true)
+            let controller = navigationCoordinator.prepareNewGroupViewController(withInitialMembers: membersViewController.selectedPeople)
+            /// Present modally the NewGroup screen and silently remove this detail screen under so when it is dismissed the user is on the groups screen.
+            navigationController?.present(controller, animated: true, completion: {
+                self.navigationController?.popViewController(animated: false)
+            })
         }
     }
     

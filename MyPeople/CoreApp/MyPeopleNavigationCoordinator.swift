@@ -12,6 +12,7 @@ import ContactsUI
 
 public protocol AppNavigationCoordinator: class {
     func prepareMyPeopleViewController() -> UIViewController
+    func prepareNewGroupViewController(withInitialMembers: [Person.ID]) -> UIViewController
     func prepareGroupDetailViewController(for groupID: Group.ID) -> UIViewController?
     func prepareContactDetailViewController(for personID: Person.ID) throws -> UIViewController?
 }
@@ -30,6 +31,13 @@ public class MyPeopleNavigationCoordinator: AppNavigationCoordinator {
     public func prepareMyPeopleViewController() -> UIViewController {
         let controller = GroupsViewController(navigationCoordinator: self, stateController: stateController)
         return controller
+    }
+    
+    /// Wraps a NewGroupViewController in a nav controller to present modally.
+    public func prepareNewGroupViewController(withInitialMembers initialMembers: [Person.ID]) -> UIViewController {
+        let controller = NewGroupViewController(navigationCoordinator: self, stateController: stateController, initialMemberIDs: initialMembers)
+        let navController = UINavigationController(rootViewController: controller)
+        return navController
     }
     
     public func prepareGroupDetailViewController(for groupID: Group.ID) -> UIViewController? {
